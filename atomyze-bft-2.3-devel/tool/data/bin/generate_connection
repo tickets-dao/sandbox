@@ -164,9 +164,9 @@ process_state_namespace_external() {
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_external)
-$(peers_section_internal)
+$(peers_section_external)
 " > "$connection_file"
-	_info "'$namespace' internal connection '$connection_file'"
+	_info "'$namespace' external connection '$connection_file'"
 }
 
 ###############################################################################
