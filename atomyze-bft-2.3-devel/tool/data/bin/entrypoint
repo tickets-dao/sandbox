@@ -2,5 +2,11 @@
 
 while true
 do
-    steps
+    if ! steps
+    then
+        echo ""
+        echo "-- ERROR: -----------------------------------"
+        echo ""
+        sleep 30
+    fi
 done

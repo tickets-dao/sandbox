@@ -2,7 +2,7 @@
 
 . default
 
-FROM="$DATA/backup"
+FROM="$DATA/out"
 TO="$DATA/state"
 
 find "$TO" -maxdepth 2 -mindepth 1 -print0 | xargs rm -vrf

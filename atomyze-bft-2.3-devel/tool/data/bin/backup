@@ -3,6 +3,6 @@
 . default
 
 FROM="$STATE"
-TO="$DATA/backup"
+TO="$DATA/out"
 
 tar -czvf "$TO/backup.tar.gz" "$FROM"
