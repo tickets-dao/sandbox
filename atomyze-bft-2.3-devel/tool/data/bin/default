@@ -7,12 +7,15 @@ STATE_FILE="$STATE/.file"
 STATE_FILE_TMP="/tmp/.file"
 CHANNEL_DATA="$DATA/channel"
 CHANNEL_STATE="$STATE/channel"
+CONNECTION_STATE="$STATE/connection"
+CONNECTION_DATA="$DATA/out/connection"
 OUT="/dev/shm/out"
 [ -z "$ORDERER_PORT" ] && ORDERER_PORT="7050"
 [ -z "$PEER_PORT" ] && PEER_PORT="7051"
 CRYPTOMATERIAL="${STATE}/peerOrganizations ${STATE}/ordererOrganizations"
 CHAINCODE_TMP="/tmp/chaincode.tar.gz"
 CUSTOM_CHECK_FILE=".custom_check"
+ENV="/state/.env"
 
 _err() {
     echo "-- ERROR: $1"
@@ -55,6 +58,11 @@ _org_by_hostname() {
     echo "${1#*.}"
 }
 
+_org_by_configtx() {
+    [ -z "$2" ] && limit="999" || limit="$2"
+    grep -E '\sID: '  "$1" | awk '{print $2}' | head -n "$limit"
+}
+
 _crypto_basedir_by_hostname() {
     find $CRYPTOMATERIAL -type d -name "$1" 2>/dev/null \
         | head -n 1
@@ -79,10 +87,16 @@ _crypto_admin_ca_by_org() {
         xargs -0rI X readlink -f "X/users/Admin@$1/tls/ca.crt"
 }
 
-
 _crypto_admin_msp_by_org() {
     find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
         xargs -0rI X readlink -f "X/users/Admin@$1/msp"
+}
+
+_expose_by_hostname() {
+    search="${1//[.-]/_}"
+    search="${search#test_}"
+    search="EXP_${search^^}"
+    grep -m 1 "^$search" "$ENV" | cut -d "=" -f 2 | cut -d ":" -f 1
 }
 
 _info "$0"

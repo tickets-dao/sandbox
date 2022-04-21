@@ -130,6 +130,7 @@ services:
     depends_on:
       - dind
     environment:
+      - HOSTPWD=$PWD
       - FABRIC_LOGGING_SPEC=DEBUG
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix://docker/docker.sock
@@ -137,10 +138,11 @@ services:
     working_dir: /data
     entrypoint: entrypoint
     volumes:
+      - tool:/state
       - ./tool/data:/data
       - ./tool/data/bin:/data/bin:ro
+      - .env:/state/.env
       - docker:/docker
-      - tool:/state
       - grafana:/state/grafana
       - prometheus:/state/prometheus
       - redis:/state/redis

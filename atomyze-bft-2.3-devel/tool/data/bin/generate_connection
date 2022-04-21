@@ -1,0 +1,177 @@
+#!/bin/bash
+
+. default
+
+[ -z "$VERSION" ] && VERSION="1.0.0"
+[ -z "$LOGGING_LEVEL" ] && LOGGING_LEVEL="info"
+
+CONFIGTX=""
+ORG=""
+CERT=""
+KEY=""
+MSP=""
+CA=""
+
+###############################################################################
+header() {
+	echo -n "---
+name: $NAMESPACE-network
+version: $VERSION
+client:
+	organization: $ORG
+	
+	logging:
+		level: $LOGGING_LEVEL
+
+	tlsCerts:
+		client:
+			key:
+				path: $KEY
+			cert:
+				path: $CERT
+		cryptoconfig:
+			path: $CRYPTOCONFIG
+
+	credentialStore:
+		path: $MSP/signcerts
+		cryptoStore:
+			path: $MSP
+
+channels:
+"
+}
+
+organizations_section() {
+	echo -n "
+organizations:"
+	for org in $(_org_by_configtx "$CONFIGTX")
+	do
+	echo -n "
+	$org:
+		mspid: $org
+		cryptoPath: $MSP
+		peers:
+$(_configtx_peer_fqdn "$CONFIGTX"|fgrep ".$org"|sed 's/^/\t\t\t- /g')
+"
+	done
+}
+
+orderers_section_internal() {
+	echo -n "
+orderers:"
+	for orderer in $(_configtx_orderer_fqdn "$CONFIGTX")
+	do
+	echo -n "
+	$orderer:
+		url: grpcs://$orderer:$ORDERER_PORT
+		tlsCACerts:
+			path: $CA
+"
+	done
+}
+
+orderers_section_external() {
+	echo -n "
+orderers:"
+	for orderer in $(_configtx_orderer_fqdn "$CONFIGTX")
+	do
+	echo -n "
+	$orderer:
+		url: grpcs://localhost:$(_expose_by_hostname "$orderer")
+		tlsCACerts:
+			path: $CA
+"
+	done
+}
+
+peers_section_internal() {
+	echo -n "
+peers:"
+	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
+	do
+		echo -n "
+	$peer:
+		url: grpcs://$peer:$PEER_PORT
+		tlsCACerts:
+			path: $CA
+"
+	done
+}
+
+peers_section_external() {
+	echo -n "
+peers:"
+	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
+	do
+		echo -n "
+	$peer:
+		url: grpcs://localhost:$(_expose_by_hostname "$peer")
+		tlsCACerts:
+			path: $CA
+"
+	done
+}
+
+###############################################################################
+process_state_namespace_internal() {
+	src="$1"
+	NAMESPACE="${src##*/}"
+	CONFIGTX="$src/system/configtx.yaml"
+	ORG="$(_org_by_configtx "$CONFIGTX" "1")"
+	connection_dir="$CONNECTION_STATE/$NAMESPACE/$ORG"
+	connection_file="$connection_dir/connection.yaml"
+	msp="$(_crypto_admin_msp_by_org "$ORG")"
+	cryptoconfig="${msp%/*}"
+
+	mkdir -p "$connection_dir"
+	cp -frv "$cryptoconfig" "$connection_dir"
+
+	CERT="$connection_dir/Admin@$ORG/tls/client.crt"
+	KEY="$connection_dir/Admin@$ORG/tls/client.key"
+	CA="$connection_dir/Admin@$ORG/tls/ca.crt"
+	MSP="$connection_dir/Admin@$ORG/msp"
+	CRYPTOCONFIG="$connection_dir/Admin@$ORG"
+
+	_info "generate connection for '$src'"
+	echo -n "$(header)
+$(organizations_section)
+$(orderers_section_internal)
+$(peers_section_internal)
+" > "$connection_file"
+	_info "'$namespace' internal connection '$connection_file'"
+}
+
+process_state_namespace_external() {
+	src="$1"
+	NAMESPACE="${src##*/}"
+	CONFIGTX="$src/system/configtx.yaml"
+	ORG="$(_org_by_configtx "$CONFIGTX" "1")"
+	connection_dir="$CONNECTION_DATA/$NAMESPACE/$ORG"
+	connection_file="$connection_dir/connection.yaml"
+	msp="$(_crypto_admin_msp_by_org "$ORG")"
+	cryptoconfig="${msp%/*}"
+
+	mkdir -p "$connection_dir"
+	cp -frv "$cryptoconfig" "$connection_dir"
+
+	CERT="$HOSTPWD/$connection_dir/Admin@$ORG/tls/client.crt"
+	KEY="$HOSTPWD/$connection_dir/Admin@$ORG/tls/client.key"
+	CA="$HOSTPWD/$connection_dir/Admin@$ORG/tls/ca.crt"
+	MSP="$HOSTPWD/$connection_dir/Admin@$ORG/msp"
+	CRYPTOCONFIG="$HOSTPWD/$connection_dir/Admin@$ORG"
+
+	_info "generate connection for '$src'"
+	echo -n "$(header)
+$(organizations_section)
+$(orderers_section_external)
+$(peers_section_internal)
+" > "$connection_file"
+	_info "'$namespace' internal connection '$connection_file'"
+}
+
+###############################################################################
+for namespace in $(find "$CHANNEL_STATE" -type d -maxdepth 1 -mindepth 1)
+do
+	process_state_namespace_internal "$namespace"
+	process_state_namespace_external "$namespace"
+done
