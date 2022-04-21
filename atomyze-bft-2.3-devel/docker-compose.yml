@@ -139,9 +139,9 @@ services:
     entrypoint: entrypoint
     volumes:
       - tool:/state
+      - .env:/state/.env
       - ./tool/data:/data
       - ./tool/data/bin:/data/bin:ro
-      - .env:/state/.env
       - docker:/docker
       - grafana:/state/grafana
       - prometheus:/state/prometheus
