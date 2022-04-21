@@ -34,7 +34,7 @@ package_go_chaincode() {
 	echo "$CHAINCODE_INIT" > "$dst.init"
 }
 
-for gomod in $(find "$CHANNEL_DATA" -type f -name "go.mod")
+for gomod in $(find "$CHANNEL_DATA" -maxdepth 4 -type f -name "go.mod")
 do
 	package_go_chaincode "$gomod"
 done
