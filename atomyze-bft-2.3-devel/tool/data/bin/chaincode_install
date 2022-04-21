@@ -18,6 +18,7 @@ package_install() {
 	sequence_file="$src.sequence"
 	sequence="$(cat "$sequence_file" || echo "1")"
 	id="${chaincode}_${version}:${hash}"
+	dst_dir="$CHANNEL_STATE/$namespace/$channel"
 	dst="$dst_dir/$chaincode.tar.gz.install"
 
 	_equal "$src" "$dst" && return
@@ -33,8 +34,12 @@ package_install() {
 		export CORE_PEER_TLS_ENABLED="true"
 
 		_info "install '$chaincode' to '$peer'"
-		peer lifecycle chaincode install "$src" 
-		
+		# TODO BUG if build fail we shoul check it
+		peer lifecycle chaincode install "$src"
+		peer lifecycle chaincode queryinstalled 2>&1 | tee "$OUT"
+		grep -E "Package ID: ${chaincode}_${version}:${hash}" "$OUT" || \
+			_err "failed to install '$chaincode' on '$peer'"
+
 		_info "approvemyorg '$chaincode' to '$peer'"
 		orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
 		peer lifecycle chaincode approveformyorg \
@@ -65,7 +70,7 @@ package_install() {
 		peer lifecycle chaincode querycommitted --channelID "$channel" | tee "$OUT"
 		
 		fgrep -q "Name: $chaincode, Version: $version, Sequence: $sequence" "$OUT" || \
-			_err "failed to install chaincode"
+			_err "failed to commit '$chaincode' on '$peer'"
 	done
 	echo "$((sequence + 1))" > "$sequence_file"
 	_copy "$src" "$dst"
