@@ -37,7 +37,7 @@ package_install() {
 		# TODO BUG if build fail we shoul check it
 		peer lifecycle chaincode install "$src"
 		peer lifecycle chaincode queryinstalled 2>&1 | tee "$OUT"
-		grep -E "Package ID: ${chaincode}_${version}:${hash}" "$OUT" || \
+		grep -qE "Package ID: ${chaincode}_${version}:${hash}" "$OUT" || \
 			_err "failed to install '$chaincode' on '$peer'"
 
 		_info "approvemyorg '$chaincode' to '$peer'"
