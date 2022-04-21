@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. default
+
+find "$DATA" -type f -exec md5sum '{}' \; > "$STATE_HASH"
+find "$DATA" > "$STATE_FILE"

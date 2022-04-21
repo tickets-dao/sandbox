@@ -1,0 +1,3 @@
+#!/bin/sh
+
+timeout -s 9 1 wget -O - localhost:9090 | grep -E 'doctype html'

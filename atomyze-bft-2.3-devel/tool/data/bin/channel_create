@@ -1,0 +1,42 @@
+#!/bin/bash
+
+. default
+
+create_channel() {
+    src="$1"
+    dst="$src.create"
+    src_dir="${src%/channel.tx}"
+	channel="${src_dir##*/}"
+	configtx="$src_dir/configtx.yaml"
+	genesis="$src_dir/channel.block"
+
+    _equal "$src" "$dst" && return
+	orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
+	org="$(_org_by_hostname "$orderer")"
+
+	export CORE_PEER_LOCALMSPID="$org"
+	export CORE_PEER_MSPCONFIGPATH="$(_crypto_admin_msp_by_org "$org")"
+	peer channel create \
+		-c "$channel" \
+		-f "$src" \
+		--tls \
+		--clientauth \
+		-o "$orderer:$ORDERER_PORT" \
+		--cafile "$(_crypto_ca_by_hostname "$orderer")" \
+		--certfile "$(_crypto_admin_cert_by_org "$org")" \
+		--keyfile "$(_crypto_admin_key_by_org "$org")" \
+		--outputBlock "$genesis"
+
+    if [ "$?" = "0" ]
+    then
+        _copy "$src" "$dst"
+    else
+        _err "failed to create channel '$src'"
+    fi
+}
+
+for channeltx in $(find "$CHANNEL_STATE" -type f -name "channel.tx")
+do
+	create_channel "$channeltx"
+done
+

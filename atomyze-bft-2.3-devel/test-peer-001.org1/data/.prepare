@@ -1,0 +1,6 @@
+#!/bin/sh
+
+CUSTOM_CHECK="/state/.custom_check"
+[ -r "$CUSTOM_CHECK" ] && . "$CUSTOM_CHECK"
+
+timeout -s 9 1 wget -O - http://localhost:8080/metrics | grep -E 'HELP'

@@ -1,0 +1,63 @@
+PeerOrgs:
+  - Name: org0
+    Domain: org0
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: test-orderer-001
+        SANS:
+          - "localhost"
+      - Hostname: test-orderer-002
+        SANS:
+          - "localhost"
+      - Hostname: test-orderer-011
+        SANS:
+          - "localhost"
+      - Hostname: test-orderer-012
+        SANS:
+          - "localhost"
+      - Hostname: test-peer-001
+        SANS:
+          - "localhost"
+      - Hostname: test-peer-002
+        SANS:
+          - "localhost"
+    Users:
+      Count: 10
+
+  - Name: org1
+    Domain: org1
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: test-orderer-001
+        SANS:
+          - "localhost"
+      - Hostname: test-orderer-002
+        SANS:
+          - "localhost"
+      - Hostname: test-orderer-011
+        SANS:
+          - "localhost"
+      - Hostname: test-orderer-012
+        SANS:
+          - "localhost"
+      - Hostname: test-peer-001
+        SANS:
+          - "localhost"
+      - Hostname: test-peer-002
+        SANS:
+          - "localhost"
+    Users:
+      Count: 10
+
+  - Name: org2
+    Domain: org2
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: test-peer-001
+        SANS:
+          - "localhost"
+      - Hostname: test-peer-002
+        SANS:
+          - "localhost"
+    Users:
+      Count: 10

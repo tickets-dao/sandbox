@@ -1,0 +1,77 @@
+#!/bin/bash
+
+. default
+
+package_install() {
+    src="$1"
+	hash="$(sha256sum "$src" | cut -c 1-64)"
+	chaincode_no_ext="${src%.tar.gz}"
+	chaincode="${chaincode_no_ext##*/}"
+	channel_dir="${src%/*}"
+	channel="${channel_dir##*/}"
+	namespace_dir="${channel_dir%/*}"
+	namespace="${namespace_dir##*/}"
+	configtx="$channel_dir/configtx.yaml"
+	version="$(cat "$src.version")"
+	policy="$(cat "$src.policy")"
+	init="$(cat "$src.init")"
+	sequence_file="$src.sequence"
+	sequence="$(cat "$sequence_file" || echo "1")"
+	id="${chaincode}_${version}:${hash}"
+	dst="$dst_dir/$chaincode.tar.gz.install"
+
+	_equal "$src" "$dst" && return
+	err="0"
+	for peer in $(_configtx_peer_fqdn "$configtx")
+	do
+		org="$(_org_by_hostname "$peer")"
+		export CORE_PEER_LOCALMSPID="$org"
+    	export CORE_PEER_ID="$peer"
+    	export CORE_PEER_MSPCONFIGPATH="$(_crypto_admin_msp_by_org "$org")"
+    	export CORE_PEER_TLS_ROOTCERT_FILE="$(_crypto_admin_ca_by_org "$org")"
+		export CORE_PEER_ADDRESS="$peer:$PEER_PORT"
+		export CORE_PEER_TLS_ENABLED="true"
+
+		_info "install '$chaincode' to '$peer'"
+		peer lifecycle chaincode install "$src" 
+		
+		_info "approvemyorg '$chaincode' to '$peer'"
+		orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
+		peer lifecycle chaincode approveformyorg \
+			--tls \
+			--cafile "$(_crypto_ca_by_hostname "$orderer")" \
+			--orderer "$orderer:$ORDERER_PORT" \
+			--channelID "$channel" \
+			--name "$chaincode" \
+			--version "$version" \
+			--package-id "$id" \
+			--sequence "$sequence" \
+			--init-required "$init" \
+          	--signature-policy "$policy" 
+
+		_info "commit '$chaincode' to '$peer'"		
+		peer lifecycle chaincode commit \
+			--tls \
+			--cafile "$(_crypto_ca_by_hostname "$orderer")" \
+			--orderer "$orderer:$ORDERER_PORT" \
+			--channelID "$channel" \
+			--name "$chaincode" \
+			--version "$version" \
+			--sequence "$sequence" \
+			--init-required "$init" \
+			--signature-policy "$policy"
+
+		_info "chaincode querycommitted on '$peer'"
+		peer lifecycle chaincode querycommitted --channelID "$channel" | tee "$OUT"
+		
+		fgrep -q "Name: $chaincode, Version: $version, Sequence: $sequence" "$OUT" || \
+			_err "failed to install chaincode"
+	done
+	echo "$((sequence + 1))" > "$sequence_file"
+	_copy "$src" "$dst"
+}
+
+for package in $(find "$CHANNEL_STATE" -type f -name "*.tar.gz")
+do
+	package_install "$package"
+done

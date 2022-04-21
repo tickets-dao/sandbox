@@ -1,0 +1,18 @@
+#!/bin/sh
+
+. default
+
+while true
+do
+    md5sum "$STATE_HASH" || break
+
+    find "$DATA" > "$STATE_FILE_TMP"
+    if ! _equal "$STATE_FILE_TMP" "$STATE_FILE"
+    then
+        diff "$STATE_FILE_TMP" "$STATE_FILE"
+        mv -v "$STATE_FILE_TMP" "$STATE_FILE"
+        break
+    fi
+    
+    sleep 10
+done

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+. default
+
+FROM="$STATE"
+TO="$DATA/backup"
+
+tar -czvf "$TO/backup.tar.gz" "$FROM"

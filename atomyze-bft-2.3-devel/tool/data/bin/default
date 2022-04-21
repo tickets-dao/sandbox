@@ -1,0 +1,89 @@
+#!/bin/sh
+
+DATA="/data"
+STATE="/state"
+STATE_HASH="$STATE/.hash"
+STATE_FILE="$STATE/.file"
+STATE_FILE_TMP="/tmp/.file"
+CHANNEL_DATA="$DATA/channel"
+CHANNEL_STATE="$STATE/channel"
+OUT="/dev/shm/out"
+[ -z "$ORDERER_PORT" ] && ORDERER_PORT="7050"
+[ -z "$PEER_PORT" ] && PEER_PORT="7051"
+CRYPTOMATERIAL="${STATE}/peerOrganizations ${STATE}/ordererOrganizations"
+CHAINCODE_TMP="/tmp/chaincode.tar.gz"
+CUSTOM_CHECK_FILE=".custom_check"
+
+_err() {
+    echo "-- ERROR: $1"
+    exit 1
+}
+
+_info() {
+    echo "-- INFO: $1"
+}
+
+_info_and_exit() {
+    _info "$1"
+    exit
+}
+
+_equal() {
+    [ "$(cat "$1" | md5sum)" = "$(cat "$2" | md5sum)" ]
+}
+
+_copy() {
+    cp -v "$1" "$2"
+}
+
+_configtx_orderer_fqdn_port() {
+    [ -z "$2" ] && limit="999" || limit="$2"
+    sed -n '/^Orderer:/,/Organizations:/p' "$1" | awk '/- [a-z]+-/ {print $2}' | head -n "$limit"
+}
+
+_configtx_orderer_fqdn() {
+    [ -z "$2" ] && limit="999" || limit="$2"
+    _configtx_orderer_fqdn_port "$1" | cut -d ':' -f 1 | head -n "$limit"
+}
+
+_configtx_peer_fqdn() {
+    [ -z "$2" ] && limit="999" || limit="$2"
+    grep -E "^# peer " "$1" | cut -d " " -f 3 | head -n "$limit"
+}
+
+_org_by_hostname() {
+    echo "${1#*.}"
+}
+
+_crypto_basedir_by_hostname() {
+    find $CRYPTOMATERIAL -type d -name "$1" 2>/dev/null \
+        | head -n 1
+}
+
+_crypto_ca_by_hostname() {
+    echo "$STATE/$1/tls/ca.crt"
+}
+
+_crypto_admin_cert_by_org() {
+    find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
+        xargs -0rI X readlink -f "X/users/Admin@$1/tls/client.crt"
+}
+
+_crypto_admin_key_by_org() {
+    find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
+        xargs -0rI X readlink -f "X/users/Admin@$1/tls/client.key"
+}
+
+_crypto_admin_ca_by_org() {
+    find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
+        xargs -0rI X readlink -f "X/users/Admin@$1/tls/ca.crt"
+}
+
+
+_crypto_admin_msp_by_org() {
+    find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
+        xargs -0rI X readlink -f "X/users/Admin@$1/msp"
+}
+
+_info "$0"
+cd "$WORK" || _err "failed to set work directory"

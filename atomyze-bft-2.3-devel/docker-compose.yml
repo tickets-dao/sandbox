@@ -1,0 +1,461 @@
+version: '3.4'
+
+###############################################################################
+x-check: &default-healthcheck
+  healthcheck:
+    test: [ "CMD", "/data/.prepare" ]
+    interval: 5s
+    timeout: 4s
+  deploy:
+    resources:
+      limits:
+        memory: 512M
+      reservations:
+        memory: 16M
+
+###############################################################################
+volumes:
+  docker:
+  tool:
+  prometheus:
+  grafana:
+  postgres:
+  redis:
+  test-orderer-001.org0:
+  test-orderer-002.org0:
+  test-orderer-011.org0:
+  test-orderer-012.org0:
+  test-peer-001.org0:
+  test-peer-002.org0:
+  test-orderer-001.org1:
+  test-orderer-002.org1:
+  test-orderer-011.org1:
+  test-orderer-012.org1:
+  test-peer-001.org1:
+  test-peer-002.org1:
+  test-peer-001.org2:
+  test-peer-002.org2:
+  test-robot-001.org0:
+  test-observer-001.org0:
+
+###############################################################################
+services:
+  dind:
+    image: "${IMG_DIND}"
+    restart: always
+    privileged: true
+    volumes:
+      - ./dind/data:/data:rw
+      - ./dind/etc/docker/daemon.json:/etc/docker/daemon.json
+      - docker:/run
+    <<: *default-healthcheck
+
+###############################################################################
+  prometheus:
+    image: "${IMG_PROMETHEUS}"
+    restart: unless-stopped
+    user: root
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "${IP}:${EXP_PROMETHEUS}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - prometheus:/prometheus
+      - ./prometheus/data:/data
+      - ./prometheus/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    <<: *default-healthcheck
+
+###############################################################################
+  grafana:
+    image: "${IMG_GRAFANA}"
+    restart: unless-stopped
+    user: root
+    depends_on:
+      - prometheus
+    ports:
+        - "${IP}:${EXP_GRAFANA}"
+    volumes:
+      - ./grafana/data:/data
+      - ./grafana/etc/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana:/var/lib/grafana
+    <<: *default-healthcheck
+
+###############################################################################
+  redis:
+    image: "${IMG_REDIS}"
+    restart: unless-stopped
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    command: ["redis-server", "--requirepass", "test", "--save", ""]
+    volumes:
+      - redis:/data:rw
+
+###############################################################################
+  postgres:
+    image: "${IMG_POSTGRES}"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+    ports:
+      - "${IP}:${EXP_POSTGRES}"
+    volumes:
+      - ./postgres/data:/data:rw
+      - postgres:/var/lib/postgresql/data:rw
+    <<: *default-healthcheck
+
+###############################################################################
+  mailhog:
+    image: "${IMG_MAILHOG}"
+    restart: unless-stopped
+    ports:
+      - "${IP}:${EXP_MAILHOG}"
+    # volumes:
+    #   - ./mailhog/data:/data
+
+###############################################################################
+  tool:
+    image: "${IMG_TOOL}"
+    tty: true
+    stdin_open: true
+    depends_on:
+      - dind
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix://docker/docker.sock
+      - PATH=/data/bin:/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    working_dir: /data
+    entrypoint: entrypoint
+    volumes:
+      - ./tool/data:/data
+      - ./tool/data/bin:/data/bin:ro
+      - docker:/docker
+      - tool:/state
+      - grafana:/state/grafana
+      - prometheus:/state/prometheus
+      - redis:/state/redis
+      - postgres:/state/postgres
+      - test-orderer-001.org0:/state/test-orderer-001.org0
+      - test-orderer-002.org0:/state/test-orderer-002.org0
+      - test-orderer-011.org0:/state/test-orderer-011.org0
+      - test-orderer-012.org0:/state/test-orderer-012.org0
+      - test-peer-001.org0:/state/test-peer-001.org0
+      - test-peer-002.org0:/state/test-peer-002.org0
+      - test-orderer-001.org1:/state/test-orderer-001.org1
+      - test-orderer-002.org1:/state/test-orderer-002.org1
+      - test-orderer-011.org1:/state/test-orderer-011.org1
+      - test-orderer-012.org1:/state/test-orderer-012.org1
+      - test-peer-001.org1:/state/test-peer-001.org1
+      - test-peer-002.org1:/state/test-peer-002.org1
+      - test-peer-001.org2:/state/test-peer-001.org2
+      - test-peer-002.org2:/state/test-peer-002.org2
+      - test-robot-001.org0:/state/test-robot-001.org0
+      - test-observer-001.org0:/state/test-observer-001.org0
+
+###############################################################################
+  test-orderer-001.org0:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org0
+    volumes:
+      - ./test-orderer-001.org0/data:/data
+      - test-orderer-001.org0:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_001_ORG0}"
+    <<: *default-healthcheck
+
+  test-orderer-002.org0:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org0
+    volumes:
+      - ./test-orderer-002.org0/data:/data
+      - test-orderer-002.org0:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_002_ORG0}"
+    <<: *default-healthcheck
+
+  test-orderer-011.org0:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org0
+    volumes:
+      - ./test-orderer-011.org0/data:/data
+      - test-orderer-011.org0:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_011_ORG0}"
+    <<: *default-healthcheck
+
+  test-orderer-012.org0:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org0
+    volumes:
+      - ./test-orderer-012.org0/data:/data
+      - test-orderer-012.org0:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_012_ORG0}"
+    <<: *default-healthcheck
+
+  test-orderer-001.org1:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org1
+    volumes:
+      - ./test-orderer-001.org1/data:/data
+      - test-orderer-001.org1:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_001_ORG1}"
+    <<: *default-healthcheck
+
+  test-orderer-002.org1:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org1
+    volumes:
+      - ./test-orderer-002.org1/data:/data
+      - test-orderer-002.org1:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_002_ORG1}"
+    <<: *default-healthcheck
+
+  test-orderer-011.org1:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org1
+    volumes:
+      - ./test-orderer-011.org1/data:/data
+      - test-orderer-011.org1:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_011_ORG1}"
+    <<: *default-healthcheck
+
+  test-orderer-012.org1:
+    image: "${IMG_ORDERER}"
+    restart: always
+    depends_on:
+      - tool
+    env_file: .env-orderer
+    environment:
+      - ORDERER_GENERAL_LOCALMSPID=org1
+    volumes:
+      - ./test-orderer-012.org1/data:/data
+      - test-orderer-012.org1:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_012_ORG1}"
+    <<: *default-healthcheck
+
+###############################################################################
+  test-peer-001.org0:
+    image: "${IMG_PEER_TAG}"
+    restart: always
+    env_file:  .env-peer
+    depends_on:
+      - dind
+      - tool
+    environment:
+      - CORE_PEER_ID=test-peer-001.org0
+      - CORE_PEER_LOCALMSPID=org0
+      - CORE_PEER_ADDRESS=test-peer-001.org0:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=test-peer-001.org0:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=test-peer-001.org0:7051
+      - CORE_PEER_CHAINCODEADDRESS=test-peer-001.org0:6000
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
+    volumes:
+      - ./test-peer-001.org0/data:/data:rw
+      - test-peer-001.org0:/state
+      - docker:/docker
+    ports:
+      - "${IP}:${EXP_PEER_001_ORG0}"
+    <<: *default-healthcheck
+
+  test-peer-002.org0:
+    image: "${IMG_PEER_TAG}"
+    restart: always
+    env_file:  .env-peer
+    depends_on:
+      - dind
+      - tool
+    environment:
+      - CORE_PEER_ID=test-peer-002.org0
+      - CORE_PEER_LOCALMSPID=org0
+      - CORE_PEER_ADDRESS=test-peer-002.org0:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=test-peer-001.org0:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=test-peer-001.org0:7051
+      - CORE_PEER_CHAINCODEADDRESS=test-peer-002.org0:6000
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
+    volumes:
+      - ./test-peer-002.org0/data:/data:rw
+      - test-peer-002.org0:/state
+      - docker:/docker
+    ports:
+      - "${IP}:${EXP_PEER_002_ORG0}"
+    <<: *default-healthcheck
+
+  test-peer-001.org1:
+    image: "${IMG_PEER_TAG}"
+    restart: always
+    env_file:  .env-peer
+    depends_on:
+      - dind
+      - tool
+    environment:
+      - CORE_PEER_ID=test-peer-001.org1
+      - CORE_PEER_LOCALMSPID=org1
+      - CORE_PEER_ADDRESS=test-peer-001.org1:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=test-peer-001.org1:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=test-peer-001.org1:7051
+      - CORE_PEER_CHAINCODEADDRESS=test-peer-001.org1:6000
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
+    volumes:
+      - ./test-peer-001.org1/data:/data:rw
+      - test-peer-001.org1:/state
+      - docker:/docker
+    ports:
+      - "${IP}:${EXP_PEER_001_ORG1}"
+    <<: *default-healthcheck
+
+  test-peer-002.org1:
+    image: "${IMG_PEER_TAG}"
+    restart: always
+    env_file:  .env-peer
+    depends_on:
+      - dind
+      - tool
+    environment:
+      - CORE_PEER_ID=test-peer-002.org1
+      - CORE_PEER_LOCALMSPID=org1
+      - CORE_PEER_ADDRESS=test-peer-002.org1:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=test-peer-001.org1:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=test-peer-001.org1:7051
+      - CORE_PEER_CHAINCODEADDRESS=test-peer-002.org1:6000
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
+    volumes:
+      - ./test-peer-002.org1/data:/data:rw
+      - test-peer-002.org1:/state
+      - docker:/docker
+    ports:
+      - "${IP}:${EXP_PEER_002_ORG1}"
+    <<: *default-healthcheck
+
+  test-peer-001.org2:
+    image: "${IMG_PEER_TAG}"
+    restart: always
+    env_file:  .env-peer
+    depends_on:
+      - dind
+      - tool
+    environment:
+      - CORE_PEER_ID=test-peer-001.org2
+      - CORE_PEER_LOCALMSPID=org2
+      - CORE_PEER_ADDRESS=test-peer-001.org2:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=test-peer-001.org2:7051
+      - CORE_PEER_GOSSIP_EXtest-peer-002.TERNALENDPOINT=test-peer-001.org2:7051
+      - CORE_PEER_CHAINCODEADDRESS=test-peer-001.org2:6000
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
+    volumes:
+      - ./test-peer-001.org2/data:/data:rw
+      - test-peer-001.org2:/state
+      - docker:/docker
+    ports:
+      - "${IP}:${EXP_PEER_001_ORG2}"
+    <<: *default-healthcheck
+
+  test-peer-002.org2:
+    image: "${IMG_PEER_TAG}"
+    restart: always
+    env_file:  .env-peer
+    depends_on:
+      - dind
+      - tool
+    environment:
+      - CORE_PEER_ID=test-peer-002.org2
+      - CORE_PEER_LOCALMSPID=org2
+      - CORE_PEER_ADDRESS=test-peer-002.org2:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=test-peer-001.org2:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=test-peer-001.org2:7051
+      - CORE_PEER_CHAINCODEADDRESS=test-peer-002.org2:6000
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
+    volumes:
+      - ./test-peer-002.org2/data:/data:rw
+      - test-peer-002.org2:/state
+      - docker:/docker
+    ports:
+      - "${IP}:${EXP_PEER_002_ORG2}"
+    <<: *default-healthcheck
+
+###############################################################################
+  test-robot-001.org0:
+    image: "${IMG_ROBOT}"
+    restart: always
+    depends_on:
+      - test-peer-001.org0
+      - test-peer-002.org0
+      - test-orderer-001.org0
+      - test-orderer-002.org0
+      - test-orderer-011.org0
+      - test-orderer-012.org0
+    # env_file: .env-example
+    # environment:
+    #   - EXAMPLE=org0
+    volumes:
+      - ./test-robot-001.org0/data:/data
+      - test-robot-001.org0:/state
+    ports:
+      - "${IP}:${EXP_ROBOT}"
+    <<: *default-healthcheck
+
+###############################################################################
+  test-observer-001.org0:
+    image: "${IMG_OBSERVER}"
+    restart: always
+    depends_on:
+      - test-peer-001.org0
+      - test-peer-002.org0
+    # env_file: .env-example
+    # environment:
+    #   - EXAMPLE=org0
+    volumes:
+      - ./test-observer-001.org0/data:/data
+      - test-observer-001.org0:/state
+    ports:
+      - "${IP}:${EXP_OBSERVER}"
+    <<: *default-healthcheck

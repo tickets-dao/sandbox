@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. default
+
+FROM="$DATA/backup"
+TO="$DATA/state"
+
+find "$TO" -maxdepth 2 -mindepth 1 -print0 | xargs rm -vrf
+tar -C "/" --overwrite -vxf "$FROM/backup.tar.gz"
