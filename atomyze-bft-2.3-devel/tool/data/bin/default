@@ -92,6 +92,11 @@ _crypto_admin_msp_by_org() {
         xargs -0rI X readlink -f "X/users/Admin@$1/msp"
 }
 
+_crypto_msp_by_org() {
+    find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
+        xargs -0rI X readlink -f "X/users/$2@$1/msp"
+}
+
 _expose_by_hostname() {
     search="${1//[.-]/_}"
     search="${search#test_}"
