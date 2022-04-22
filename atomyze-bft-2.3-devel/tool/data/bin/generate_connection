@@ -19,7 +19,7 @@ name: $NAMESPACE-network
 version: $VERSION
 client:
   organization: $ORG
-	
+
   logging:
     level: $LOGGING_LEVEL
 
