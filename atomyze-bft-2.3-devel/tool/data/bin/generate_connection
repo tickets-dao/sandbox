@@ -37,9 +37,8 @@ client:
 
   credentialStore:
     path: $MSP/signcerts
-   
-  cryptoStore:
-    path: $MSP
+    cryptoStore:
+      path: $MSP
 
 channels:
 "
