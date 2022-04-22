@@ -35,11 +35,11 @@ client:
       cryptoconfig:
         path: $CRYPTOCONFIG
 
-    credentialStore:
-      path: $MSP/signcerts
+  credentialStore:
+    path: $MSP/signcerts
    
-    cryptoStore:
-      path: $MSP
+  cryptoStore:
+    path: $MSP
 
 channels:
 "
@@ -97,7 +97,7 @@ peers:"
   $peer:
     url: grpcs://$peer:$PEER_PORT
       tlsCACerts:
-      path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
+      path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pems
 "
 	done
 }
