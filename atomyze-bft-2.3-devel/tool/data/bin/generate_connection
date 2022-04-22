@@ -18,24 +18,24 @@ header() {
 name: $NAMESPACE-network
 version: $VERSION
 client:
-	organization: $ORG
+  organization: $ORG
 	
-	logging:
-		level: $LOGGING_LEVEL
+  logging:
+    level: $LOGGING_LEVEL
 
-	tlsCerts:
-		client:
-			key:
-				path: $KEY
-			cert:
-				path: $CERT
-		cryptoconfig:
-			path: $CRYPTOCONFIG
+  tlsCerts:
+    client:
+      key:
+        path: $KEY
+      cert:
+        path: $CERT
+      cryptoconfig:
+        path: $CRYPTOCONFIG
 
-	credentialStore:
-		path: $MSP/signcerts
-		cryptoStore:
-			path: $MSP
+    credentialStore:
+      path: $MSP/signcerts
+        cryptoStore:
+          path: $MSP
 
 channels:
 "
@@ -47,11 +47,11 @@ organizations:"
 	for org in $(_org_by_configtx "$CONFIGTX")
 	do
 	echo -n "
-	$org:
-		mspid: $org
-		cryptoPath: $MSP
-		peers:
-$(_configtx_peer_fqdn "$CONFIGTX"|fgrep ".$org"|sed 's/^/\t\t\t- /g')
+  $org:
+    mspid: $org
+    cryptoPath: $MSP
+    peers:
+$(_configtx_peer_fqdn "$CONFIGTX"|fgrep ".$org"|sed 's/^/      - /g')
 "
 	done
 }
@@ -62,10 +62,10 @@ orderers:"
 	for orderer in $(_configtx_orderer_fqdn "$CONFIGTX")
 	do
 	echo -n "
-	$orderer:
-		url: grpcs://$orderer:$ORDERER_PORT
-		tlsCACerts:
-			path: $CA
+  $orderer:
+    url: grpcs://$orderer:$ORDERER_PORT
+      tlsCACerts:
+        path: $CA
 "
 	done
 }
@@ -76,10 +76,10 @@ orderers:"
 	for orderer in $(_configtx_orderer_fqdn "$CONFIGTX")
 	do
 	echo -n "
-	$orderer:
-		url: grpcs://localhost:$(_expose_by_hostname "$orderer")
-		tlsCACerts:
-			path: $CA
+  $orderer:
+    url: grpcs://localhost:$(_expose_by_hostname "$orderer")
+      tlsCACerts:
+        path: $CA
 "
 	done
 }
@@ -104,10 +104,10 @@ peers:"
 	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
 	do
 		echo -n "
-	$peer:
-		url: grpcs://localhost:$(_expose_by_hostname "$peer")
-		tlsCACerts:
-			path: $CA
+  $peer:
+    url: grpcs://localhost:$(_expose_by_hostname "$peer")
+      tlsCACerts:
+        path: $CA
 "
 	done
 }
@@ -154,11 +154,11 @@ process_state_namespace_external() {
 	mkdir -p "$connection_dir"
 	cp -frv "$cryptoconfig" "$connection_dir"
 
-	CERT="$HOSTPWD/$connection_dir/Admin@$ORG/tls/client.crt"
-	KEY="$HOSTPWD/$connection_dir/Admin@$ORG/tls/client.key"
-	CA="$HOSTPWD/$connection_dir/Admin@$ORG/tls/ca.crt"
-	MSP="$HOSTPWD/$connection_dir/Admin@$ORG/msp"
-	CRYPTOCONFIG="$HOSTPWD/$connection_dir/Admin@$ORG"
+	CERT="$HOSTPWD/tool/$connection_dir/Admin@$ORG/tls/client.crt"
+	KEY="$HOSTPWD/tool/$connection_dir/Admin@$ORG/tls/client.key"
+	CA="$HOSTPWD/tool/$connection_dir/Admin@$ORG/tls/ca.crt"
+	MSP="$HOSTPWD/tool/$connection_dir/Admin@$ORG/msp"
+	CRYPTOCONFIG="$HOSTPWD/tool/$connection_dir/Admin@$ORG"
 
 	_info "generate connection for '$src'"
 	echo -n "$(header)
