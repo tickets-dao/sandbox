@@ -5,6 +5,8 @@
 [ -z "$VERSION" ] && VERSION="1.0.0"
 [ -z "$LOGGING_LEVEL" ] && LOGGING_LEVEL="info"
 [ -z "$USER" ] && USER="User1"
+[ -z "$EXPOSE" ] && USER="User1"
+
 
 ORG=""
 CERT=""
@@ -80,7 +82,7 @@ orderers:"
 	do
 	echo -n "
   $orderer:
-    url: grpcs://localhost:$(_expose_by_hostname "$orderer")
+    url: grpcs://$IP:$(_expose_by_hostname "$orderer")
     tlsCACerts:
       path: $CA
 "
@@ -108,7 +110,7 @@ peers:"
 	do
 		echo -n "
   $peer:
-    url: grpcs://localhost:$(_expose_by_hostname "$peer")
+    url: grpcs://$IP:$(_expose_by_hostname "$peer")
     tlsCACerts:
       path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
 "
@@ -156,13 +158,13 @@ $(orderers_section_internal)
 $(peers_section_internal "$connection_int_ca_dir")
 " > "$connection_int_file"
 
-	CERT="$ext/$connection_ext_dir/$USER@$ORG/tls/client.crt"
-	KEY="$ext/$connection_ext_dir/$USER@$ORG/tls/client.key"
-	CA="$ext/$connection_ext_dir/$USER@$ORG/tls/ca.crt"
-	MSP="$ext/$connection_ext_dir/$USER@$ORG/msp"
-	CRYPTOCONFIG="$ext/$connection_ext_dir/$USER@$ORG"
+	CERT="$ext$connection_ext_dir/$USER@$ORG/tls/client.crt"
+	KEY="$ext$connection_ext_dir/$USER@$ORG/tls/client.key"
+	CA="$ext$connection_ext_dir/$USER@$ORG/tls/ca.crt"
+	MSP="$ext$connection_ext_dir/$USER@$ORG/msp"
+	CRYPTOCONFIG="$ext$connection_ext_dir/$USER@$ORG"
 
-	_info "external connection '$ext/$connection_int_file'"
+	_info "external connection '$ext$connection_ext_file'"
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_external)
