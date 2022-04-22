@@ -65,8 +65,8 @@ orderers:"
 	echo -n "
   $orderer:
     url: grpcs://$orderer:$ORDERER_PORT
-      tlsCACerts:
-        path: $CA
+    tlsCACerts:
+      path: $CA
 "
 	done
 }
@@ -79,8 +79,8 @@ orderers:"
 	echo -n "
   $orderer:
     url: grpcs://localhost:$(_expose_by_hostname "$orderer")
-      tlsCACerts:
-        path: $CA
+    tlsCACerts:
+      path: $CA
 "
 	done
 }
@@ -90,11 +90,11 @@ peers_section_internal() {
 peers:"
 	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
 	do
-		echo -n "
-	$peer:
-		url: grpcs://$peer:$PEER_PORT
-		tlsCACerts:
-			path: $CA
+	echo -n "
+  $peer:
+    url: grpcs://$peer:$PEER_PORT
+      tlsCACerts:
+      path: $CA
 "
 	done
 }
@@ -107,8 +107,8 @@ peers:"
 		echo -n "
   $peer:
     url: grpcs://localhost:$(_expose_by_hostname "$peer")
-      tlsCACerts:
-        path: $CA
+    tlsCACerts:
+      path: $CA
 "
 	done
 }
