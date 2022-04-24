@@ -15,6 +15,7 @@
   - [Certificates and connection.yml](#certificates-and-connectionyml)
   - [Run-on](#run-on)
   - [Host metrics](#host-metrics)
+  - [Invoke and query](#invoke-and-query)
   - [Notes](#notes)
   - [Links](#links)
 
@@ -292,6 +293,20 @@ This utility useful for chaos testing and research of the system in boundary sta
 
 When the system starts up, the internal prometeus starts polling http://localhost:8080/metrics of the host machine.  
 This can be useful for local development. 
+
+## Invoke and query
+
+For convenient chaincode invoke and query there are scripts
+
+```
+docker-compose exec tool invoke
+```
+
+and
+
+```
+docker-compose exec tool query
+```
 
 ## Notes
 
