@@ -2,5 +2,5 @@
 
 . default
 
-find "$DATA" -type f -exec md5sum '{}' \; > "$STATE_HASH"
-find "$DATA" > "$STATE_FILE"
+find "$DATA" -type f ! -name "backup.tar.gz" -exec md5sum '{}' \; > "$STATE_HASH"
+find "$DATA" ! -name "backup.tar.gz" > "$STATE_FILE"

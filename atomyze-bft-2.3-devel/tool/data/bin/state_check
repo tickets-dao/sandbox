@@ -6,7 +6,7 @@ while true
 do
     md5sum "$STATE_HASH" || break
 
-    find "$DATA" > "$STATE_FILE_TMP"
+    find "$DATA" ! -name "backup.tar.gz" > "$STATE_FILE_TMP"
     if ! _equal "$STATE_FILE_TMP" "$STATE_FILE"
     then
         diff "$STATE_FILE_TMP" "$STATE_FILE"
