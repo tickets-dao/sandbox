@@ -90,7 +90,13 @@ with pattern **EXP_***
 For local development e.g. robot or observer you need override fabric specific gossip variables:
 
 ```
-. ./local-development-settings
+. ./default-localhost-settings && docker-compose up
+```
+
+Or you can put your custom environment variables files instead of **default-local-settings**
+
+```
+. ./my-custom-development-variables && docker-compose up
 ```
 
 Than change to a stub image of service that you develop local (on your host system) for example robot
@@ -99,7 +105,13 @@ Than change to a stub image of service that you develop local (on your host syst
 export IMG_ROBOT=alpine:3
 ```
 
-Than **start** environment as usual 
+Full example is: 
+
+```
+export IMG_ROBOT=alpine:3 && . ./default-localhost-settings && docker-compose up
+```
+
+Or fill free to setup your custom development settings file
 
 ### Backup and restore
 
