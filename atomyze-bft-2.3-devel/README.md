@@ -90,7 +90,7 @@ with pattern **EXP_***
 For local development e.g. robot or observer you need override fabric specific gossip variables:
 
 ```
-. ./default-localhost-settings && docker-compose up
+. ./default-local-settings && docker-compose up
 ```
 
 Or you can put your custom environment variables files instead of **default-local-settings**
@@ -108,7 +108,7 @@ export IMG_ROBOT=alpine:3
 Full example is: 
 
 ```
-export IMG_ROBOT=alpine:3 && . ./default-localhost-settings && docker-compose up
+export IMG_ROBOT=alpine:3 && . ./default-local-settings && docker-compose up
 ```
 
 Or fill free to setup your custom development settings file
