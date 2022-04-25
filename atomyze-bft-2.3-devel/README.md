@@ -212,11 +212,18 @@ tool/data/channel/
 * On **channel** level it will apply to all chaincodes in this channel
 * Locate **.prepare** file in chaincode directory for chaincode specific configuration
 
-Example:
+Example for public namespace with 3 organizations:
 
 ```
 CHAINCODE_VERSION="$(date +%s)"
 CHAINCODE_POLICY="AND('org0.peer', OutOf(1, 'org1.peer', 'org2.peer'))"
+```
+
+Example for private namespace with 2 organizations:
+
+```
+CHAINCODE_VERSION="$(date +%s)"
+CHAINCODE_POLICY="AND('org0.peer', 'org2.peer')"
 ```
 
 This **.prepare** example contains the standard channel policy and allows you to automatically change the version of the chaincodes, which is very useful for local development
