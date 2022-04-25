@@ -90,7 +90,7 @@ with pattern **EXP_***
 For local development e.g. robot or observer you need override fabric specific gossip variables:
 
 ```
-. local-development-settings
+. ./local-development-settings
 ```
 
 Than change to a stub image of service that you develop local (on your host system) for example robot
