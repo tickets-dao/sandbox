@@ -82,7 +82,7 @@ orderers:"
 	do
 	echo -n "
   $orderer:
-    url: grpcs://$IP:$(_expose_by_hostname "$orderer")
+    url: grpcs://localhost:$(_expose_by_hostname "$orderer")
     tlsCACerts:
       path: $CA
 "
@@ -110,7 +110,7 @@ peers:"
 	do
 		echo -n "
   $peer:
-    url: grpcs://$IP:$(_expose_by_hostname "$peer")
+    url: grpcs://localhost:$(_expose_by_hostname "$peer")
     tlsCACerts:
       path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
 "
