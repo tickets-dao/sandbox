@@ -170,6 +170,8 @@ $(organizations_section)
 $(orderers_section_external)
 $(peers_section_external "$ext$connection_ext_ca_dir")
 " > "$connection_ext_file"
+
+	chown -PRc "$(stat -c %u:%g "$DATA/out")" "$DATA/out"
 }
 
 ###############################################################################

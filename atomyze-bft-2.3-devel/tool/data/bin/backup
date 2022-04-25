@@ -6,3 +6,4 @@ FROM="$STATE"
 TO="$DATA/out"
 
 tar -czvf "$TO/backup.tar.gz" "$FROM"
+chown -PRc "$(stat -c %u:%g "$DATA/out")" "$DATA/out"
