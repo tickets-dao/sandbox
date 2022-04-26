@@ -126,7 +126,7 @@ docker-compose stop
 * start only **tool** service
 
 ```
-docker-compose up tool -d
+docker-compose up -d tool
 ```
 
 * run **backup** routine inside **tool** container
