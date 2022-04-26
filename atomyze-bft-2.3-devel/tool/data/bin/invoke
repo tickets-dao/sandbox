@@ -41,4 +41,4 @@ peer chaincode invoke \
 	--orderer "$orderer:$ORDERER_PORT" \
 	--channelID "$channel" \
 	--name "$chaincode" \
-	--ctor "$ctor"
+	--ctor "${ctor}"

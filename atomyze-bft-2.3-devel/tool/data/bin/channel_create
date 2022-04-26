@@ -20,14 +20,13 @@ create_channel() {
 		-c "$channel" \
 		-f "$src" \
 		--tls \
-		--clientauth \
 		-o "$orderer:$ORDERER_PORT" \
 		--cafile "$(_crypto_ca_by_hostname "$orderer")" \
 		--certfile "$(_crypto_admin_cert_by_org "$org")" \
 		--keyfile "$(_crypto_admin_key_by_org "$org")" \
-		--outputBlock "$genesis"
+		--outputBlock "$genesis" 2>&1 | tee -a "$OUT"
 
-    if [ "$?" = "0" ]
+    if grep -qE "but it is currently at version|Created and started new channel" "$OUT"
     then
         _copy "$src" "$dst"
     else
