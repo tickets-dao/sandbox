@@ -11,11 +11,12 @@
     - [Exposed ports](#exposed-ports)
     - [Local development](#local-development)
     - [Backup and restore](#backup-and-restore)
-  - [Namespaces channels and chaincodes](#namespaces-channels-and-chaincodes)
-  - [Certificates and connection.yml](#certificates-and-connectionyml)
-  - [Run-on](#run-on)
-  - [Host metrics](#host-metrics)
-  - [Invoke and query](#invoke-and-query)
+    - [Namespaces channels and chaincodes](#namespaces-channels-and-chaincodes)
+    - [Certificates and connection.yml](#certificates-and-connectionyml)
+    - [Run-on](#run-on)
+    - [Host metrics](#host-metrics)
+    - [Invoke and query](#invoke-and-query)
+    - [Switch fabric version](#switch-fabric-version)
   - [Notes](#notes)
   - [Links](#links)
 
@@ -143,7 +144,7 @@ docker-compose exec tool restore
 
 Backup file located in **tool/data/out/backup.tar.gz** fill free to share it and make pre configured environment. 
 
-## Namespaces channels and chaincodes
+### Namespaces channels and chaincodes
 
 The main idea of this solution this is a declarative mapping of the file structure into the fabric configuration.
 
@@ -228,7 +229,7 @@ CHAINCODE_POLICY="AND('org0.peer', 'org2.peer')"
 
 This **.prepare** example contains the standard channel policy and allows you to automatically change the version of the chaincodes, which is very useful for local development
 
-## Certificates and connection.yml
+### Certificates and connection.yml
 
 After the system reaches a consistent state
 
@@ -257,7 +258,7 @@ tool/data/out/
 
 This makes it easy to configure the fabric sdk
 
-## Run-on
+### Run-on
 
 There is a **run-on** utility to manage the service in the system
 
@@ -308,12 +309,12 @@ Script:
 
 This utility useful for chaos testing and research of the system in boundary states
 
-## Host metrics
+### Host metrics
 
 When the system starts up, the internal prometeus starts polling http://localhost:8080/metrics of the host machine.  
 This can be useful for local development. 
 
-## Invoke and query
+### Invoke and query
 
 For convenient chaincode invoke and query there are scripts
 
@@ -325,6 +326,14 @@ and
 
 ```
 docker-compose exec tool query
+```
+
+### Switch fabric version
+
+To switch fabric version simple import environment file with version you want and than start cluster as usual 
+
+```
+. ./env-hlf-2.4.3 && docker-compose up
 ```
 
 ## Notes
