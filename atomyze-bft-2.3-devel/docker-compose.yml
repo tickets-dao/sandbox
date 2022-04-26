@@ -290,7 +290,7 @@ services:
 
 ###############################################################################
   test-peer-001.org0:
-    image: "${IMG_PEER_TAG}"
+    image: "${IMG_PEER}"
     restart: always
     env_file:  .env-peer
     depends_on:
@@ -313,7 +313,7 @@ services:
     <<: *default-healthcheck
 
   test-peer-002.org0:
-    image: "${IMG_PEER_TAG}"
+    image: "${IMG_PEER}"
     restart: always
     env_file:  .env-peer
     depends_on:
@@ -336,7 +336,7 @@ services:
     <<: *default-healthcheck
 
   test-peer-001.org1:
-    image: "${IMG_PEER_TAG}"
+    image: "${IMG_PEER}"
     restart: always
     env_file:  .env-peer
     depends_on:
@@ -359,7 +359,7 @@ services:
     <<: *default-healthcheck
 
   test-peer-002.org1:
-    image: "${IMG_PEER_TAG}"
+    image: "${IMG_PEER}"
     restart: always
     env_file:  .env-peer
     depends_on:
@@ -382,7 +382,7 @@ services:
     <<: *default-healthcheck
 
   test-peer-001.org2:
-    image: "${IMG_PEER_TAG}"
+    image: "${IMG_PEER}"
     restart: always
     env_file:  .env-peer
     depends_on:
@@ -405,7 +405,7 @@ services:
     <<: *default-healthcheck
 
   test-peer-002.org2:
-    image: "${IMG_PEER_TAG}"
+    image: "${IMG_PEER}"
     restart: always
     env_file:  .env-peer
     depends_on:
