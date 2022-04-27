@@ -16,6 +16,7 @@ create_channel() {
 
 	export CORE_PEER_LOCALMSPID="$org"
 	export CORE_PEER_MSPCONFIGPATH="$(_crypto_admin_msp_by_org "$org")"
+
 	peer channel create \
 		-c "$channel" \
 		-f "$src" \

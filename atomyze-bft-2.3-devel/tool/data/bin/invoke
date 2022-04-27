@@ -36,7 +36,6 @@ export CORE_PEER_TLS_ENABLED="true"
 
 peer chaincode invoke \
 	--tls \
-	--isInit \
 	--cafile "$(_crypto_ca_by_hostname "$orderer")" \
 	--orderer "$orderer:$ORDERER_PORT" \
 	--channelID "$channel" \
