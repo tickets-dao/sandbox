@@ -170,10 +170,10 @@ $(peers_section_internal "$connection_int_ca_dir")
 	fi
 
 	# External variables before generate
-	CERT="$ext$connection_ext_dir/$user@$org/tls/client.crt"
-	KEY="$ext$connection_ext_dir/$user@$org/tls/client.key"
-	CA="$ext$connection_ext_dir/$user@$org/tls/ca.crt"
-	MSP="$ext$connection_ext_dir/$user@$org/msp"
+	CERT="$EXT$connection_ext_dir/$user@$org/tls/client.crt"
+	KEY="$EXT$connection_ext_dir/$user@$org/tls/client.key"
+	CA="$EXT$connection_ext_dir/$user@$org/tls/ca.crt"
+	MSP="$EXT$connection_ext_dir/$user@$org/msp"
 	CRYPTOCONFIG="$EXT$connection_ext_dir/$user@$org"
 
 	_info "external connection '$EXT$connection_ext_file'"
