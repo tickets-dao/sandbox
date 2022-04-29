@@ -5,6 +5,7 @@ STATE="/state"
 STATE_HASH="$STATE/.hash"
 STATE_FILE="$STATE/.file"
 STATE_FILE_TMP="/tmp/.file"
+CONNECTION_TMP="/tmp/.connection.yaml"
 CHANNEL_DATA="$DATA/channel"
 CHANNEL_STATE="$STATE/channel"
 CONNECTION_STATE="$STATE/connection"
@@ -16,6 +17,8 @@ CRYPTOMATERIAL="${STATE}/peerOrganizations ${STATE}/ordererOrganizations"
 CHAINCODE_TMP="/tmp/chaincode.tar.gz"
 CUSTOM_CHECK_FILE=".custom_check"
 ENV="/state/.env"
+SLEEP_ERROR="30"
+SLEEP_STATE="30"
 
 _err() {
     echo "-- ERROR: $1"
@@ -40,20 +43,23 @@ _equal() {
 }
 
 _copy() {
-    cp -v "$1" "$2"
+    cp -fv "$1" "$2"
 }
 
 _configtx_orderer_fqdn_port() {
+    local limit
     [ -z "$2" ] && limit="999" || limit="$2"
     sed -n '/^Orderer:/,/Organizations:/p' "$1" | awk '/- [a-z]+-/ {print $2}' | head -n "$limit"
 }
 
 _configtx_orderer_fqdn() {
+    local limit
     [ -z "$2" ] && limit="999" || limit="$2"
     _configtx_orderer_fqdn_port "$1" | cut -d ':' -f 1 | head -n "$limit"
 }
 
 _configtx_peer_fqdn() {
+    local limit
     [ -z "$2" ] && limit="999" || limit="$2"
     grep -E "^# peer " "$1" | cut -d " " -f 3 | head -n "$limit"
 }
@@ -63,6 +69,7 @@ _org_by_hostname() {
 }
 
 _org_by_configtx() {
+    local limit
     [ -z "$2" ] && limit="999" || limit="$2"
     grep -E '\sID: '  "$1" | awk '{print $2}' | head -n "$limit"
 }
@@ -102,6 +109,7 @@ _crypto_msp_by_org() {
 }
 
 _expose_by_hostname() {
+    local search
     search="${1//[.-]/_}"
     search="${search#test_}"
     search="EXP_${search^^}"
@@ -109,6 +117,7 @@ _expose_by_hostname() {
 }
 
 _tool_ski_by_public_key() {
+    local der
     der="$(echo "$1" | openssl ec -pubin -outform DER 2>/dev/null)" || \
         _err "failed transform public to der"
     echo "$der" | \
@@ -118,9 +127,14 @@ _tool_ski_by_public_key() {
 }
 
 _tool_ski_by_private_key() {
+    local public_key
     public_key="$(openssl ec -in "$1" -pubout 2>/dev/null )" || \
         _err "failed export public key"
     _tool_ski_by_public_key "$public_key"
+}
+
+_robot_state_dirs() {
+    find "$STATE" -type d -name "test-robot*" -mindepth 1 -maxdepth 1
 }
 
 alias _ski=_tool_ski_by_private_key

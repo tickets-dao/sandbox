@@ -2,6 +2,7 @@
 
 . default
 
+
 while true
 do
     if ! steps
@@ -9,6 +10,6 @@ do
         echo ""
         echo "-- ERROR: -----------------------------------"
         echo ""
-        sleep 30
+        sleep "$SLEEP_ERROR"
     fi
 done

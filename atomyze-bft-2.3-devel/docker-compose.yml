@@ -432,17 +432,26 @@ services:
     image: "${IMG_ROBOT}"
     restart: always
     depends_on:
+      - tool
       - test-peer-001.org0
       - test-peer-002.org0
+      - test-peer-001.org1
+      - test-peer-002.org1
+      - test-peer-001.org2
+      - test-peer-002.org2
       - test-orderer-001.org0
       - test-orderer-002.org0
       - test-orderer-011.org0
       - test-orderer-012.org0
-    # env_file: .env-example
-    # environment:
-    #   - EXAMPLE=org0
+      - test-orderer-001.org1
+      - test-orderer-002.org1
+      - test-orderer-011.org1
+      - test-orderer-012.org1
+    command: ["-c", "/etc/config.yaml"]
+    user: "root"
     volumes:
       - ./test-robot-001.org0/data:/data
+      - ./test-robot-001.org0/etc/config.yaml:/etc/config.yaml:ro
       - test-robot-001.org0:/state
     ports:
       - "${IP}:${EXP_ROBOT}"

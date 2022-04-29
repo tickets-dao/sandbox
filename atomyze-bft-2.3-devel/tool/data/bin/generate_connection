@@ -4,16 +4,17 @@
 
 [ -z "$VERSION" ] && VERSION="1.0.0"
 [ -z "$LOGGING_LEVEL" ] && LOGGING_LEVEL="info"
-[ -z "$USER" ] && USER="User1"
-[ -z "$EXPOSE" ] && USER="User1"
+[ -z "$USERS" ] && USERS="Admin User1"
+CP="cp -fru"
+EXT="$HOSTPWD/tool"
+CHANGED="no"
 
-
-ORG=""
-CERT=""
-KEY=""
-MSP=""
-CA=""
-CONFIGTX=""
+# ORG=""
+# CERT=""
+# KEY=""
+# MSP=""
+# CA=""
+# CONFIGTX=""
 
 ###############################################################################
 header() {
@@ -47,6 +48,7 @@ channels:
 }
 
 organizations_section() {
+	local org
 	echo -n "
 organizations:"
 	for org in $(_org_by_configtx "$CONFIGTX")
@@ -97,8 +99,8 @@ peers:"
 	echo -n "
   $peer:
     url: grpcs://$peer:$PEER_PORT
-      tlsCACerts:
-      path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pems
+    tlsCACerts:
+      path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
 "
 	done
 }
@@ -118,58 +120,81 @@ peers:"
 }
 
 process_state_namespace() {
-	src="$1"
-	NAMESPACE="${src##*/}"
-	CONFIGTX="$src/system/configtx.yaml"
-	ORG="$(_org_by_configtx "$CONFIGTX" "1")"
-	msp="$(_crypto_msp_by_org "$ORG" "$USER")"
-	cryptoconfig="${msp%/*}"
-	ext="$HOSTPWD/tool"
+	local src="$1"
+	local configtx="$2"
+	local org="$3"
+	local user="$4"
+	local namespace="${src##*/}"
+	local msp="$(_crypto_msp_by_org "$org" "$user")"
+	local cryptoconfig="${msp%/*}"
 
-	connection_int_dir="$CONNECTION_STATE/$NAMESPACE/$ORG"
-	connection_int_ca_dir="$connection_int_dir/ca"
-	connection_int_file="$connection_int_dir/connection.yaml"
+	# Internal variables
+	connection_int_dir="$CONNECTION_STATE/$namespace/$org"
+	connection_int_ca_dir="$connection_int_dir/$user@$org/ca"
+	connection_int_file="$connection_int_dir/$user@$org/connection.yaml"
 
-	connection_ext_dir="$CONNECTION_DATA/$NAMESPACE/$ORG"
-	connection_ext_ca_dir="$connection_ext_dir/ca"
-	connection_ext_file="$connection_ext_dir/connection.yaml"
+	# External variables
+	connection_ext_dir="$CONNECTION_DATA/$namespace/$org"
+	connection_ext_ca_dir="$connection_ext_dir/$user@$org/ca"
+	connection_ext_file="$connection_ext_dir/$user@$org/connection.yaml"
 
+	# Basic directories and copy crypto
 	mkdir -p "$connection_int_dir" "$connection_ext_dir"
-	mkdir -p "$connection_int_ca_dir" "$connection_ext_ca_dir"
-	cp -frv "$cryptoconfig" "$connection_int_dir"
-	cp -frv "$cryptoconfig" "$connection_ext_dir"
+	mkdir -p "$connection_int_ca_dir" "$connection_ext_ca_dir"	
+	$CP "$cryptoconfig" "$connection_int_dir"
+	$CP "$cryptoconfig" "$connection_ext_dir"
 
-	for org in $(_org_by_configtx "$CONFIGTX")
-	do
-		cp -v "$(_crypto_msp_by_org "$org" "$USER")/tlscacerts/tlsca.$org-cert.pem" "$connection_int_ca_dir"
-		cp -v "$(_crypto_msp_by_org "$org" "$USER")/tlscacerts/tlsca.$org-cert.pem" "$connection_ext_ca_dir"
-	done
+	# Basic variables
+	CONFIGTX="$configtx"
+	NAMESPACE="$namespace"
+	ORG="$org"
 
-	CERT="$connection_int_dir/$USER@$ORG/tls/client.crt"
-	KEY="$connection_int_dir/$USER@$ORG/tls/client.key"
-	CA="$connection_int_dir/$USER@$ORG/tls/ca.crt"
-	MSP="$connection_int_dir/$USER@$ORG/msp"
-	CRYPTOCONFIG="$connection_int_dir/$USER@$ORG"
+	# Internal variables before generate
+	CERT="$connection_int_dir/$user@$org/tls/client.crt"
+	KEY="$connection_int_dir/$user@$org/tls/client.key"
+	CA="$connection_int_dir/$user@$org/tls/ca.crt"
+	MSP="$connection_int_dir/$user@$org/msp"
+	CRYPTOCONFIG="$connection_int_dir/$user@$org"
 
 	_info "internal connection for '$connection_int_file'"
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_internal)
 $(peers_section_internal "$connection_int_ca_dir")
-" > "$connection_int_file"
+" > "$CONNECTION_TMP"
 
-	CERT="$ext$connection_ext_dir/$USER@$ORG/tls/client.crt"
-	KEY="$ext$connection_ext_dir/$USER@$ORG/tls/client.key"
-	CA="$ext$connection_ext_dir/$USER@$ORG/tls/ca.crt"
-	MSP="$ext$connection_ext_dir/$USER@$ORG/msp"
-	CRYPTOCONFIG="$ext$connection_ext_dir/$USER@$ORG"
+	if ! _equal "$CONNECTION_TMP" "$connection_int_file"
+	then
+		_copy "$CONNECTION_TMP" "$connection_int_file"
+		CHANGED="yes"
+	fi
 
-	_info "external connection '$ext$connection_ext_file'"
+	# External variables before generate
+	CERT="$ext$connection_ext_dir/$user@$org/tls/client.crt"
+	KEY="$ext$connection_ext_dir/$user@$org/tls/client.key"
+	CA="$ext$connection_ext_dir/$user@$org/tls/ca.crt"
+	MSP="$ext$connection_ext_dir/$user@$org/msp"
+	CRYPTOCONFIG="$EXT$connection_ext_dir/$user@$org"
+
+	_info "external connection '$EXT$connection_ext_file'"
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_external)
 $(peers_section_external "$ext$connection_ext_ca_dir")
-" > "$connection_ext_file"
+" > "$CONNECTION_TMP"
+
+	if ! _equal "$CONNECTION_TMP" "$connection_ext_file"
+	then
+		_copy "$CONNECTION_TMP" "$connection_ext_file"
+		CHANGED="yes"
+	fi
+
+	# Copy all organisation ca certs
+	for org in $(_org_by_configtx "$configtx")
+	do
+		$CP "$(_crypto_msp_by_org "$org" "$user")/tlscacerts/tlsca.$org-cert.pem" "$connection_int_ca_dir"
+		$CP "$(_crypto_msp_by_org "$org" "$user")/tlscacerts/tlsca.$org-cert.pem" "$connection_ext_ca_dir"
+	done
 
 	chown -PRc "$(stat -c %u:%g "$DATA/out")" "$DATA/out"
 }
@@ -177,5 +202,15 @@ $(peers_section_external "$ext$connection_ext_ca_dir")
 ###############################################################################
 for namespace in $(find "$CHANNEL_STATE" -type d -maxdepth 1 -mindepth 1)
 do
-	process_state_namespace "$namespace"
+	configtx="$namespace/system/configtx.yaml"
+	for org in $(_org_by_configtx "$configtx")
+	do
+		for user in $USERS
+		do
+			process_state_namespace "$namespace" "$configtx" "$org" "$user"
+		done
+	done
 done
+
+# Update robot connection
+[ "$CHANGED" = "yes" ] && _robot_state_dirs | xargs -r -IX $CP "$CONNECTION_STATE" "X"

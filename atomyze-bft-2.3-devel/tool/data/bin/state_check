@@ -16,5 +16,5 @@ do
         break
     fi
     
-    sleep 10
+    sleep "$SLEEP_STATE"
 done

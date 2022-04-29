@@ -1,0 +1,68 @@
+# logger
+logLevel: debug # values: error, warning, info, debug, trace
+logType: logrus # values: std, logrus
+
+# Web server port
+# Endpoints:
+# /info    - application info
+# /metrics - prometheus metrics
+# /healthz - liveness probe
+# /readyz  - readiness probe 
+serverPort: 8080
+
+# Fabric
+profilePath: /state/connection/public/User1@org0/connection.yaml # path to Fabric connection profile
+userName: User1 # Fabric user
+orgName: org0 # Fabric org
+useSmartBFT: true # Use SmartBFT consensus algorithm or Raft consensus algorithm
+
+# Block parser configuration
+txSwapPrefix: swaps # prefix of keys in HLF which store tx swaps
+txMultiSwapPrefix: multi_swap # prefix of keys in HLF which store tx multi swaps
+txPreimagePrefix: batchTransactions # prefix of keys in HLF which store tx preimages
+
+# Robots configuration
+robots:
+  - chName: acl # channel for batches
+    collectorsBufSize: 1
+    src: # sources of transactions, swaps, multiswaps, keys of swaps and keys of multiswaps
+      - chName: acl
+        initBlockNum: 1
+  - chName: fiat
+    collectorsBufSize: 1
+    src: # sources of transactions, swaps, multiswaps, keys of swaps and keys of multiswaps
+      - chName: fiat
+        initBlockNum: 1
+  - chName: cc
+    collectorsBufSize: 1
+    src: # sources of transactions, swaps, multiswaps, keys of swaps and keys of multiswaps
+      - chName: cc
+        initBlockNum: 1
+  # - chName: industrial
+  #   collectorsBufSize: 1
+  #   src: # sources of transactions, swaps, multiswaps, keys of swaps and keys of multiswaps
+  #     - chName: industrial
+  #       initBlockNum: 1
+
+# Batch limits
+delayAfterChRobotError: 3s # delay after not unrecoverable channel error before retry run channel miner again
+defaultBatchLimits: # at least one of limits must be filled
+  batchBlocksCountLimit: 10 # max blocks count in batch 
+  batchLenLimit: 1000
+  batchSizeLimit: 100000 # max batch size in bytes
+  batchTimeoutLimit: 300ms # max waiting time before generating a batch
+
+# Redis configuration
+redisStor:
+  dbPrefix: robot # Redis db prefix
+  addr: # Redis addresses
+    - redis:6379
+  password: test # Redis password
+  withTLS: false # enable TLS for communication with Redis
+
+# Crypto configuration
+cryptoMngKind: none # values: none, vault, google
+
+# Prometheus configuration
+promMetrics:
+  prefix: robot_ # Prometheus prefix
