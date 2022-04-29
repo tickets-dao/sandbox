@@ -91,10 +91,10 @@ with pattern **EXP_***
 For local development e.g. robot or observer you need override fabric specific gossip variables:
 
 ```
-. ./default-local-settings && docker-compose up
+. ./env-local-development && docker-compose up
 ```
 
-Or you can put your custom environment variables files instead of **default-local-settings**
+Or you can put your custom environment variables files instead of **env-local-development**
 
 ```
 . ./my-custom-development-variables && docker-compose up
@@ -109,7 +109,7 @@ export IMG_ROBOT=alpine:3
 Full example is: 
 
 ```
-export IMG_ROBOT=alpine:3 && . ./default-local-settings && docker-compose up
+export IMG_ROBOT=alpine:3 && . ./env-local-development && docker-compose up
 ```
 
 Or fill free to setup your custom development settings file
@@ -245,14 +245,14 @@ tool/data/out/
 ├── connection
 │   ├── private
 │   │   └── org0
-│   │       ├── ca
-│   │       ├── connection.yaml <------
 │   │       └── User1@org0
+│   │           ├── ca
+│   │           ├── connection.yaml <------
 │   └── public
 │       └── org0
-│           ├── ca
-│           ├── connection.yaml <------
 │           └── User1@org0
+│               ├── ca
+│               ├── connection.yaml <------
 
 ```
 
