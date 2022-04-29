@@ -180,7 +180,7 @@ $(peers_section_internal "$connection_int_ca_dir")
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_external)
-$(peers_section_external "$ext$connection_ext_ca_dir")
+$(peers_section_external "$EXT$connection_ext_ca_dir")
 " > "$CONNECTION_TMP"
 
 	if ! _equal "$CONNECTION_TMP" "$connection_ext_file"
