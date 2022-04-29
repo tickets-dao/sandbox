@@ -17,8 +17,8 @@ CRYPTOMATERIAL="${STATE}/peerOrganizations ${STATE}/ordererOrganizations"
 CHAINCODE_TMP="/tmp/chaincode.tar.gz"
 CUSTOM_CHECK_FILE=".custom_check"
 ENV="/state/.env"
-SLEEP_ERROR="30"
-SLEEP_STATE="30"
+[ -z "$SLEEP_ERROR" ] && SLEEP_ERROR="30"
+[ -z "$SLEEP_STATE" ] && SLEEP_STATE="30"
 
 _err() {
     echo "-- ERROR: $1"
