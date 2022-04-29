@@ -31,6 +31,10 @@ _info_and_exit() {
     exit
 }
 
+_setup_extra_packages() {
+    which "openssl" || apk add --no-cache openssl=~1 || _err "failed to install openssl"
+}
+
 _equal() {
     [ "$(cat "$1" | md5sum)" = "$(cat "$2" | md5sum)" ]
 }
@@ -103,6 +107,23 @@ _expose_by_hostname() {
     search="EXP_${search^^}"
     grep -m 1 "^$search" "$ENV" | cut -d "=" -f 2 | cut -d ":" -f 1
 }
+
+_tool_ski_by_public_key() {
+    der="$(echo "$1" | openssl ec -pubin -outform DER 2>/dev/null)" || \
+        _err "failed transform public to der"
+    echo "$der" | \
+        dd ibs=26 skip=1 2>/dev/null | \
+        openssl dgst -sha256 2>/dev/null | \
+        cut -d ' ' -f2
+}
+
+_tool_ski_by_private_key() {
+    public_key="$(openssl ec -in "$1" -pubout 2>/dev/null )" || \
+        _err "failed export public key"
+    _tool_ski_by_public_key "$public_key"
+}
+
+alias _ski=_tool_ski_by_private_key
 
 _info "$0"
 cd "$WORK" || _err "failed to set work directory"

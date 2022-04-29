@@ -22,7 +22,7 @@ PeerOrgs:
         SANS:
           - "localhost"
     Users:
-      Count: 10
+      Count: 2
 
   - Name: org1
     Domain: org1
@@ -47,7 +47,7 @@ PeerOrgs:
         SANS:
           - "localhost"
     Users:
-      Count: 10
+      Count: 2
 
   - Name: org2
     Domain: org2
@@ -60,4 +60,4 @@ PeerOrgs:
         SANS:
           - "localhost"
     Users:
-      Count: 10
+      Count: 2

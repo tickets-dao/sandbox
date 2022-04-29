@@ -4,6 +4,8 @@
 
 while true
 do
+    _setup_extra_packages
+    
     md5sum "$STATE_HASH" || break
 
     find "$DATA" ! -name "backup.tar.gz" > "$STATE_FILE_TMP"
