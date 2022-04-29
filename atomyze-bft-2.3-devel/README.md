@@ -10,6 +10,7 @@
     - [Stop and purge](#stop-and-purge)
     - [Exposed ports](#exposed-ports)
     - [Local development](#local-development)
+      - [Auto-apply configuration](#auto-apply-configuration)
     - [Backup and restore](#backup-and-restore)
     - [Namespaces channels and chaincodes](#namespaces-channels-and-chaincodes)
     - [Certificates and connection.yml](#certificates-and-connectionyml)
@@ -113,6 +114,22 @@ export IMG_ROBOT=alpine:3 && . ./env-local-development && docker-compose up
 ```
 
 Or fill free to setup your custom development settings file
+
+#### Auto-apply configuration
+
+To control auto apply loop you can setup check timeout before **up** environment
+
+
+```
+export SLEEP_STATE=30 # sleep to check changes
+export SLEEP_ERROR=30 # sleep after error appears 
+```
+
+To disable auto apply configuration (oneshot start)
+
+```
+export SLEEP_STATE=9999
+```
 
 ### Backup and restore
 
