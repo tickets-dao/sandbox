@@ -3,7 +3,7 @@
 . default
 
 # WARNING Wait until container restart with new cryptomaterials
-WAIT_CONTAINERS_RESTART=10
+WAIT_CONTAINERS_RESTART=5
 
 orderer_deploy_genesis() {
     src="$1"
@@ -27,6 +27,7 @@ orderer_deploy_genesis() {
         _err "failed to set genesis"
     fi
 
+    _info "wait container restart with new cryptomaterials"
     sleep "$WAIT_CONTAINERS_RESTART"
 }
 
