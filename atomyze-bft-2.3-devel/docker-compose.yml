@@ -447,7 +447,6 @@ services:
       - test-orderer-002.org1
       - test-orderer-011.org1
       - test-orderer-012.org1
-    command: ["-c", "/etc/config.yaml"]
     user: "root"
     volumes:
       - ./test-robot-001.org0/data:/data
