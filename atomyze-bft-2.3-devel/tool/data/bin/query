@@ -6,7 +6,7 @@ help() {
 	echo "
 Usage: $0 [namespace<private|public>] [channel] [chaincode] <ctor|list/-l/--list> <peer>
 
-Invoke a chaincode in selected namespace.
+Query a chaincode in selected namespace on a selected peer node.
 
 Example:
 
