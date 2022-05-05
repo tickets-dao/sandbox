@@ -230,7 +230,7 @@ tool/data/channel/
 * On **channel** level it will apply to all chaincodes in this channel
 * Locate **.prepare** file in chaincode directory for chaincode specific configuration
 
-Example for public namespace with 3 organizations:
+Example for public namespace with 3 organizations **without initialization**:
 
 ```
 CHAINCODE_VERSION="$(date +%s)"
@@ -242,6 +242,28 @@ Example for private namespace with 2 organizations:
 ```
 CHAINCODE_VERSION="$(date +%s)"
 CHAINCODE_POLICY="AND('org0.peer', 'org2.peer')"
+```
+
+Example with manual initialization later:
+
+```
+CHAINCODE_VERSION="$(date +%s)"
+CHAINCODE_POLICY="AND('org0.peer')"
+CHAINCODE_INIT="skip"
+```
+
+Example with initialization and internal helper function usage
+
+```
+CHAINCODE_VERSION="$(date +%s)"
+CHAINCODE_POLICY="AND('org0.peer')"
+
+key0="$(_crypto_admin_key_by_org "org0")"
+key1="$(_crypto_admin_key_by_org "org1")"
+ski0="$(_tool_ski_by_private_key "$key0")"
+ski1="$(_tool_ski_by_private_key "$key1")"
+
+CHAINCODE_INIT="{\"Args\":[\"$ski0\",\"1\",\"$ski1\"]}"
 ```
 
 This **.prepare** example contains the standard channel policy and allows you to automatically change the version of the chaincodes, which is very useful for local development
