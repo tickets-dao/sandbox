@@ -14,7 +14,6 @@ package_install() {
 	configtx="$channel_dir/configtx.yaml"
 	version="$(cat "$src.version")"
 	policy="$(cat "$src.policy")"
-	init="$(cat "$src.init")"
 	sequence_file="$src.sequence"
 	sequence="$(cat "$sequence_file" || echo "1")"
 	id="${chaincode}_${version}:${hash}"
@@ -22,6 +21,17 @@ package_install() {
 	dst="$dst_dir/$chaincode.tar.gz.install"
 
 	_equal "$src" "$dst" && return
+
+	if [ -r "$init" ]
+	then
+		APPROVEFORMYORG="peer lifecycle chaincode approveformyorg"
+		COMMIT="peer lifecycle chaincode commit"
+	else
+		APPROVEFORMYORG="peer lifecycle chaincode approveformyorg --init-required"
+		INIT="$(cat "$src.init")"
+		COMMIT="peer lifecycle chaincode commit --init-required"
+	fi
+
 	err="0"
 	for peer in $(_configtx_peer_fqdn "$configtx")
 	do
@@ -34,7 +44,6 @@ package_install() {
 		export CORE_PEER_TLS_ENABLED="true"
 
 		_info "install '$chaincode' to '$peer'"
-		# TODO BUG if build fail we shoul check it
 		peer lifecycle chaincode install "$src"
 		peer lifecycle chaincode queryinstalled 2>&1 | tee "$OUT"
 		grep -qE "Package ID: ${chaincode}_${version}:${hash}" "$OUT" || \
@@ -42,7 +51,7 @@ package_install() {
 
 		_info "approvemyorg '$chaincode' to '$peer'"
 		orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
-		peer lifecycle chaincode approveformyorg \
+		$APPROVEFORMYORG \
 			--tls \
 			--cafile "$(_crypto_ca_by_hostname "$orderer")" \
 			--orderer "$orderer:$ORDERER_PORT" \
@@ -51,11 +60,10 @@ package_install() {
 			--version "$version" \
 			--package-id "$id" \
 			--sequence "$sequence" \
-			--init-required "$init" \
-          	--signature-policy "$policy" 
+			--signature-policy "$policy"
 
-		_info "commit '$chaincode' to '$peer'"		
-		peer lifecycle chaincode commit \
+		_info "commit '$chaincode' to '$peer'"
+		$COMMIT \
 			--tls \
 			--cafile "$(_crypto_ca_by_hostname "$orderer")" \
 			--orderer "$orderer:$ORDERER_PORT" \
@@ -63,20 +71,29 @@ package_install() {
 			--name "$chaincode" \
 			--version "$version" \
 			--sequence "$sequence" \
-			--init-required "$init" \
 			--signature-policy "$policy"
 
 		_info "chaincode querycommitted on '$peer'"
 		peer lifecycle chaincode querycommitted --channelID "$channel" | tee "$OUT"
 		
+		echo "Name: $chaincode, Version: $version, Sequence: $sequence"
 		fgrep -q "Name: $chaincode, Version: $version, Sequence: $sequence" "$OUT" || \
 			_err "failed to commit '$chaincode' on '$peer'"
 	done
+
+	# {} - looks like json otherwise ignore step and initialize manually
+	if echo "$INIT" | grep -qE '\{.*\}'
+	then
+		invoke "$namespace" "$channel" "$chaincode" "$INIT" "--isInit" 2>&1 | tee "$OUT"	
+		grep -qE "already initialized|Chaincode invoke successful" "$OUT" || \
+			_err "failed to init chaincode '$chaincode' with '$INIT'"
+	fi
+
 	echo "$((sequence + 1))" > "$sequence_file"
 	_copy "$src" "$dst"
 }
 
-for package in $(find "$CHANNEL_STATE" -type f -name "*.tar.gz")
+for package in $(find "$CHANNEL_STATE" -type f -name "*.tar.gz" | sort -u)
 do
 	package_install "$package"
 done

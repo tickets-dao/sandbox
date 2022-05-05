@@ -18,7 +18,6 @@ package_go_chaincode() {
 	[ -r "$chaincode_dir/.prepare" ] && . "$chaincode_dir/.prepare"
 	[ -z "$CHAINCODE_VERSION" ] && _err "fail chaincode version"
 	[ -z "$CHAINCODE_POLICY" ] && _err "fail chaincode policy"
-	[ -z "$CHAINCODE_INIT" ] && _info "empty init '$chaincode'"
 	[ -n "$CHAINCODE_SEQUENCE" ] && echo "$CHAINCODE_SEQUENCE" > "$sequence_file"
 
 	peer lifecycle chaincode package \
@@ -29,9 +28,17 @@ package_go_chaincode() {
 	
 	_equal "$CHAINCODE_TMP" "$dst" && return
 	_copy "$CHAINCODE_TMP" "$dst"
+
 	echo "$CHAINCODE_VERSION" > "$dst.version"
 	echo "$CHAINCODE_POLICY" > "$dst.policy"
-	echo "$CHAINCODE_INIT" > "$dst.init"
+
+	if [ -z "$CHAINCODE_INIT" ]
+	then
+		_info "empty init '$chaincode'"
+		rm -f "$dst.init"
+	else
+		echo "$CHAINCODE_INIT" > "$dst.init"
+	fi
 }
 
 for gomod in $(find "$CHANNEL_DATA" -maxdepth 4 -type f -name "go.mod")

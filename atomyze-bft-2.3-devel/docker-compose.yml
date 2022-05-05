@@ -133,8 +133,10 @@ services:
       - dind
     environment:
       - IP
+      - SLEEP_STATE
+      - SLEEP_ERROR
       - HOSTPWD=$PWD
-      - FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=${TOOL_LOG_LEVEL}
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix://docker/docker.sock
       - PATH=/data/bin:/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
