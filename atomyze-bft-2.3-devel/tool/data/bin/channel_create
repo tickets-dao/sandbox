@@ -27,10 +27,15 @@ create_channel() {
 		--keyfile "$(_crypto_admin_key_by_org "$org")" \
 		--outputBlock "$genesis" 2>&1 | tee -a "$OUT"
 
-    if grep -qE "but it is currently at version|Created and started new channel" "$OUT"
+
+	success="but it is currently at version|\
+Created and started new channel|\
+Received block: 0"
+    if grep -qE "$success" "$OUT"
     then
         _copy "$src" "$dst"
     else
+		cat "$OUT"
         _err "failed to create channel '$src'"
     fi
 }
