@@ -76,10 +76,10 @@ process_package() {
 	fi
 }
 
-# for gomod in $(find "$CHANNEL_DATA" -maxdepth 4 -type f -name "go.mod")
-# do
-# 	process_go_chaincode "$gomod"
-# done
+for gomod in $(find "$CHANNEL_DATA" -maxdepth 4 -type f -name "go.mod")
+do
+	process_go_chaincode "$gomod"
+done
 
 for package in $(find "$CHANNEL_DATA" -maxdepth 3 -type f -name "*.tar.gz")
 do
