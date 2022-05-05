@@ -46,6 +46,7 @@ package_install() {
 		_info "install '$chaincode' to '$peer'"
 		peer lifecycle chaincode install "$src"
 		peer lifecycle chaincode queryinstalled 2>&1 | tee "$OUT"
+
 		grep -qE "Package ID: ${chaincode}_${version}:${hash}" "$OUT" || \
 			_err "failed to install '$chaincode' on '$peer'"
 

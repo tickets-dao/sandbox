@@ -14,8 +14,10 @@
       - [Auto-apply configuration](#auto-apply-configuration)
     - [Backup and restore](#backup-and-restore)
     - [Namespaces channels and chaincodes](#namespaces-channels-and-chaincodes)
+      - [Chaincode from existing package](#chaincode-from-existing-package)
     - [Certificates and connection.yml](#certificates-and-connectionyml)
     - [Run-on](#run-on)
+    - [Grafana and custom dashboards](#grafana-and-custom-dashboards)
     - [Host metrics](#host-metrics)
     - [Invoke and query](#invoke-and-query)
     - [Switch fabric version](#switch-fabric-version)
@@ -220,7 +222,7 @@ tool/data/channel/
 ```
 
 This will automatically install **chaincode1** into **channel1** into cluster/namespace **public**
-To setup policy and verion of chaincode use **.prepare** file
+To setup policy and version of chaincode use **.prepare** file
 
 ```
 tool/data/channel/
@@ -276,6 +278,29 @@ CHAINCODE_INIT="{\"Args\":[\"$ski0\",\"1\",\"$ski1\"]}"
 ```
 
 This **.prepare** example contains the standard channel policy and allows you to automatically change the version of the chaincodes, which is very useful for local development
+
+#### Chaincode from existing package
+
+The system allows you to install chaincodes from packages
+Just put package tar.gz file with to channel directory
+```
+./tool/data/channel/
+├── private
+│   └── system
+│       └── configtx.yaml
+└── public
+    ├── acl
+    │   ├── acl.tar.gz <-----------------
+    │   └── acl.tar.gz.prepare
+    └── system
+        └── configtx.yaml
+
+```
+
+To setup policy/initialization for chaincodes in channel use **.prepare** file on a channel level.  
+To setup policy/initialization for specific **example.tar.gz** place .prepare content to **example.tar.gz.prepare** file
+
+* CHAINCODE_VERSION - is taken from the package file and ignored in .prepare
 
 ### Certificates and connection.yml
 
@@ -357,9 +382,24 @@ Script:
 
 This utility useful for chaos testing and research of the system in boundary states
 
+### Grafana and custom dashboards
+
+To setup custom grafana dashboards just put dashboard json file into **grafana/data/dashboard** directory
+
+```
+./grafana/data/
+├── dashboard <------------
+│   └── .gitkeep
+└── .prepare
+
+```
+
+Dashboards json will automatically import into running grafana instance.
+All internal datasources are configured automatically.
+
 ### Host metrics
 
-When the system starts up, the internal prometeus starts polling http://localhost:8080/metrics of the host machine.  
+When the system starts up, the internal prometheus starts polling http://localhost:8080/metrics of the host machine.  
 This can be useful for local development. 
 
 ### Invoke and query
