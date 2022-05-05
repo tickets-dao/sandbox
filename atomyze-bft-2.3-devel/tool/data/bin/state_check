@@ -16,5 +16,6 @@ do
         break
     fi
     
+    _info "wait $SLEEP_STATE sec. before next check"
     sleep "$SLEEP_STATE"
 done

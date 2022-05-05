@@ -7,6 +7,7 @@
   - [Description](#description)
   - [How to](#how-to)
     - [Start](#start)
+    - [Force reload configuration](#force-reload-configuration)
     - [Stop and purge](#stop-and-purge)
     - [Exposed ports](#exposed-ports)
     - [Local development](#local-development)
@@ -59,11 +60,19 @@ Wait until the system reaches a consistent condition.
 This can be determined by recording a hash of the state in the logs.
 
 ```
-tool_1                    | 176f52ae3ac92b90558e91361d8fc046  /state/.hash
+tool_1                    | -- INFO: consistent state 3a60e7a068835f47aeee506cfd974adf  /state/.hash
 ```
 
 Every time you see state hash in log mean that system successfully reach consistent condition. 
 And ready to process requests.
+
+### Force reload configuration
+
+To force initiate configuration reload use reload script inside tool container
+
+```
+docker-compose exec tool reload
+```
 
 ### Stop and purge
 

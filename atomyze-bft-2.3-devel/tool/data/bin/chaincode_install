@@ -75,8 +75,6 @@ package_install() {
 
 		_info "chaincode querycommitted on '$peer'"
 		peer lifecycle chaincode querycommitted --channelID "$channel" | tee "$OUT"
-		
-		echo "Name: $chaincode, Version: $version, Sequence: $sequence"
 		fgrep -q "Name: $chaincode, Version: $version, Sequence: $sequence" "$OUT" || \
 			_err "failed to commit '$chaincode' on '$peer'"
 	done
