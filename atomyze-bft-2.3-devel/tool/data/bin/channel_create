@@ -27,7 +27,6 @@ create_channel() {
 		--keyfile "$(_crypto_admin_key_by_org "$org")" \
 		--outputBlock "$genesis" 2>&1 | tee -a "$OUT"
 
-
 	success="but it is currently at version|\
 Created and started new channel|\
 Received block: 0"
