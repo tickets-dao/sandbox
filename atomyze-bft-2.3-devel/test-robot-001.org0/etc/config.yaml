@@ -61,7 +61,7 @@ redisStor:
   withTLS: false # enable TLS for communication with Redis
 
 # Crypto configuration
-cryptoMngKind: none # values: none, vault, google
+cryptoMngKind: local
 
 # Prometheus configuration
 promMetrics:
