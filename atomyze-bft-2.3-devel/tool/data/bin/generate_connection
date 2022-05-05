@@ -72,7 +72,7 @@ orderers:"
   $orderer:
     url: grpcs://$orderer:$ORDERER_PORT
     tlsCACerts:
-      path: $CA
+      path: $1/tlsca.$(_org_by_hostname "$orderer")-cert.pem
 "
 	done
 }
@@ -86,7 +86,7 @@ orderers:"
   $orderer:
     url: grpcs://localhost:$(_expose_by_hostname "$orderer")
     tlsCACerts:
-      path: $CA
+      path: $1/tlsca.$(_org_by_hostname "$orderer")-cert.pem
 "
 	done
 }
@@ -159,7 +159,7 @@ process_state_namespace() {
 	_info "internal connection for '$connection_int_file'"
 	echo -n "$(header)
 $(organizations_section)
-$(orderers_section_internal)
+$(orderers_section_internal "$connection_int_ca_dir")
 $(peers_section_internal "$connection_int_ca_dir")
 " > "$CONNECTION_TMP"
 
@@ -179,7 +179,7 @@ $(peers_section_internal "$connection_int_ca_dir")
 	_info "external connection '$EXT$connection_ext_file'"
 	echo -n "$(header)
 $(organizations_section)
-$(orderers_section_external)
+$(orderers_section_external "$EXT$connection_ext_ca_dir")
 $(peers_section_external "$EXT$connection_ext_ca_dir")
 " > "$CONNECTION_TMP"
 
@@ -212,5 +212,10 @@ do
 	done
 done
 
-# Update robot connection
-[ "$CHANGED" = "yes" ] && _robot_state_dirs | xargs -r -IX $CP "$CONNECTION_STATE" "X"
+if [ "$CHANGED" = "yes" ]
+then
+	_robot_state_dirs | xargs -r -IX $CP "$CONNECTION_STATE" "X"
+	_observer_state_dirs | xargs -r -IX $CP "$CONNECTION_STATE" "X"
+else
+	_info "connection not changed"
+fi
