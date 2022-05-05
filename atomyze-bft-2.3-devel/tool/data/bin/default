@@ -17,8 +17,8 @@ CRYPTOMATERIAL="${STATE}/peerOrganizations ${STATE}/ordererOrganizations"
 CHAINCODE_TMP="/tmp/chaincode.tar.gz"
 CUSTOM_CHECK_FILE=".custom_check"
 ENV="/state/.env"
-[ -z "$SLEEP_ERROR" ] && SLEEP_ERROR="30"
 [ -z "$SLEEP_STATE" ] && SLEEP_STATE="30"
+[ -z "$SLEEP_ERROR" ] && SLEEP_ERROR="30"
 
 _err() {
     echo "-- ERROR: $1"
@@ -35,10 +35,12 @@ _info_and_exit() {
 }
 
 _setup_extra_packages() {
-    which "openssl" || apk add --no-cache openssl=~1 || _err "failed to install openssl"
+    which "openssl" 2>&1 >/dev/null || \
+        apk add --no-cache openssl=~1 || _err "failed to install openssl"
 }
 
 _equal() {
+    [ -r "$1" -o -r "$2" ] || return 1
     [ "$(cat "$1" | md5sum)" = "$(cat "$2" | md5sum)" ]
 }
 
@@ -118,13 +120,13 @@ _expose_by_hostname() {
 
 _tool_ski_by_public_key() {
     local der
-    der="$(echo "$1" | openssl ec -pubin -outform DER 2>/dev/null)" || \
-        _err "failed transform public to der"
+    der="$(echo -n "$1" | openssl ec -pubin -outform DER 2>/dev/null)" || \
+         _err "failed convert to der"
     echo "$der" | \
         dd ibs=26 skip=1 2>/dev/null | \
         openssl dgst -sha256 2>/dev/null | \
         cut -d ' ' -f2
-}
+} 2>/dev/null
 
 _tool_ski_by_private_key() {
     local public_key
@@ -135,6 +137,10 @@ _tool_ski_by_private_key() {
 
 _robot_state_dirs() {
     find "$STATE" -type d -name "test-robot*" -mindepth 1 -maxdepth 1
+}
+
+_observer_state_dirs() {
+    find "$STATE" -type d -name "test-observer*" -mindepth 1 -maxdepth 1
 }
 
 alias _ski=_tool_ski_by_private_key

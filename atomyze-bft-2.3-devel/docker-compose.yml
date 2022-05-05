@@ -463,9 +463,6 @@ services:
     depends_on:
       - test-peer-001.org0
       - test-peer-002.org0
-    # env_file: .env-example
-    # environment:
-    #   - EXAMPLE=org0
     volumes:
       - ./test-observer-001.org0/data:/data
       - test-observer-001.org0:/state
