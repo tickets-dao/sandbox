@@ -18,7 +18,13 @@ then
     "name": "service",
     "role": "Admin"
     }' http://admin:test@127.0.0.1:3000/api/auth/keys
-    cut -d '"' -f 10 "$OUT" > "$TOKEN"
+    token="$(cut -d '"' -f 10 "$OUT")"
+    if echo "$token" | grep -qE "[a-zA-Z0-9]+"
+    then
+        echo "$token" > "$TOKEN"
+    else
+        exit 1
+    fi
 fi
 
 if [ ! -r "$DATASOURCE" ]
