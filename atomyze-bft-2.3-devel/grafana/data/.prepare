@@ -43,7 +43,6 @@ if ! md5sum -c "$MD5SUM"
 then
     for dashboard in $(find "$DASHBOARD" -type f -name "*.json")
     do
-        "$dashboard"
         curl \
             -o "$OUT" \
             -X POST \
@@ -51,6 +50,7 @@ then
             -H "Accept: application/json" \
             -H "Authorization: Bearer $(cat $TOKEN)" \
             -T "$dashboard" http://127.0.0.1:3000/api/dashboards/db
+	cat "$OUT"
         grep -E "success" "$OUT" || exit 1
     done
     find "$DASHBOARD" -type f -name "*.json" -exec md5sum '{}' \; > "$MD5SUM"
