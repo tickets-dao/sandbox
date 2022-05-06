@@ -9,8 +9,8 @@
     "slug": "robot-dashboard",
     "url": "/d/7ccf9pl7z/robot-dashboard",
     "expires": "0001-01-01T00:00:00Z",
-    "created": "2022-05-06T11:08:27Z",
-    "updated": "2022-05-06T11:08:27Z",
+    "created": "2022-05-06T12:46:18Z",
+    "updated": "2022-05-06T12:46:18Z",
     "updatedBy": "admin",
     "createdBy": "admin",
     "version": 1,
@@ -173,8 +173,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": true,
             "expr": "robot_app_init_duration_seconds{instance=~\"$instance\"}",
@@ -275,8 +274,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": false,
             "expr": "robot_app_info{instance=~\"$instance\"}",
@@ -338,8 +336,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": false,
             "expr": "robot_robot_started_total{instance=~\"$instance\"}",
@@ -427,8 +424,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": true,
             "expr": "rate(robot_batch_collect_duration_seconds_sum{instance=~\"$instance\"}[$__rate_interval])",
@@ -512,8 +508,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": true,
             "expr": "robot_batch_size_estimated_diff_count{instance=~\"$instance\"}",
@@ -614,8 +609,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": true,
             "expr": "robot_block_tx_count_count{instance=~\"$instance\",channel=\"$channel\"}",
@@ -701,8 +695,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": true,
             "expr": "robot_collector_process_block_num{instance=~\"$instance\",channel=\"$channel\"}",
@@ -786,8 +779,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "IYjOi2lnk"
+              "type": "prometheus"
             },
             "exemplar": true,
             "expr": "robot_tx_waiting_process_count{instance=~\"$instance\",channel=~\"$channel\"}",
@@ -808,8 +800,7 @@
         {
           "current": {},
           "datasource": {
-            "type": "prometheus",
-            "uid": "IYjOi2lnk"
+            "type": "prometheus"
           },
           "definition": "robot_app_info",
           "description": "Robot instance",
@@ -832,8 +823,7 @@
         {
           "current": {},
           "datasource": {
-            "type": "prometheus",
-            "uid": "IYjOi2lnk"
+            "type": "prometheus"
           },
           "definition": "robot_collector_process_block_num",
           "description": "Robot channel",
@@ -854,7 +844,6 @@
         },
         {
           "current": {},
-          "datasource": "IYjOi2lnk",
           "definition": "robot_collector_process_block_num",
           "description": "Robot",
           "hide": 0,
@@ -883,7 +872,6 @@
     "title": "Robot Dashboard",
     "uid": "7ccf9pl7z",
     "version": 1,
-    "weekStart": ""
+    "weekStart":  ""
   }
 }
-
