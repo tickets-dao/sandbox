@@ -5,6 +5,7 @@
 [ -z "$VERSION" ] && VERSION="1.0.0"
 [ -z "$LOGGING_LEVEL" ] && LOGGING_LEVEL="info"
 [ -z "$USERS" ] && USERS="Admin User1"
+[ -z "$SANS" ] && SANS="localhost"
 CP="cp -fru"
 EXT="$HOSTPWD/tool"
 CHANGED="no"
@@ -84,9 +85,25 @@ orderers:"
 	do
 	echo -n "
   $orderer:
-    url: grpcs://localhost:$(_expose_by_hostname "$orderer")
+    url: grpcs://$SANS:$(_expose_by_hostname "$orderer")
     tlsCACerts:
       path: $1/tlsca.$(_org_by_hostname "$orderer")-cert.pem
+"
+	done
+}
+
+
+orderers_section_entity_matchers() {
+	echo -n "
+entityMatchers:
+  orderer:"
+	for orderer in $(_configtx_orderer_fqdn "$CONFIGTX")
+	do
+	echo -n "
+    - pattern: $orderer
+      urlSubstitutionExp: $SANS:$(_expose_by_hostname "$orderer")
+      sslTargetOverrideUrlSubstitutionExp: $SANS
+      mappedHost: $orderer
 "
 	done
 }
@@ -112,7 +129,7 @@ peers:"
 	do
 		echo -n "
   $peer:
-    url: grpcs://localhost:$(_expose_by_hostname "$peer")
+    url: grpcs://$SANS:$(_expose_by_hostname "$peer")
     tlsCACerts:
       path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
 "
@@ -180,6 +197,7 @@ $(peers_section_internal "$connection_int_ca_dir")
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_external "$EXT$connection_ext_ca_dir")
+$(orderers_section_entity_matchers)
 $(peers_section_external "$EXT$connection_ext_ca_dir")
 " > "$CONNECTION_TMP"
 

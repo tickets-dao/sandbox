@@ -245,21 +245,21 @@ Example for public namespace with 3 organizations **without initialization**:
 
 ```
 CHAINCODE_VERSION="$(date +%s)"
-CHAINCODE_POLICY="AND('org0.peer', OutOf(1, 'org1.peer', 'org2.peer'))"
+CHAINCODE_POLICY="AND('org0.member', OutOf(1, 'org1.member', 'org2.member'))"
 ```
 
 Example for private namespace with 2 organizations:
 
 ```
 CHAINCODE_VERSION="$(date +%s)"
-CHAINCODE_POLICY="AND('org0.peer', 'org2.peer')"
+CHAINCODE_POLICY="AND('org0.member', 'org2.member')"
 ```
 
 Example with manual initialization later:
 
 ```
 CHAINCODE_VERSION="$(date +%s)"
-CHAINCODE_POLICY="AND('org0.peer')"
+CHAINCODE_POLICY="AND('org0.member')"
 CHAINCODE_INIT="skip"
 ```
 
@@ -267,7 +267,7 @@ Example with initialization and internal helper function usage
 
 ```
 CHAINCODE_VERSION="$(date +%s)"
-CHAINCODE_POLICY="AND('org0.peer')"
+CHAINCODE_POLICY="AND('org0.member')"
 
 key0="$(_crypto_admin_key_by_org "org0")"
 key1="$(_crypto_admin_key_by_org "org1")"
@@ -345,7 +345,7 @@ Usage: /data/bin/run-on [host] [/path/to/script]
 Command copy selected shell script to remote host and execute it.
 
 Example:
-    /data/bin/run-on "test-peer-004.org1" "/data/bin/script_russian_roulette" 
+    /data/bin/run-on "test-peer-004.org1" "/data/bin/script_russian_roulette"
     /data/bin/run-on "test-peer-001.org1" "/data/bin/script_reboot" 
     /data/bin/run-on "test-peer-002.org1" "/data/bin/script_tc_latency" 
     /data/bin/run-on "test-peer-004.org1" "/data/bin/script_tc_bad_network" 
