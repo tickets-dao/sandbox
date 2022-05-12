@@ -43,9 +43,22 @@ client:
     path: $MSP/signcerts
     cryptoStore:
       path: $MSP
-
-channels:
 "
+
+	echo -n "
+channels:"
+	for channel in $(ls -1 "$CHANNEL_STATE/$namespace")
+	do
+		echo -n "
+  $channel:
+    peers:
+"
+		for peer in $(_configtx_peer_fqdn "$CONFIGTX")
+		do
+			echo -n "      $peer: {}
+"
+		done
+	done
 }
 
 organizations_section() {
