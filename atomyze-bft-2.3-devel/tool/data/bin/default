@@ -21,7 +21,7 @@ ENV="/state/.env"
 [ -z "$SLEEP_STATE" ] && SLEEP_STATE="30"
 [ -z "$SLEEP_ERROR" ] && SLEEP_ERROR="30"
 
-_err() { # print [message] and exit with error code
+_err() { # print [message] and exit with error
     echo "-- ERROR: '$VERSION' $1"
     exit 1
 }
