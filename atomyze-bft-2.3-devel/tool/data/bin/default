@@ -115,7 +115,7 @@ _crypto_msp_by_org() { # return path to msp directory by [org] and [user]
         xargs -0rI X readlink -f "X/users/$2@$1/msp"
 }
 
-_expose_by_hostname() { # "return ports that exposed from compose file by [hostname]"
+_expose_by_hostname() { # return ports that exposed from compose file by [hostname]
     local search
     search="${1//[.-]/_}"
     search="${search#test_}"
