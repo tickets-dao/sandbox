@@ -10,6 +10,7 @@
     - [Force reload configuration](#force-reload-configuration)
     - [Stop and purge](#stop-and-purge)
     - [Exposed ports](#exposed-ports)
+    - [Custom tools in sandbox](#custom-tools-in-sandbox)
     - [Local development](#local-development)
       - [Auto-apply configuration](#auto-apply-configuration)
     - [Backup and restore](#backup-and-restore)
@@ -96,7 +97,34 @@ Full list of exposed ports and services you can find in
 
 [.env](.env)
 
-with pattern **EXP_***
+with pattern **EXP_**
+
+### Custom tools in sandbox
+
+To run additional utilities such as workload generation utilities, you can use this approach
+
+* Add custom docker-compose file with necessary tool and bind mounе **tool state** volume and data directory for **data/out**
+
+Example for l2:
+
+```
+version: '3.4'
+
+services:
+  l2:
+    image: registry.n-t.io/atmz/l2/loader2:1.0.0
+    command: generate_load 10tps
+    restart: unless-stopped
+    volumes:
+      - tool:/state
+      - ./tool/data:/data
+```
+
+* Start compose with custom docker-compose file
+
+```
+docker-compose -f l2.yml -f docker-compose.yml up
+```
 
 ### Local development
 
