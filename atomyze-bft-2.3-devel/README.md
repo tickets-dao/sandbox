@@ -7,6 +7,7 @@
   - [Description](#description)
   - [How to](#how-to)
     - [Start](#start)
+    - [Help](#help)
     - [Force reload configuration](#force-reload-configuration)
     - [Stop and purge](#stop-and-purge)
     - [Exposed ports](#exposed-ports)
@@ -68,6 +69,14 @@ tool_1                    | -- INFO: consistent state 3a60e7a068835f47aeee506cfd
 
 Every time you see state hash in log mean that system successfully reach consistent condition. 
 And ready to process requests.
+
+### Help
+
+To get all supported tool list and available internal function
+
+```
+docker-compose exec tool --help
+```
 
 ### Force reload configuration
 
