@@ -36,7 +36,11 @@ _info_and_exit() {
 
 _setup_extra_packages() {
     which "openssl" 2>&1 >/dev/null || \
-        apk add --no-cache openssl=~1 || _err "failed to install openssl"
+        apk add --no-cache openssl=~1 || \
+        _err "failed to install openssl"
+    which "base58" 2>&1 >/dev/null || \
+        apk add --no-cache py3-pip=~20 && pip3 install base58==2.* || \
+        _err "failed to install base58"
 }
 
 _equal() {
