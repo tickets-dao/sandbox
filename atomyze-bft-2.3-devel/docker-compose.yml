@@ -36,7 +36,8 @@ volumes:
   test-peer-001.org2:
   test-peer-002.org2:
   test-robot-001.org0:
-  test-observer-001.org0:
+  test-observer-hlfparser-001.org0:
+  test-observer-apiservice-001.org0:
 
 ###############################################################################
 services:
@@ -167,7 +168,8 @@ services:
       - test-peer-001.org2:/state/test-peer-001.org2
       - test-peer-002.org2:/state/test-peer-002.org2
       - test-robot-001.org0:/state/test-robot-001.org0
-      - test-observer-001.org0:/state/test-observer-001.org0
+      - test-observer-hlfparser-001.org0:/state/test-observer-hlfparser-001.org0
+      - test-observer-apiservice-001.org0:/state/test-observer-apiservice-001.org0
 
 ###############################################################################
   test-orderer-001.org0:
@@ -459,15 +461,32 @@ services:
     <<: *default-healthcheck
 
 ###############################################################################
-  test-observer-001.org0:
-    image: "${IMG_OBSERVER}"
+  test-observer-hlfparser-001.org0:
+    image: "${IMG_OBSERVER_HLFPARSER}"
     restart: always
+    env_file: .env-observer-hlfparser
     depends_on:
-      - test-peer-001.org0
-      - test-peer-002.org0
+      - postgres
     volumes:
-      - ./test-observer-001.org0/data:/data
-      - test-observer-001.org0:/state
+      - ./test-observer-hlfparser-001.org0/data:/data
+      - test-observer-hlfparser-001.org0:/state
     ports:
-      - "${IP}:${EXP_OBSERVER}"
+      - "${IP}:${EXP_OBSERVER_HLFPARSER_HEALTH}"
+      - "${IP}:${EXP_OBSERVER_HLFPARSER_API}"
+      - "${IP}:${EXP_OBSERVER_HLFPARSER_METRIC}"
+    <<: *default-healthcheck
+
+  test-observer-apiservice-001.org0:
+    image: "${IMG_OBSERVER_APISERVICE}"
+    restart: always
+    env_file: .env-observer-apiservice
+    depends_on:
+      - postgres
+    volumes:
+      - ./test-observer-apiservice-001.org0/data:/data
+      - test-observer-apiservice-001.org0:/state
+    ports:
+      - "${IP}:${EXP_OBSERVER_APISERVICE_HEALTH}"
+      - "${IP}:${EXP_OBSERVER_APISERVICE_API}"
+      - "${IP}:${EXP_OBSERVER_APISERVICE_METRIC}"
     <<: *default-healthcheck

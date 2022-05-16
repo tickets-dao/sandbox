@@ -85,7 +85,7 @@ scrape_configs:
   - targets:
     - test-robot-001.org0:8080
 
-- job_name: observer
+- job_name: observer-hlfparser
   honor_timestamps: true
   scrape_interval: 10s
   scrape_timeout: 5s
@@ -93,7 +93,17 @@ scrape_configs:
   scheme: http
   static_configs:
   - targets:
-    - test-observer-001.org0:8080
+    - test-observer-hlfparser-001.org0:8080
+
+- job_name: observer-apiservice
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-apiservice-001.org0:8080
 
 - job_name: host
   honor_timestamps: true

@@ -3,14 +3,14 @@
 . default
 
 create_channel() {
-    src="$1"
-    dst="$src.create"
-    src_dir="${src%/channel.tx}"
+	src="$1"
+	dst="$src.create"
+	src_dir="${src%/channel.tx}"
 	channel="${src_dir##*/}"
 	configtx="$src_dir/configtx.yaml"
 	genesis="$src_dir/channel.block"
 
-    _equal "$src" "$dst" && return
+	_equal "$src" "$dst" && return
 	orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
 	org="$(_org_by_hostname "$orderer")"
 
@@ -30,13 +30,13 @@ create_channel() {
 	success="but it is currently at version|\
 Created and started new channel|\
 Received block: 0"
-    if grep -qE "$success" "$OUT"
-    then
-        _copy "$src" "$dst"
-    else
+	if grep -qE "$success" "$OUT"
+	then
+		_copy "$src" "$dst"
+	else
 		cat "$OUT"
-        _err "failed to create channel '$src'"
-    fi
+		_err "failed to create channel '$src'"
+	fi
 }
 
 for channeltx in $(find "$CHANNEL_STATE" -type f -name "channel.tx")
