@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.0.0"
+VERSION="2.1.0"
 DATA="/data"
 STATE="/state"
 STATE_HASH="$STATE/.hash"
@@ -22,7 +22,7 @@ ENV="/state/.env"
 [ -z "$SLEEP_ERROR" ] && SLEEP_ERROR="30"
 
 _err() { # print [message] and exit with error
-    echo "-- ERROR: '$VERSION' $1"
+    echo "-- ERROR: 'sandbox:$VERSION' $1"
     exit 1
 }
 
@@ -123,22 +123,38 @@ _expose_by_hostname() { # return ports that exposed from compose file by [hostna
     grep -m 1 "^$search" "$ENV" | cut -d "=" -f 2 | cut -d ":" -f 1
 }
 
-_tool_ski_by_public_key() { # generate SKI by [public_key_data]
-    local der
-    der="$(echo -n "$1" | openssl ec -pubin -outform DER 2>/dev/null)" || \
-         _err "failed convert to der"
-    echo "$der" | \
-        dd ibs=26 skip=1 2>/dev/null | \
-        openssl dgst -sha256 2>/dev/null | \
-        cut -d ' ' -f2
-} 2>/dev/null
-
-_tool_ski_by_private_key() { # generate SKI by [privat_key_file] 
+_tool_public_by_private() { # generate der public data by [private_key_pem_file] 
     local public_key
     public_key="$(openssl ec -in "$1" -pubout 2>/dev/null )" || \
         _err "failed export public key"
-    _tool_ski_by_public_key "$public_key"
+    der="$(echo -n "$public_key" | openssl ec -pubin -outform DER 2>/dev/null)" || \
+         _err "failed convert to der"
+    echo "$der"
 }
+
+_tool_ibs() { # return asn1 data offset by [der_public_data]
+    echo "$1" | openssl asn1parse -inform DER -in - | grep 'BIT STRING' | \
+        tr -d " " | cut -d ':' -f 1
+}
+
+_tool_wallet() { # generate wallet (base58check->sha256->pubkey) by [private_key_pem_file]
+    der="$(_tool_public_by_private "$1")"
+    ibs="$(_ibs "$der")"
+    echo "$der" | \
+        dd ibs="$ibs" skip=1 2>/dev/null | \
+        openssl dgst -sha256 -binary 2>/dev/null | \
+        base58 -c
+    echo
+} 2>/dev/null
+
+_tool_ski() { # generate SKI by [private_key_pem_file]
+    der="$(_tool_public_by_private "$1")"
+    ibs="$(_tool_ibs_by_der_public_key_data "$der")"
+    echo "$der" | \
+        dd ibs="$ibs" skip=1 2>/dev/null | \
+        openssl dgst -sha256 2>/dev/null | \
+        cut -d ' ' -f2
+} 2>/dev/null
 
 _robot_state_dirs() { # shows robot service state directory
     find "$STATE" -type d -name "test-robot*" -mindepth 1 -maxdepth 1
@@ -148,7 +164,6 @@ _observer_state_dirs() { # shows observer services state directories
     find "$STATE" -type d -name "test-observer*" -mindepth 1 -maxdepth 1
 }
 
-alias _ski=_tool_ski_by_private_key
 
 _info "$0"
 cd "$WORK" || _err "failed to set work directory"
