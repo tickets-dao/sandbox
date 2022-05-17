@@ -39,9 +39,12 @@ _setup_extra_packages() { # setup exta package that not included in base image
     which "openssl" 2>&1 >/dev/null || \
         apk add --no-cache openssl=~1 || \
         _err "failed to install openssl"
-    which "base58" 2>&1 >/dev/null || \
-        apk add --no-cache py3-pip=~20 && pip3 install base58==2.* || \
-        _err "failed to install base58"
+
+    if ! which "base58" 2>&1 >/dev/null 
+    then
+        apk add --no-cache py3-pip=~20
+        pip3 install base58==2.* || _err "failed to install base58"
+    fi
 }
 
 _equal() { # compare if [file1] is equal [file2]

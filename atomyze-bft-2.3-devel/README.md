@@ -316,6 +316,21 @@ CHAINCODE_INIT="{\"Args\":[\"$ski0\",\"1\",\"$ski1\"]}"
 
 This **.prepare** example contains the standard channel policy and allows you to automatically change the version of the chaincodes, which is very useful for local development
 
+
+If you place **.prepare** at the namespace level, it will be executed after successfully reaching a consistent state. This is useful for various tests and initial data fills.
+
+```
+./tool/data/channel/
+├── .gitignore
+├── private
+│   └── system
+│       └── configtx.yaml
+└── public
+    ├── .prepare  <--------------------
+    └── system
+        └── configtx.yaml
+```
+
 #### Chaincode from existing package
 
 The system allows you to install chaincodes from packages
