@@ -1,3 +1,6 @@
 #!/bin/sh
 
-timeout -s 9 1 wget -O - localhost:9090 | grep -E 'doctype html'
+CUSTOM_CHECK="/state/.custom_check"
+[ -r "$CUSTOM_CHECK" ] && . "$CUSTOM_CHECK"
+
+wget -T 1 -O - http://localhost:9090 | grep -E 'doctype html'

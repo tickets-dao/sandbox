@@ -62,4 +62,4 @@ then
     find "$DASHBOARD" -type f -name "*.json" -exec md5sum '{}' \; > "$MD5SUM"
 fi
 
-timeout -s 9 1 wget -O - http://localhost:3000/metrics | grep -E 'HELP'
+wget -T 1 -O - http://localhost:3000/metrics | grep -E 'HELP'
