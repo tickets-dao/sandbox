@@ -146,7 +146,7 @@ _tool_ibs() { # return asn1 data offset by [private_key_pem_file]
 
 _tool_address() { # generate address (base58check->sha256->pubkey) by [private_key_pem_file]
     ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
-    openssl pkey -in "$1" -pubout -outform DER "$1" | \
+    openssl pkey -in "$1" -pubout -outform DER | \
         dd ibs="$ibs" skip=1 | \
         openssl dgst -sha256 -binary | \
         base58 -c
