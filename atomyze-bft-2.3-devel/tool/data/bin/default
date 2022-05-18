@@ -131,10 +131,8 @@ _tool_der_public_by_private() { # generate der public data by [private_key_pem_f
 }
 
 _tool_ibs() { # return asn1 data offset by [private_key_pem_file]
-    _tool_der_public_by_private "$1" | openssl asn1parse -inform DER | \
-        grep 'BIT STRING' | \
-        tr -d " " | cut -d ':' -f 1 | \
-        grep -E "^[0-9]+$"
+    # magic bit offset for ec keys
+    openssl ec -check -in "$1" &>/dev/null && echo "26" || false
 }
 
 _tool_wallet() { # generate wallet (base58check->sha256->pubkey) by [private_key_pem_file]
