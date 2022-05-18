@@ -126,18 +126,27 @@ _expose_by_hostname() { # return ports that exposed from compose file by [hostna
     grep -m 1 "^$search" "$ENV" | cut -d "=" -f 2 | cut -d ":" -f 1
 }
 
-_tool_der_public_by_private() { # generate der public data by [private_key_pem_file]
-    openssl ec -in "$1" -pubout | openssl ec -pubin -outform DER
-}
-
+# table of data offsets in the public key by key type
 _tool_ibs() { # return asn1 data offset by [private_key_pem_file]
-    # magic bit offset for ec keys
-    openssl ec -check -in "$1" &>/dev/null && echo "26" || false
+    text="$(openssl pkey -in "$1" -text)"
+    if echo "$text" | grep -q "ED25519"
+    then
+        echo "12"
+    elif echo "$text" | grep -q "P-256"
+    then
+        echo "26"
+    elif echo "$text" | grep -q "RSA Private-Key"
+    then
+        echo "24"
+    else
+        echo "$text"
+        false
+    fi
 }
 
-_tool_wallet() { # generate wallet (base58check->sha256->pubkey) by [private_key_pem_file]
+_tool_address() { # generate address (base58check->sha256->pubkey) by [private_key_pem_file]
     ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
-    _tool_der_public_by_private "$1" | \
+    openssl pkey -in "$1" -pubout -outform DER "$1" | \
         dd ibs="$ibs" skip=1 | \
         openssl dgst -sha256 -binary | \
         base58 -c
@@ -146,7 +155,7 @@ _tool_wallet() { # generate wallet (base58check->sha256->pubkey) by [private_key
 
 _tool_ski() { # generate SKI by [private_key_pem_file]
     ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
-    _tool_der_public_by_private "$1" | \
+    openssl pkey -in "$1" -pubout -outform DER | \
         dd ibs="$ibs" skip=1 | \
         openssl dgst -sha256 | \
         cut -d ' ' -f2
