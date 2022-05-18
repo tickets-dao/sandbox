@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="2.1.0"
+VERSION="2.1.1"
 DATA="/data"
 STATE="/state"
 STATE_HASH="$STATE/.hash"
@@ -126,38 +126,33 @@ _expose_by_hostname() { # return ports that exposed from compose file by [hostna
     grep -m 1 "^$search" "$ENV" | cut -d "=" -f 2 | cut -d ":" -f 1
 }
 
-_tool_public_by_private() { # generate der public data by [private_key_pem_file] 
-    local public_key
-    public_key="$(openssl ec -in "$1" -pubout 2>/dev/null )" || \
-        _err "failed export public key"
-    der="$(echo -n "$public_key" | openssl ec -pubin -outform DER 2>/dev/null)" || \
-         _err "failed convert to der"
-    echo "$der"
+_tool_der_public_by_private() { # generate der public data by [private_key_pem_file]
+    openssl ec -in "$1" -pubout | openssl ec -pubin -outform DER
 }
 
-_tool_ibs() { # return asn1 data offset by [der_public_data]
-    echo "$1" | openssl asn1parse -inform DER -in - | grep 'BIT STRING' | \
-        tr -d " " | cut -d ':' -f 1
+_tool_ibs() { # return asn1 data offset by [private_key_pem_file]
+    _tool_public_by_private "$1" | openssl asn1parse -inform DER | \
+        grep 'BIT STRING' | \
+        tr -d " " | cut -d ':' -f 1 | \
+        grep -E "^[0-9]+$"
 }
 
 _tool_wallet() { # generate wallet (base58check->sha256->pubkey) by [private_key_pem_file]
-    der="$(_tool_public_by_private "$1")"
-    ibs="$(_ibs "$der")"
-    echo "$der" | \
-        dd ibs="$ibs" skip=1 2>/dev/null | \
-        openssl dgst -sha256 -binary 2>/dev/null | \
+    ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
+    _tool_der_public_by_private "$1" | \
+        dd ibs="$ibs" skip=1 | \
+        openssl dgst -sha256 -binary | \
         base58 -c
     echo
-} 2>/dev/null
+} 2> /dev/null
 
 _tool_ski() { # generate SKI by [private_key_pem_file]
-    der="$(_tool_public_by_private "$1")"
-    ibs="$(_tool_ibs_by_der_public_key_data "$der")"
-    echo "$der" | \
-        dd ibs="$ibs" skip=1 2>/dev/null | \
-        openssl dgst -sha256 2>/dev/null | \
+    ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
+    _tool_der_public_by_private "$1" | \
+        dd ibs="$ibs" skip=1 | \
+        openssl dgst -sha256 | \
         cut -d ' ' -f2
-} 2>/dev/null
+} 2> /dev/null
 
 _robot_state_dirs() { # shows robot service state directory
     find "$STATE" -type d -name "test-robot*" -mindepth 1 -maxdepth 1
@@ -166,7 +161,6 @@ _robot_state_dirs() { # shows robot service state directory
 _observer_state_dirs() { # shows observer services state directories
     find "$STATE" -type d -name "test-observer*" -mindepth 1 -maxdepth 1
 }
-
 
 _info "$0"
 cd "$WORK" || _err "failed to set work directory"
