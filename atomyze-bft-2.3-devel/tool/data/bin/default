@@ -147,11 +147,18 @@ _tool_ibs() { # return asn1 data offset by [private_key_pem_file]
     fi
 }
 
+_tool_private_and_public_keys_base58check() { # generate atomyze specific key bundle base64 encode [private_key_pem_file]
+    {
+        openssl pkey -in "$1" -outform DER | dd ibs=16 skip=1
+        openssl pkey -in "$1" -outform DER -pubout | dd ibs=12 skip=1
+    } | base58 -c
+    echo
+} 2> /dev/null
+
 _tool_private_key_base58check() { # generate valid private key in base64 encode [private_key_pem_file]
     ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
-    openssl pkey -in "$1" -pubout -outform DER | \
+    openssl pkey -in "$1" -outform DER | \
         dd ibs="$ibs" skip=1 | \
-        openssl dgst -sha256 -binary | \
         base58 -c
     echo
 } 2> /dev/null
