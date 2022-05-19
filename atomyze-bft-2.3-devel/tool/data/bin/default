@@ -129,7 +129,10 @@ _expose_by_hostname() { # return ports that exposed from compose file by [hostna
 # table of data offsets in the public key by key type
 _tool_ibs() { # return asn1 data offset by [private_key_pem_file]
     text="$(openssl pkey -in "$1" -text)"
-    if echo "$text" | grep -q "ED25519"
+    if echo "$text" | grep -q "ED25519 Private-Key"
+    then
+        echo "16"
+    elif echo "$text" | grep -q "ED25519"
     then
         echo "12"
     elif echo "$text" | grep -q "P-256"
@@ -143,6 +146,24 @@ _tool_ibs() { # return asn1 data offset by [private_key_pem_file]
         false
     fi
 }
+
+_tool_private_key_base58check() { # generate valid private key in base64 encode [private_key_pem_file]
+    ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
+    openssl pkey -in "$1" -pubout -outform DER | \
+        dd ibs="$ibs" skip=1 | \
+        openssl dgst -sha256 -binary | \
+        base58 -c
+    echo
+} 2> /dev/null
+
+_tool_validator() { # generate encoded public key (base58->pubkey) by [private_key_pem_file]
+    ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
+    openssl pkey -in "$1" -pubout -outform DER | \
+        dd ibs="$ibs" skip=1 | \
+        openssl dgst -sha256 -binary | \
+        base58
+    echo
+} 2> /dev/null
 
 _tool_address() { # generate address (base58check->sha256->pubkey) by [private_key_pem_file]
     ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
