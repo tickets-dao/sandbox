@@ -4,7 +4,7 @@
 
 help() {
 	echo "
-Usage: $0 [namespace<private|public>] [channel] [chaincode] [ctor] [extra args]
+Usage: $0 [namespace<private|public>] [channel] [chaincode] [ctor] <extra args> <peer>
 
 Invoke a chaincode in selected namespace.
 
@@ -22,10 +22,10 @@ channel="$2"
 chaincode="$3"
 ctor="$4"
 extra="$5"
+peer="$6"
 
 configtx="$CHANNEL_STATE/$namespace/$channel/configtx.yaml"
-
-peer=$(_configtx_peer_fqdn "$configtx" "1")
+[ -z "$peer" ] && peer=$(_configtx_peer_fqdn "$configtx" "1")
 org="$(_org_by_hostname "$peer")"
 orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
 
