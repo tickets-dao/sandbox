@@ -164,18 +164,16 @@ _tool_private_key_base58check() { # generate valid private key in base64 encode 
 } 2> /dev/null
 
 _tool_validator() { # generate encoded public key (base58->pubkey) by [private_key_pem_file]
-    ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
     openssl pkey -in "$1" -pubout -outform DER | \
-        dd ibs="$ibs" skip=1 | \
+        dd ibs="12" skip=1 | \
         openssl dgst -sha3-256 -binary | \
         base58
     echo
 } 2> /dev/null
 
-_tool_address() { # generate atomyze specific address (base58check->sha256->private + pubkey) by [private_key_pem_file]
-    ibs="$(_tool_ibs "$1")" || _err "failed to get offset"
+_tool_address() { # generate atomyze specific address (base58check->sha256->pubkey) by [private_key_pem_file]
     openssl pkey -in "$1" -pubout -outform DER | \
-        dd ibs="$ibs" skip=1 | \
+        dd ibs="12" skip=1 | \
         openssl dgst -sha3-256 -binary | \
         base58 -c
     echo
