@@ -1717,7 +1717,9 @@
     "refresh": "",
     "schemaVersion": 35,
     "style": "dark",
-    "tags": [],
+    "tags": [
+      "atomyze"
+    ],
     "templating": {
       "list": [
         {
@@ -1778,7 +1780,7 @@
       ]
     },
     "timezone": "",
-    "title": "HLF",
+    "title": "hlf",
     "uid": "bT7iYOhnk",
     "version": 3,
     "weekStart": ""

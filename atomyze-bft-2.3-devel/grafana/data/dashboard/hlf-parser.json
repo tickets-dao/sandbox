@@ -733,7 +733,7 @@
     "schemaVersion": 30,
     "style": "dark",
     "tags": [
-      "atomyze"
+      "core"
     ],
     "templating": {
       "list": [
@@ -768,7 +768,7 @@
     },
     "timepicker": {},
     "timezone": "",
-    "title": "HLFParser",
+    "title": "hlf-parser",
     "uid": "dUATHOh7z",
     "version": 1
   }
