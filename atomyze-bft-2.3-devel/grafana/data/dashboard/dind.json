@@ -936,7 +936,7 @@
               "type": "prometheus"
             },
             "exemplar": true,
-            "expr": "sum(rate(process_cpu_seconds_total[$__interval])) * 100",
+            "expr": "sum(rate(process_cpu_seconds_total{instance=\"$instance\"}[$__interval])) * 100",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -2230,7 +2230,9 @@
     "refresh": "5s",
     "schemaVersion": 35,
     "style": "dark",
-    "tags": [],
+    "tags": [
+      "core"
+    ],
     "templating": {
       "list": [
         {
@@ -2264,7 +2266,7 @@
     },
     "timepicker": {},
     "timezone": "",
-    "title": "DIND",
+    "title": "dind",
     "uid": "2xHOZwQnk",
     "version": 1,
     "weekStart": ""
