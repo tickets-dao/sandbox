@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="2.1.1"
+VERSION="3.2.2"
 DATA="/data"
 STATE="/state"
 STATE_HASH="$STATE/.hash"
@@ -72,6 +72,15 @@ _configtx_peer_fqdn() { # shows orderer fqdns and limit [999] output hosts
     local limit
     [ -z "$2" ] && limit="999" || limit="$2"
     grep -E "^# peer " "$1" | cut -d " " -f 3 | head -n "$limit"
+}
+
+_configtx_anchor_peer_by_org() { # list anchor peers from [configtx] by [org] limit [number]
+    local limit
+    [ -z "$3" ] && limit="999" || limit="$3"
+    sed -n '/- &'$2'/,/^$/p' "$1" | \
+        sed -n '/AnchorPeers:/,/^$/p' | \
+        grep "Host: " | tr -d ' ' | cut -d ':' -f 2 | \
+        head -n "$limit"
 }
 
 _org_by_hostname() { # return organisation by [hostname] 

@@ -9,6 +9,7 @@ process_channel_dir() {
 	channel="${dir##*/}"
 	namespace="${dir%/*}"
 	namespace="${namespace##*/}"
+
 	if [ -e "$dir/configtx.yaml" ]
 	then
 		src="$dir/configtx.yaml"
@@ -44,7 +45,7 @@ process_channel_dir() {
 		_copy "$src" "$dst" 
 	else
 		rm -vf "$dst"
-		_err "failed generate genesis '$src'"
+		_err "failed generate transaction '$src'"
 	fi
 }
 
