@@ -1,8 +1,0 @@
-# Fabric specific configuration for local development
-
-export EEP_PEER_001_ORG0=localhost:8001
-export EEP_PEER_002_ORG0=localhost:8002
-export EEP_PEER_001_ORG1=localhost:8101
-export EEP_PEER_002_ORG1=localhost:8102
-export EEP_PEER_001_ORG2=localhost:8201
-export EEP_PEER_002_ORG2=localhost:8202

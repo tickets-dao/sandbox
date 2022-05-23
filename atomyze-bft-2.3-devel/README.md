@@ -137,19 +137,13 @@ docker-compose -f l2.yml -f docker-compose.yml up
 
 ### Local development
 
-For local development e.g. robot or observer you need override fabric specific gossip variables:
-
-```
-. ./env-local-development && docker-compose up
-```
-
-Or you can put your custom environment variables files instead of **env-local-development**
+Or you can put your custom environment variables files
 
 ```
 . ./my-custom-development-variables && docker-compose up
 ```
 
-Than change to a stub image of service that you develop local (on your host system) for example robot
+Change to a stub image of service that you develop local (on your host system) for example robot
 
 ```
 export IMG_ROBOT=alpine:3
@@ -158,7 +152,7 @@ export IMG_ROBOT=alpine:3
 Full example is: 
 
 ```
-export IMG_ROBOT=alpine:3 && . ./env-local-development && docker-compose up
+export IMG_ROBOT=alpine:3 && docker-compose up
 ```
 
 Or fill free to setup your custom development settings file

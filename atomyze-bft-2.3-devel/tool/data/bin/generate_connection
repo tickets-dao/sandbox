@@ -119,9 +119,22 @@ entityMatchers:
       mappedHost: $orderer
 "
 	done
+
+	echo -n "
+  peer:"
+
+	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
+	do
+	echo -n "
+    - pattern: $peer
+      urlSubstitutionExp: $SANS:$(_expose_by_hostname "$peer")
+      sslTargetOverrideUrlSubstitutionExp: $SANS
+      mappedHost: $peer
+"
+	done
 }
 
-peers_section_internal() {
+peers_section() {
 	echo -n "
 peers:"
 	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
@@ -135,19 +148,19 @@ peers:"
 	done
 }
 
-peers_section_external() {
-	echo -n "
-peers:"
-	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
-	do
-		echo -n "
-  $peer:
-    url: grpcs://$SANS:$(_expose_by_hostname "$peer")
-    tlsCACerts:
-      path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
-"
-	done
-}
+# peers_section_external() {
+# 	echo -n "
+# peers:"
+# 	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
+# 	do
+# 		echo -n "
+#   $peer:
+#     url: grpcs://$SANS:$(_expose_by_hostname "$peer")
+#     tlsCACerts:
+#       path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
+# "
+# 	done
+# }
 
 process_state_namespace() {
 	local src="$1"
@@ -190,7 +203,7 @@ process_state_namespace() {
 	echo -n "$(header)
 $(organizations_section)
 $(orderers_section_internal "$connection_int_ca_dir")
-$(peers_section_internal "$connection_int_ca_dir")
+$(peers_section "$connection_int_ca_dir")
 " > "$CONNECTION_TMP"
 
 	if ! _equal "$CONNECTION_TMP" "$connection_int_file"
@@ -211,7 +224,7 @@ $(peers_section_internal "$connection_int_ca_dir")
 $(organizations_section)
 $(orderers_section_external "$EXT$connection_ext_ca_dir")
 $(orderers_section_entity_matchers)
-$(peers_section_external "$EXT$connection_ext_ca_dir")
+$(peers_section "$EXT$connection_ext_ca_dir")
 " > "$CONNECTION_TMP"
 
 	if ! _equal "$CONNECTION_TMP" "$connection_ext_file"
