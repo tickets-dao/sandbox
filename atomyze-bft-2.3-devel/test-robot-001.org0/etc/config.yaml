@@ -13,7 +13,6 @@ serverPort: 8080
 # Fabric
 profilePath: /state/connection/public/org0/User1@org0/connection.yaml
 userName: User1 # Fabric user
-orgName: org0 # Fabric org
 useSmartBFT: true # Use SmartBFT consensus algorithm or Raft consensus algorithm
 
 # Block parser configuration
