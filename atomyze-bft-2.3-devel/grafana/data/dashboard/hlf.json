@@ -618,7 +618,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(broadcast_validate_duration_count{project=\"$project\", instance=\"$instance\"})",
+            "expr": "rate(broadcast_validate_duration_count{instance=\"$instance\"}[$__interval])",
             "instant": false,
             "interval": "",
             "intervalFactor": 2,
@@ -703,7 +703,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(ledger_transaction_count{project=\"$project\",instance=\"$instance\",validation_code=\"VALID\"})",
+            "expr": "rate(ledger_transaction_count{instance=\"$instance\"}[$__interval])",
             "interval": "",
             "legendFormat": "{{channel}}",
             "refId": "A"
