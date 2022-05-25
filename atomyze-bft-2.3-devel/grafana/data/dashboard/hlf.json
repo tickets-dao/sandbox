@@ -618,7 +618,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(broadcast_validate_duration_count{instance=\"$instance\"}[$__interval])",
+            "expr": "rate(broadcast_validate_duration_count{instance=~\".*.orderer.*\"}[$__interval])",
             "instant": false,
             "interval": "",
             "intervalFactor": 2,
@@ -703,8 +703,9 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(ledger_transaction_count{instance=\"$instance\"}[$__interval])",
+            "expr": "rate(ledger_transaction_count{instance=~\".*.peer.*\"}[$__interval])",
             "interval": "",
+            "intervalFactor": 2,
             "legendFormat": "{{channel}}",
             "refId": "A"
           }
@@ -1728,7 +1729,7 @@
             "text": "test-orderer-002.org0:8080",
             "value": "test-orderer-002.org0:8080"
           },
-          "definition": "label_values(instance)",
+          "definition": "label_values({instance=~\".*.orderer.*|.*.peer.*\"}, instance)",
           "description": "List of available instances",
           "hide": 0,
           "includeAll": false,
@@ -1737,7 +1738,7 @@
           "name": "instance",
           "options": [],
           "query": {
-            "query": "label_values(instance)",
+            "query": "label_values({instance=~\".*.orderer.*|.*.peer.*\"}, instance)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 1,
