@@ -9,10 +9,10 @@
     "slug": "hlf",
     "url": "/d/bT7iYOhnk/hlf",
     "expires": "0001-01-01T00:00:00Z",
-    "created": "2022-04-26T09:50:12Z",
-    "updated": "2022-05-12T11:37:34Z",
+    "created": "2022-05-26T11:50:24Z",
+    "updated": "2022-05-26T12:27:13Z",
     "updatedBy": "admin",
-    "createdBy": "admin",
+    "createdBy": "Anonymous",
     "version": 3,
     "hasAcl": false,
     "isFolder": false,
@@ -49,7 +49,7 @@
     "gnetId": 10716,
     "graphTooltip": 0,
     "id": null,
-    "iteration": 1652355442963,
+    "iteration": 1653565849046,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -210,6 +210,9 @@
         "type": "stat"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "Number of transactions processed.",
         "fieldConfig": {
           "defaults": {
@@ -247,7 +250,7 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 4,
+          "w": 6,
           "x": 8,
           "y": 1
         },
@@ -325,8 +328,8 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 4,
-          "x": 16,
+          "w": 5,
+          "x": 14,
           "y": 1
         },
         "id": 19,
@@ -404,8 +407,8 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 4,
-          "x": 20,
+          "w": 5,
+          "x": 19,
           "y": 1
         },
         "id": 10,
@@ -452,7 +455,7 @@
         "fillGradient": 0,
         "gridPos": {
           "h": 8,
-          "w": 12,
+          "w": 24,
           "x": 0,
           "y": 5
         },
@@ -545,6 +548,9 @@
         "type": "row"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -597,7 +603,7 @@
         },
         "gridPos": {
           "h": 8,
-          "w": 12,
+          "w": 24,
           "x": 0,
           "y": 14
         },
@@ -617,100 +623,33 @@
         },
         "targets": [
           {
+            "datasource": {
+              "type": "prometheus"
+            },
             "exemplar": true,
-            "expr": "rate(broadcast_validate_duration_count{instance=~\".*.orderer.*\"}[$__interval])",
+            "expr": "sum(rate(broadcast_validate_duration_count{instance=\"$instance\"}[$__interval])) by (channel)",
+            "hide": false,
             "instant": false,
             "interval": "",
             "intervalFactor": 2,
             "legendFormat": "{{channel}}",
             "refId": "A"
-          }
-        ],
-        "title": "Orderer",
-        "type": "timeseries"
-      },
-      {
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "drawStyle": "line",
-              "fillOpacity": 0,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "lineInterpolation": "linear",
-              "lineWidth": 2,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
           },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 12,
-          "x": 12,
-          "y": 14
-        },
-        "id": 43,
-        "options": {
-          "legend": {
-            "calcs": [
-              "last"
-            ],
-            "displayMode": "list",
-            "placement": "right"
-          },
-          "tooltip": {
-            "mode": "single",
-            "sort": "none"
-          }
-        },
-        "targets": [
           {
+            "datasource": {
+              "type": "prometheus"
+            },
             "exemplar": true,
-            "expr": "rate(ledger_transaction_count{instance=~\".*.peer.*\"}[$__interval])",
+            "expr": "sum(rate(ledger_transaction_count{instance=\"$instance\",validation_code=\"VALID\"}[$__interval])) by (channel)",
+            "hide": false,
+            "instant": false,
             "interval": "",
             "intervalFactor": 2,
             "legendFormat": "{{channel}}",
-            "refId": "A"
+            "refId": "B"
           }
         ],
-        "title": "Peer",
+        "title": "TPS $instance",
         "type": "timeseries"
       },
       {
@@ -731,6 +670,9 @@
         "bars": false,
         "dashLength": 10,
         "dashes": false,
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "go_memstats_alloc_bytes",
         "fieldConfig": {
           "defaults": {
@@ -825,6 +767,9 @@
         "bars": false,
         "dashLength": 10,
         "dashes": false,
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "go_memstats_alloc_bytes",
         "fill": 1,
         "fillGradient": 0,
@@ -911,6 +856,9 @@
         "bars": true,
         "dashLength": 10,
         "dashes": false,
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "go_gc_duration_seconds",
         "fill": 1,
         "fillGradient": 0,
@@ -1270,6 +1218,9 @@
       },
       {
         "columns": [],
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "The number of transactions processed.",
         "fontSize": "100%",
         "gridPos": {
@@ -1715,19 +1666,19 @@
         }
       }
     ],
-    "refresh": "",
+    "refresh": "1m",
     "schemaVersion": 35,
     "style": "dark",
     "tags": [
-      "atomyze"
+      "core"
     ],
     "templating": {
       "list": [
         {
           "current": {
             "selected": true,
-            "text": "test-orderer-002.org0:8080",
-            "value": "test-orderer-002.org0:8080"
+            "text": "test-orderer-001.org0:8080",
+            "value": "test-orderer-001.org0:8080"
           },
           "definition": "label_values({instance=~\".*.orderer.*|.*.peer.*\"}, instance)",
           "description": "List of available instances",
