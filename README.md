@@ -13,7 +13,7 @@ Sandboxes for atomyze CORE products
 ## Description
 
 Collection of environments for local development and infrastructure development.
-The environments replicate real-world environments as closely as possible and are designed for chaos testing, integration testing, and local development.ы
+The environments replicate real-world environments as closely as possible and are designed for chaos testing, integration testing, and local development.
 
 * *-devel - already to use local develop and integration test environment
 * *-infra - for ansible deploy and local infrastructure development
