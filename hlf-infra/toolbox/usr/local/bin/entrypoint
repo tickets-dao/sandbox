@@ -1,0 +1,12 @@
+#!/bin/sh
+
+for dir in facts logs retry-files tmp vault
+do
+	mkdir -vp "/ansible/main/$dir"
+done
+
+while true
+do
+	date
+	sleep 30
+done

@@ -24,8 +24,7 @@ The environments replicate real-world environments as closely as possible and ar
 * [atomyze-bft-2.4-devel](atomyze-bft-2.4-devel/README.md)
 * [atomyze-raft-2.3-devel](atomyze-raft-2.3-devel/README.md)
 * [atomyze-raft-2.4-devel](atomyze-raft-2.4-devel/README.md)
-* [cicd-cluster-infra](cicd-cluster-infra/README.md)
-* [hlf-cluster-infra](hlf-cluster-infra/README.md)
+* [hlf-infra](hlf-infra/README.md)
 
 ## Links
 

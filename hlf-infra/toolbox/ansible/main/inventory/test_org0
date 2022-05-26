@@ -1,0 +1,27 @@
+[test_org0:children]
+	test_org0_bastion
+	test_org0_orderer
+	test_org0_peer
+	test_org0_tool
+
+[test_org0_bastion]
+	test-bastion-001.org0
+
+[test_org0_orderer:children]
+	test_org0_orderer_public
+	test_org0_orderer_private
+
+[test_org0_orderer_public]
+	test-orderer-001.org0
+	test-orderer-002.org0
+
+[test_org0_orderer_private]
+	test-orderer-011.org0
+	test-orderer-012.org0
+
+[test_org0_peer]
+	test-peer-001.org0
+	test-peer-002.org0
+
+[test_org0_tool]
+	test-tool-001.org0

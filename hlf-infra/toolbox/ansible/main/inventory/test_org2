@@ -1,0 +1,14 @@
+[test_org2:children]
+	test_org2_bastion
+	test_org2_peer
+	test_org2_tool
+
+[test_org2_bastion]
+	test-bastion-001.org2
+
+[test_org2_peer]
+	test-peer-001.org2
+	test-peer-002.org2
+
+[test_org2_tool]
+	test-tool-001.org2
