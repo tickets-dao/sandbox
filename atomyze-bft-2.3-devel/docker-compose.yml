@@ -46,8 +46,8 @@ services:
     restart: always
     privileged: true
     volumes:
-      - ./dind/data:/data:rw
-      - ./dind/etc/docker/daemon.json:/etc/docker/daemon.json
+      - ${ORIGIN}/dind/data:/data:rw
+      - ${ORIGIN}/dind/etc/docker/daemon.json:/etc/docker/daemon.json
       - docker:/run
     <<: *default-healthcheck
 
@@ -69,8 +69,8 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - prometheus:/prometheus
-      - ./prometheus/data:/data
-      - ./prometheus/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ${ORIGIN}/prometheus/data:/data
+      - ${ORIGIN}/prometheus/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     <<: *default-healthcheck
 
 ###############################################################################
@@ -83,8 +83,8 @@ services:
     ports:
         - "${IP}:${EXP_GRAFANA}"
     volumes:
-      - ./grafana/data:/data
-      - ./grafana/etc/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ${ORIGIN}/grafana/data:/data
+      - ${ORIGIN}/grafana/etc/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana:/var/lib/grafana
     <<: *default-healthcheck
 
@@ -112,7 +112,7 @@ services:
     ports:
       - "${IP}:${EXP_POSTGRES}"
     volumes:
-      - ./postgres/data:/data:rw
+      - ${ORIGIN}/postgres/data:/data:rw
       - postgres:/var/lib/postgresql/data:rw
     <<: *default-healthcheck
 
@@ -136,6 +136,7 @@ services:
       - IP
       - SLEEP_STATE
       - SLEEP_ERROR
+      - SMARTBFT
       - HOSTPWD=$PWD
       - FABRIC_LOGGING_SPEC=${TOOL_LOG_LEVEL}
       - GOPATH=/opt/gopath
@@ -146,8 +147,8 @@ services:
     volumes:
       - tool:/state
       - .env:/state/.env
-      - ./tool/data:/data
-      - ./tool/data/bin:/data/bin:ro
+      - ${ORIGIN_DATA}/tool/data:/data
+      - ${ORIGIN}/tool/data/bin:/data/bin:ro
       - docker:/docker
       - grafana:/state/grafana
       - prometheus:/state/prometheus
@@ -181,7 +182,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org0
     volumes:
-      - ./test-orderer-001.org0/data:/data
+      - ${ORIGIN}/test-orderer-001.org0/data:/data
       - test-orderer-001.org0:/state
     ports:
       - "${IP}:${EXP_ORDERER_001_ORG0}"
@@ -196,7 +197,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org0
     volumes:
-      - ./test-orderer-002.org0/data:/data
+      - ${ORIGIN}/test-orderer-002.org0/data:/data
       - test-orderer-002.org0:/state
     ports:
       - "${IP}:${EXP_ORDERER_002_ORG0}"
@@ -211,7 +212,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org0
     volumes:
-      - ./test-orderer-011.org0/data:/data
+      - ${ORIGIN}/test-orderer-011.org0/data:/data
       - test-orderer-011.org0:/state
     ports:
       - "${IP}:${EXP_ORDERER_011_ORG0}"
@@ -226,7 +227,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org0
     volumes:
-      - ./test-orderer-012.org0/data:/data
+      - ${ORIGIN}/test-orderer-012.org0/data:/data
       - test-orderer-012.org0:/state
     ports:
       - "${IP}:${EXP_ORDERER_012_ORG0}"
@@ -241,7 +242,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org1
     volumes:
-      - ./test-orderer-001.org1/data:/data
+      - ${ORIGIN}/test-orderer-001.org1/data:/data
       - test-orderer-001.org1:/state
     ports:
       - "${IP}:${EXP_ORDERER_001_ORG1}"
@@ -256,7 +257,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org1
     volumes:
-      - ./test-orderer-002.org1/data:/data
+      - ${ORIGIN}/test-orderer-002.org1/data:/data
       - test-orderer-002.org1:/state
     ports:
       - "${IP}:${EXP_ORDERER_002_ORG1}"
@@ -271,7 +272,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org1
     volumes:
-      - ./test-orderer-011.org1/data:/data
+      - ${ORIGIN}/test-orderer-011.org1/data:/data
       - test-orderer-011.org1:/state
     ports:
       - "${IP}:${EXP_ORDERER_011_ORG1}"
@@ -286,7 +287,7 @@ services:
     environment:
       - ORDERER_GENERAL_LOCALMSPID=org1
     volumes:
-      - ./test-orderer-012.org1/data:/data
+      - ${ORIGIN}/test-orderer-012.org1/data:/data
       - test-orderer-012.org1:/state
     ports:
       - "${IP}:${EXP_ORDERER_012_ORG1}"
@@ -309,7 +310,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=test-peer-001.org0:6000
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
     volumes:
-      - ./test-peer-001.org0/data:/data:rw
+      - ${ORIGIN}/test-peer-001.org0/data:/data:rw
       - test-peer-001.org0:/state
       - docker:/docker
     ports:
@@ -332,7 +333,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=test-peer-002.org0:6000
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
     volumes:
-      - ./test-peer-002.org0/data:/data:rw
+      - ${ORIGIN}/test-peer-002.org0/data:/data:rw
       - test-peer-002.org0:/state
       - docker:/docker
     ports:
@@ -355,7 +356,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=test-peer-001.org1:6000
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
     volumes:
-      - ./test-peer-001.org1/data:/data:rw
+      - ${ORIGIN}/test-peer-001.org1/data:/data:rw
       - test-peer-001.org1:/state
       - docker:/docker
     ports:
@@ -378,7 +379,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=test-peer-002.org1:6000
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
     volumes:
-      - ./test-peer-002.org1/data:/data:rw
+      - ${ORIGIN}/test-peer-002.org1/data:/data:rw
       - test-peer-002.org1:/state
       - docker:/docker
     ports:
@@ -401,7 +402,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=test-peer-001.org2:6000
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
     volumes:
-      - ./test-peer-001.org2/data:/data:rw
+      - ${ORIGIN}/test-peer-001.org2/data:/data:rw
       - test-peer-001.org2:/state
       - docker:/docker
     ports:
@@ -424,7 +425,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=test-peer-002.org2:6000
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6000
     volumes:
-      - ./test-peer-002.org2/data:/data:rw
+      - ${ORIGIN}/test-peer-002.org2/data:/data:rw
       - test-peer-002.org2:/state
       - docker:/docker
     ports:
@@ -435,6 +436,8 @@ services:
   test-robot-001.org0:
     image: "${IMG_ROBOT}"
     restart: always
+    environment:
+      - ROBOT_USESMARTBFT=$SMARTBFT
     depends_on:
       - tool
       - test-peer-001.org0
@@ -453,8 +456,8 @@ services:
       - test-orderer-012.org1
     user: "root"
     volumes:
-      - ./test-robot-001.org0/data:/data
-      - ./test-robot-001.org0/etc/config.yaml:/etc/config.yaml:ro
+      - ${ORIGIN}/test-robot-001.org0/data:/data
+      - ${ORIGIN}/test-robot-001.org0/etc/config.yaml:/etc/config.yaml:ro
       - test-robot-001.org0:/state
     ports:
       - "${IP}:${EXP_ROBOT}"
@@ -468,7 +471,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./test-observer-hlfparser-001.org0/data:/data
+      - ${ORIGIN}/test-observer-hlfparser-001.org0/data:/data
       - test-observer-hlfparser-001.org0:/state
     ports:
       - "${IP}:${EXP_OBSERVER_HLFPARSER_HEALTH}"
@@ -483,7 +486,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./test-observer-apiservice-001.org0/data:/data
+      - ${ORIGIN}/test-observer-apiservice-001.org0/data:/data
       - test-observer-apiservice-001.org0:/state
     ports:
       - "${IP}:${EXP_OBSERVER_APISERVICE_HEALTH}"
