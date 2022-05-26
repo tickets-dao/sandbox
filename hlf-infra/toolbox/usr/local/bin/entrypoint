@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for dir in facts logs retry-files tmp vault
+for dir in facts logs retry-files tmp
 do
 	mkdir -vp "/ansible/main/$dir"
 done

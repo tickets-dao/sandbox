@@ -78,6 +78,7 @@ services:
       - ./toolbox/ansible/main/inventory:/ansible/main/inventory:ro
       - ./toolbox/ansible/main/playbooks:/ansible/main/playbooks:ro
       - ./toolbox/ansible/main/roles:/ansible/main/roles:ro
+      - ./toolbox/ansible/main/vault:/ansible/main/vault:ro
       - ./toolbox/ansible/main/ansible.cfg:/ansible/main/ansible.cfg:ro
       - toolbox--main:/ansible/main
       - toolbox--state:/state
