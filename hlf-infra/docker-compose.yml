@@ -141,7 +141,6 @@ services:
       - test-tool-001.org2--opt:/state/test-tool-001.org2--opt
       - test-tool-001.org2--run:/state/test-tool-001.org2--run
 
-
 ###############################################################################
   test-bastion-001.org0:
     image: "${IMG_BASE_SYSTEM}"

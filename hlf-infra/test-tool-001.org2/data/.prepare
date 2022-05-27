@@ -3,4 +3,4 @@
 CUSTOM_CHECK="/state/.custom_check"
 [ -r "$CUSTOM_CHECK" ] && . "$CUSTOM_CHECK"
 
-wget -T 1 -O - http://localhost:8080/metrics | grep -E 'HELP'
+wget -T 1 -t 1 -O - http://localhost:8080/metrics | grep -E 'HELP'
