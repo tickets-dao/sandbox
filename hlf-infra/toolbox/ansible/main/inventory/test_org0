@@ -1,11 +1,15 @@
 [test_org0:children]
 	test_org0_bastion
+	test_org0_ca
 	test_org0_orderer
 	test_org0_peer
 	test_org0_tool
 
 [test_org0_bastion]
 	test-bastion-001.org0
+
+[test_org0_ca]
+	test-ca-001.org0
 
 [test_org0_orderer:children]
 	test_org0_orderer_public

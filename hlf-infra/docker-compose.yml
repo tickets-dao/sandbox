@@ -25,6 +25,13 @@ volumes:
   test-bastion-001.org2--opt:
   test-bastion-001.org2--run:
   #
+  test-ca-001.org0--opt:
+  test-ca-001.org0--run:
+  test-ca-001.org1--opt:
+  test-ca-001.org1--run:
+  test-ca-001.org2--opt:
+  test-ca-001.org2--run:
+  #
   test-orderer-001.org0--opt:
   test-orderer-001.org0--run:
   test-orderer-002.org0--opt:
@@ -89,6 +96,13 @@ services:
       - test-bastion-001.org1--run:/state/test-bastion-001.org1--run
       - test-bastion-001.org2--opt:/state/test-bastion-001.org2--opt
       - test-bastion-001.org2--run:/state/test-bastion-001.org2--run
+      #
+      - test-ca-001.org0--opt:/state/test-ca-001.org0--opt
+      - test-ca-001.org0--run:/state/test-ca-001.org0--run
+      - test-ca-001.org1--opt:/state/test-ca-001.org1--opt
+      - test-ca-001.org1--run:/state/test-ca-001.org1--run
+      - test-ca-001.org2--opt:/state/test-ca-001.org2--opt
+      - test-ca-001.org2--run:/state/test-ca-001.org2--run
       #
       - test-orderer-001.org0--opt:/state/test-orderer-001.org0--opt
       - test-orderer-001.org0--run:/state/test-orderer-001.org0--run
@@ -169,6 +183,43 @@ services:
       - test-bastion-001.org2--run:/run
     ports:
       - "${IP}:${EXP_BASTION_001_ORG2}"
+    <<: *default-healthcheck
+
+###############################################################################
+  test-ca-001.org0:
+    image: "${IMG_BASE_SYSTEM}"
+    restart: always
+    hostname: test-ca-001
+    domainname: org0
+    privileged: true
+    volumes:
+      - ./test-ca-001.org0/data:/data
+      - test-ca-001.org0--opt:/opt
+      - test-ca-001.org0--run:/run
+    <<: *default-healthcheck
+
+  test-ca-001.org1:
+    image: "${IMG_BASE_SYSTEM}"
+    restart: always
+    hostname: test-ca-001
+    domainname: org1
+    privileged: true
+    volumes:
+      - ./test-ca-001.org1/data:/data
+      - test-ca-001.org1--opt:/opt
+      - test-ca-001.org1--run:/run
+    <<: *default-healthcheck
+
+  test-ca-001.org2:
+    image: "${IMG_BASE_SYSTEM}"
+    restart: always
+    hostname: test-ca-001
+    domainname: org2
+    privileged: true
+    volumes:
+      - ./test-ca-001.org2/data:/data
+      - test-ca-001.org2--opt:/opt
+      - test-ca-001.org2--run:/run
     <<: *default-healthcheck
 
 ###############################################################################
