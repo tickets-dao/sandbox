@@ -11,8 +11,9 @@ join_channel() {
 
 	_equal "$src" "$dst" && return
 	err="0"
-	for peer in $(_configtx_peer_fqdn "$configtx")
+	for peer in $(_configtx_peer_fqdn "$configtx") $(_configtx_commit_fqdn "$configtx")
 	do
+		_info "join channel '$peer'"
 		org="$(_org_by_hostname "$peer")"
 		export CORE_PEER_LOCALMSPID="$org"
 		export CORE_PEER_ID="$peer"

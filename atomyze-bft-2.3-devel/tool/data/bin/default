@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="4.1.0"
+VERSION="4.2.0"
 DATA="/data"
 STATE="/state"
 STATE_HASH="$STATE/.hash"
@@ -68,10 +68,16 @@ _configtx_orderer_fqdn() { # shows orderer fqdns and limit [999] output hosts
     _configtx_orderer_fqdn_port "$1" | cut -d ':' -f 1 | head -n "$limit"
 }
 
-_configtx_peer_fqdn() { # shows orderer fqdns and limit [999] output hosts
+_configtx_peer_fqdn() { # shows peer fqdns by [configtx] and limit [999] output hosts
     local limit
     [ -z "$2" ] && limit="999" || limit="$2"
     grep -E "^# peer " "$1" | cut -d " " -f 3 | head -n "$limit"
+}
+
+_configtx_commit_fqdn() { # shows commit peer fqdns by [configtx] and limit [999] output hosts
+    local limit
+    [ -z "$2" ] && limit="999" || limit="$2"
+    grep -E "^# commit " "$1" | cut -d " " -f 3 | head -n "$limit"
 }
 
 _configtx_anchor_peer_by_org() { # list anchor peers from [configtx] by [org] limit [number]

@@ -17,6 +17,7 @@
     - [Backup and restore](#backup-and-restore)
     - [Namespaces channels and chaincodes](#namespaces-channels-and-chaincodes)
       - [Chaincode from existing package](#chaincode-from-existing-package)
+      - [Full peer list and commit peer](#full-peer-list-and-commit-peer)
     - [Certificates and connection.yml](#certificates-and-connectionyml)
     - [Run-on](#run-on)
     - [Grafana and custom dashboards](#grafana-and-custom-dashboards)
@@ -51,6 +52,7 @@ The system additionally provides services:
 
 All chaincodes are run in isolated container inside dind(docker in docker)
 It is highly discouraged to change the **IP** variable for security reasons
+Some services use private images so additional access is required.  Otherwise you can override private services with **alipine:3**.  
 
 ## How to
 
@@ -347,6 +349,21 @@ To setup policy/initialization for chaincodes in channel use **.prepare** file o
 To setup policy/initialization for specific **example.tar.gz** place .prepare content to **example.tar.gz.prepare** file
 
 * CHAINCODE_VERSION - is taken from the package file and ignored in .prepare
+
+#### Full peer list and commit peer
+
+The full list of peers is set in configtx.yaml  
+
+It is possible to specify peers that will be added to the channel but will not contain any chaincodes (commit peer)  
+
+```
+# Helper to get full peer list
+# peer test-peer-001.org0
+# peer test-peer-001.org1
+# commit test-peer-001.org2
+
+...
+```
 
 ### Certificates and connection.yml
 
