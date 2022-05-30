@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="4.0.0"
+VERSION="4.1.0"
 DATA="/data"
 STATE="/state"
 STATE_HASH="$STATE/.hash"
@@ -102,29 +102,52 @@ _crypto_ca_by_hostname() { # returns path to ca certificate by [hostname]
     echo "$STATE/$1/tls/ca.crt"
 }
 
-_crypto_admin_cert_by_org() { # return path to Admin certificate by [org]
+_crypto_user_cert_by_org() { # return path by [org] to [user] certificate
+    local user
+    [ -z "$2" ] && user="Admin" || user="$2"
     find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
-        xargs -0rI X readlink -f "X/users/Admin@$1/tls/client.crt"
+        xargs -0rI X readlink -f "X/users/$user@$1/tls/client.crt"
 }
 
-_crypto_admin_key_by_org() { # return path to Admin key by [org]
+_crypto_user_key_by_org() { # return path by [org] to [user] key 
+    local user
+    [ -z "$2" ] && user="Admin" || user="$2"
     find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
-        xargs -0rI X readlink -f "X/users/Admin@$1/tls/client.key"
+        xargs -0rI X readlink -f "X/users/$user@$1/tls/client.key"
 }
 
-_crypto_admin_ca_by_org() { # return path to Admin ca certificat  by [org]
+_crypto_user_ca_by_org() { # return path by [org] to [user] ca certificat  
+    local user
+    [ -z "$2" ] && user="Admin" || user="$2"
     find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
-        xargs -0rI X readlink -f "X/users/Admin@$1/tls/ca.crt"
+        xargs -0rI X readlink -f "X/users/$user@$1/tls/ca.crt"
 }
 
-_crypto_admin_msp_by_org() { # return path to msp directory for Admin user by [org]
+_crypto_user_msp_by_org() { # return path to msp directory by [org] and [user]
+    local user
+    [ -z "$2" ] && user="Admin" || user="$2"
     find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
-        xargs -0rI X readlink -f "X/users/Admin@$1/msp"
+        xargs -0rI X readlink -f "X/users/$user@$1/msp"
 }
 
 _crypto_msp_by_org() { # return path to msp directory by [org] and [user]
-    find $CRYPTOMATERIAL -type d -name "$1" -print0 2>/dev/null | \
-        xargs -0rI X readlink -f "X/users/$2@$1/msp"
+    _crypto_user_msp_by_org "$1" "$2"
+}
+
+_crypto_admin_cert_by_org() { # return path to Admin certificate by [org]
+    _crypto_user_cert_by_org "$1"
+}
+
+_crypto_admin_key_by_org() { # return path to Admin key by [org]
+    _crypto_user_key_by_org "$1"
+}
+
+_crypto_admin_ca_by_org() { # return path to Admin ca certificat  by [org]
+    _crypto_user_ca_by_org "$1"
+}
+
+_crypto_admin_msp_by_org() { # return path to msp directory for Admin user by [org]
+    _crypto_user_msp_by_org "$1"
 }
 
 _expose_by_hostname() { # return ports that exposed from compose file by [hostname]

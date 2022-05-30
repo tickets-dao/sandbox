@@ -4,7 +4,7 @@
 
 help() {
 	echo "
-Usage: $0 [namespace<private|public>] [channel] [chaincode] [ctor] <extra args> <org>
+Usage: $0 [namespace<private|public>] [channel] [chaincode] [ctor] <extra args> <org> <user>
 
 Invoke a chaincode in selected namespace.
 
@@ -23,16 +23,19 @@ chaincode="$3"
 ctor="$4"
 extra="$5"
 custom_org="$6"
+custom_user="$7"
 
 configtx="$CHANNEL_STATE/$namespace/$channel/configtx.yaml"
 peer=$(_configtx_peer_fqdn "$configtx" "1")
-org="$(_org_by_hostname "$peer")"
-[ -n "$custom_org" ] && org="$custom_org"
+
+[ -n "$custom_org" ] && org="$custom_org" || org="$(_org_by_hostname "$peer")"
+[ -n "$custom_user" ] && user="$custom_user" || user="Admin"
+
 orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
 
 export CORE_PEER_LOCALMSPID="$org"
-export CORE_PEER_MSPCONFIGPATH="$(_crypto_admin_msp_by_org "$org")"
-export CORE_PEER_TLS_ROOTCERT_FILE="$(_crypto_admin_ca_by_org "$org")"
+export CORE_PEER_MSPCONFIGPATH="$(_crypto_user_msp_by_org "$org" "$user")"
+export CORE_PEER_TLS_ROOTCERT_FILE="$(_crypto_user_ca_by_org "$org" "$user")"
 export CORE_PEER_TLS_ENABLED="true"
 
 INVOKE="peer chaincode invoke \
@@ -49,4 +52,5 @@ do
 --tlsRootCertFiles '$(_crypto_ca_by_hostname "$peer")'"
 done
 
-echo "$INVOKE $extra" | sh
+env | grep "CORE_PEER"
+echo "$INVOKE $extra" | sh -x
