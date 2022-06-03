@@ -136,7 +136,11 @@ entityMatchers:
 
 peers_section() {
 	echo -n "
-peers:"
+peers:
+  _default:
+    grpcOptions:
+      keep-alive-time: 65s
+"
 	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
 	do
 	echo -n "
@@ -148,25 +152,10 @@ peers:"
 	done
 }
 
-# peers_section_external() {
-# 	echo -n "
-# peers:"
-# 	for peer in $(_configtx_peer_fqdn "$CONFIGTX")
-# 	do
-# 		echo -n "
-#   $peer:
-#     url: grpcs://$SANS:$(_expose_by_hostname "$peer")
-#     tlsCACerts:
-#       path: $1/tlsca.$(_org_by_hostname "$peer")-cert.pem
-# "
-# 	done
-# }
-
 process_state_namespace() {
 	local src="$1"
 	local configtx="$2"
 	local org="$3"
-	local user="$4"
 	local namespace="${src##*/}"
 	local msp="$(_crypto_msp_by_org "$org" "$user")"
 	local cryptoconfig="${msp%/*}"
