@@ -8,7 +8,7 @@ do
     
     md5sum -c "$STATE_HASH" 2>&1 >/dev/null || break
 
-    find "$DATA" ! -name "backup.tar.gz" > "$STATE_FILE_TMP"
+    find "$DATA" ! -path "$DATA/out/*" > "$STATE_FILE_TMP"
     if ! _equal "$STATE_FILE_TMP" "$STATE_FILE"
     then
         diff "$STATE_FILE_TMP" "$STATE_FILE"

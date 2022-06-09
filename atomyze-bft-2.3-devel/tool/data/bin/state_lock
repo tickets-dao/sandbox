@@ -2,6 +2,6 @@
 
 . default
 
-find "$DATA" -type f ! -name "backup.tar.gz" -exec md5sum '{}' \; > "$STATE_HASH"
-find "$DATA" ! -name "backup.tar.gz" > "$STATE_FILE"
+find "$DATA" ! -path "$DATA/out/*" -type f -exec md5sum '{}' \; > "$STATE_HASH"
+find "$DATA" ! -path "$DATA/out/*" > "$STATE_FILE"
 _info "consistent state $(md5sum "$STATE_HASH")"
