@@ -9,11 +9,11 @@
     "slug": "robot-dashboard",
     "url": "/d/7ccf9pl7z/robot-dashboard",
     "expires": "0001-01-01T00:00:00Z",
-    "created": "2022-06-02T15:22:43Z",
-    "updated": "2022-06-09T04:32:27Z",
+    "created": "2022-06-09T22:10:48Z",
+    "updated": "2022-06-09T23:29:26Z",
     "updatedBy": "admin",
     "createdBy": "Anonymous",
-    "version": 10,
+    "version": 4,
     "hasAcl": false,
     "isFolder": false,
     "folderId": 0,
@@ -47,7 +47,7 @@
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
     "id": null,
-    "iteration": 1654715529124,
+    "iteration": 1654817264617,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -65,6 +65,9 @@
         "type": "row"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -233,6 +236,9 @@
         "type": "table"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": " ledger's block num where batch was committed. Takes after every executeBatch",
         "fieldConfig": {
           "defaults": {
@@ -295,6 +301,9 @@
         "type": "stat"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -424,6 +433,9 @@
         "type": "stat"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -488,6 +500,9 @@
         "type": "stat"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "",
         "fieldConfig": {
           "defaults": {
@@ -663,6 +678,9 @@
         "type": "timeseries"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "",
         "fieldConfig": {
           "defaults": {
@@ -856,6 +874,9 @@
         "type": "row"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -942,6 +963,9 @@
         "type": "timeseries"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1027,6 +1051,9 @@
         "type": "timeseries"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1112,6 +1139,9 @@
         "type": "timeseries"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1275,7 +1305,7 @@
               "type": "prometheus"
             },
             "exemplar": true,
-            "expr": "histogram_quantile(0.95, sum(rate(robot_batch_execute_duration_seconds_bucket{instance=~\"$instance\"}[$__rate_interval])) by (le, robot))",
+            "expr": "histogram_quantile(0.95, robot_batch_execute_duration_seconds_bucket{instance=~\"$instance\"})",
             "interval": "1s",
             "intervalFactor": 10,
             "legendFormat": "{{ robot }}",
@@ -1362,7 +1392,7 @@
               "type": "prometheus"
             },
             "exemplar": true,
-            "expr": "histogram_quantile(0.95, sum(rate(batch_size_bytes_bucket{instance=~\"$instance\"}[$__rate_interval])) by (le, robot))",
+            "expr": "histogram_quantile(0.95, robot_batch_size_bytes_bucket{instance=~\"$instance\"})",
             "hide": false,
             "interval": "",
             "intervalFactor": 1,
@@ -1374,6 +1404,9 @@
         "type": "timeseries"
       },
       {
+        "datasource": {
+          "type": "prometheus"
+        },
         "description": "Relative difference between real and assumed batch size",
         "fieldConfig": {
           "defaults": {
@@ -1535,7 +1568,7 @@
               "type": "prometheus"
             },
             "exemplar": true,
-            "expr": "histogram_quantile(0.95, sum(rate(robot_batch_tx_count_bucket{instance=~\"$instance\"}[$__rate_interval])) by (le, robot))",
+            "expr": "histogram_quantile(0.95, robot_batch_tx_count_bucket{instance=~\"$instance\"})",
             "hide": false,
             "interval": "",
             "intervalFactor": 1,
@@ -1589,7 +1622,7 @@
     "timezone": "",
     "title": "Robot Dashboard",
     "uid": "7ccf9pl7z",
-    "version": 10,
+    "version": 4,
     "weekStart": ""
   }
 }
