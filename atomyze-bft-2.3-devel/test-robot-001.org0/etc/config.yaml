@@ -54,6 +54,12 @@ defaultBatchLimits: # at least one of limits must be filled
   batchSizeLimit: 100000 # max batch size in bytes
   batchTimeoutLimit: 300ms # max waiting time before generating a batch
 
+# Robots execute options
+defaultRobotExecOpts:
+  executeTimeout: 0s            # default timeout of sending-executing a batch in the HLF (duration of batchExecute)
+  waitCommitAttempts: 3         # default number of attempts checking that a batch was committed in the HLF
+  waitCommitAttemptTimeout: 15s # default timeout of checking that a batch was committed in the HLF
+
 # Redis configuration
 redisStor:
   dbPrefix: robot # Redis db prefix
