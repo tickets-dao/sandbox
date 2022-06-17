@@ -1,6 +1,6 @@
 # logger
 logLevel: debug # values: error, warning, info, debug, trace
-logType: logrus # values: std, logrus
+logType: lr-txt # values: std, lr-txt, lr-txt-dev, lr-json, lr-json-dev
 
 # Web server port
 # Endpoints:
