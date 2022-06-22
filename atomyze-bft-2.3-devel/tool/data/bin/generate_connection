@@ -43,6 +43,34 @@ client:
     path: $MSP/signcerts
     cryptoStore:
       path: $MSP
+
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+      orderer: '300'
+
+  peer:
+    timeout:
+      response: 5s
+      connection: 3s
+      discovery:
+        greylistExpiry: 1s
+      registrationResponse: 10s
+    orderer:
+      timeout:
+        connection: 3s
+        response: 5s
+    global:
+      timeout:
+        query: 5s
+        execute: 5s
+        resmgmt: 5s
+      cache:
+        connectionIdle: 30s
+        eventServiceIdle: 2m
+        channelConfig: 60s
+        channelMembership: 10s
 "
 
 	echo -n "
