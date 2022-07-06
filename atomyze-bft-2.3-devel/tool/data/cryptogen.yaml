@@ -6,21 +6,39 @@ PeerOrgs:
       - Hostname: test-orderer-001
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-orderer-002
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-orderer-011
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-orderer-012
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-peer-001
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-peer-002
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
     Users:
       Count: 2
 
@@ -31,21 +49,39 @@ PeerOrgs:
       - Hostname: test-orderer-001
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-orderer-002
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-orderer-011
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-orderer-012
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-peer-001
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-peer-002
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
     Users:
       Count: 2
 
@@ -56,8 +92,14 @@ PeerOrgs:
       - Hostname: test-peer-001
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
       - Hostname: test-peer-002
         SANS:
           - "localhost"
+          - "127.0.0.1"
+          - "$IP"
+          - "$HOST"
     Users:
       Count: 2

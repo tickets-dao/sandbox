@@ -13,6 +13,7 @@
     - [Exposed ports](#exposed-ports)
     - [Custom tools in sandbox](#custom-tools-in-sandbox)
     - [Local development](#local-development)
+      - [Sandbox on a remote VM](#sandbox-on-a-remote-vm)
       - [Auto-apply configuration](#auto-apply-configuration)
     - [Backup and restore](#backup-and-restore)
     - [Namespaces channels and chaincodes](#namespaces-channels-and-chaincodes)
@@ -158,6 +159,16 @@ export IMG_ROBOT=alpine:3 && docker-compose up
 ```
 
 Or fill free to setup your custom development settings file
+
+#### Sandbox on a remote VM
+
+To start sandbox on remote vm, you should override variables 
+
+* IP - listen IP address
+* HOST - hostname of the remote vm that will be added to SANS
+* CUSTOMPWD - path where will be stored cryptomaterials on a client
+
+WARNING: network should be isolated because of insecure passwords
 
 #### Auto-apply configuration
 

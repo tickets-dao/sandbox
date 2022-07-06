@@ -138,6 +138,7 @@ services:
       - SLEEP_ERROR
       - SMARTBFT
       - HOSTPWD=$PWD
+      - CUSTOMPWD=$CUSTOMPWD
       - FABRIC_LOGGING_SPEC=${TOOL_LOG_LEVEL}
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix://docker/docker.sock

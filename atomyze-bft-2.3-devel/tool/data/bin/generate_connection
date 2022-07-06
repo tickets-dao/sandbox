@@ -7,7 +7,7 @@
 [ -z "$USERS" ] && USERS="Admin User1"
 [ -z "$SANS" ] && SANS="localhost"
 CP="cp -fru"
-EXT="$HOSTPWD/tool"
+[ "$CUSTOMPWD" == "auto" ] && EXT="$HOSTPWD/tool" || EXT="$CUSTOMPWD"
 CHANGED="no"
 
 # ORG=""
