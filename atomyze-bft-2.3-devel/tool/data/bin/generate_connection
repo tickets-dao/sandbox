@@ -5,7 +5,17 @@
 [ -z "$VERSION" ] && VERSION="1.0.0"
 [ -z "$LOGGING_LEVEL" ] && LOGGING_LEVEL="info"
 [ -z "$USERS" ] && USERS="Admin User1"
-[ -z "$SANS" ] && SANS="localhost"
+
+if [ "$HOST" != "localhost" ]
+then
+	SANS="$HOST"
+elif [ "$IP" != "127.0.0.1" ]
+then
+	SANS="$IP"
+else
+	SANS="localhost"
+fi
+
 CP="cp -fru"
 [ "$CUSTOMPWD" == "auto" ] && EXT="$HOSTPWD/tool" || EXT="$CUSTOMPWD"
 CHANGED="no"
