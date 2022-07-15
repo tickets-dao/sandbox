@@ -38,6 +38,8 @@ volumes:
   test-robot-001.org0:
   test-observer-hlfparser-001.org0:
   test-observer-apiservice-001.org0:
+  hlf-proxy-public:
+  hlf-proxy-private:
 
 ###############################################################################
 services:
@@ -494,4 +496,37 @@ services:
       - "${IP}:${EXP_OBSERVER_APISERVICE_HEALTH}"
       - "${IP}:${EXP_OBSERVER_APISERVICE_API}"
       - "${IP}:${EXP_OBSERVER_APISERVICE_METRIC}"
+    <<: *default-healthcheck
+
+###############################################################################
+  hlf-proxy-public:
+    image: "${IMG_HLF_PROXY}"
+    restart: unless-stopped
+    environment:
+      - HLFPROXY_LOGLEVEL=debug
+      - HLFPROXY_AUTHTOKEN=test
+      - HLFPROXY_PROFILEPATH=/state/connection/public/org0/User1@org0/connection.yaml
+    user: root
+    volumes:
+      - tool:/state
+      - hlf-proxy-public:/state/hlf-proxy
+      - ./tool/data:/data
+    ports:
+      - "${IP}:${EXP_HLF_PROXY_PUBLIC}"
+    <<: *default-healthcheck
+
+  hlf-proxy-private:
+    image: "${IMG_HLF_PROXY}"
+    restart: unless-stopped
+    environment:
+      - HLFPROXY_LOGLEVEL=debug
+      - HLFPROXY_AUTHTOKEN=test
+      - HLFPROXY_PROFILEPATH=/state/connection/private/org0/User1@org0/connection.yaml
+    user: root
+    volumes:
+      - tool:/state
+      - hlf-proxy-private:/state/hlf-proxy
+      - ./tool/data:/data
+    ports:
+      - "${IP}:${EXP_HLF_PROXY_PRIVATE}"
     <<: *default-healthcheck
