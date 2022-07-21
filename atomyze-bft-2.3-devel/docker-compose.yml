@@ -444,6 +444,7 @@ services:
       - ROBOT_USESMARTBFT=$SMARTBFT
     depends_on:
       - tool
+      - redis
       - test-peer-001.org0
       - test-peer-002.org0
       - test-peer-001.org1
