@@ -42,7 +42,7 @@ _setup_extra_packages() { # setup exta package that not included in base image
 
     if ! which "base58" 2>&1 >/dev/null 
     then
-        apk add --no-cache py3-pip=~22
+        apk add --no-cache 'py3-pip>=20'
         pip3 install base58==2.* || _err "failed to install base58"
     fi
 }
