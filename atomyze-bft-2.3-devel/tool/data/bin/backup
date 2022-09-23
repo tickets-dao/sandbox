@@ -3,7 +3,8 @@
 . default
 
 FROM="$STATE"
+KEY="$DATA/out/key.pem"
 TO="$DATA/out"
 
-tar -czvf "$TO/backup.tar.gz" "$FROM"
+tar -czvf "$TO/backup.tar.gz" "$FROM" "$KEY"
 chown -PRc "$(stat -c %u:%g "$DATA/out")" "$DATA/out"
