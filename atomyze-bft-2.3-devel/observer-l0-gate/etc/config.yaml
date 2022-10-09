@@ -1,0 +1,15 @@
+---
+logLevel: debug # values: error, warn, info, debug
+logType: ws-json # values: ws-txt, ws-txt-dev, ws-json, ws-json-dev
+
+serverPort: 3000
+subgraphHealthCheck: true
+pollIntervalInMs: 5000
+
+subgraphs: []
+
+proxy:
+  - path: /api
+    upstream: test-observer-apiservice-001.org0:3305
+  - path: /api/version
+    upstream: test-observer-hlfparser-001.org0:3305

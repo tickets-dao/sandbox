@@ -500,6 +500,21 @@ services:
     <<: *default-healthcheck
 
 ###############################################################################
+  observer-l0-gate:
+    image: "${IMG_OBSERVER_GATE}"
+    restart: unless-stopped
+    environment:
+      - HLFPROXY_LOGLEVEL=debug
+    user: root
+    volumes:
+      - tool:/state
+      - ${ORIGIN}/observer-l0-gate/data:/data
+      - ${ORIGIN}/observer-l0-gate/etc/config.yaml:/etc/config.yaml:ro
+    ports:
+      - "${IP}:${IMG_OBSERVER_GATE_PUBLIC}"
+    <<: *default-healthcheck
+
+###############################################################################
   hlf-proxy-public:
     image: "${IMG_HLF_PROXY}"
     restart: unless-stopped
