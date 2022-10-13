@@ -105,6 +105,76 @@ scrape_configs:
   - targets:
     - test-observer-apiservice-001.org0:8080
 
+- job_name: observer-l0-gate
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l0-gate:3000
+
+- job_name: observer-l1-hlf-miner
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l1-hlf:9011
+
+- job_name: observer-l1-hlf-api
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l1-hlf:9010
+
+- job_name: observer-l2-foundation-miner
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l2-foundation:9021
+
+- job_name: observer-l2-foundation-api
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l2-foundation:9020
+
+- job_name: observer-l3-balance-miner
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l3-balance:9031
+
+- job_name: observer-l3-balance-api
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l3-balance:9030
+
 - job_name: host
   honor_timestamps: true
   scrape_interval: 10s
