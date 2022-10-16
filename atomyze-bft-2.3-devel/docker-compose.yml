@@ -140,6 +140,18 @@ services:
       - mongo:/bitnami/mongodb:rw
     <<: *default-healthcheck
 
+  mongo-exporter:
+    image: "${IMG_MONGO_EXPORTER}"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "${IP}:${EXP_MONGO_EXPORTER}"
+    command: ["--mongodb.uri=mongodb://test:test@mongo:27017", "--collect-all"]
+    volumes:
+      - ${ORIGIN}/mongo-exporter/data:/data:ro
+    <<: *default-healthcheck
+
 ###############################################################################
   mailhog:
     image: "${IMG_MAILHOG}"
