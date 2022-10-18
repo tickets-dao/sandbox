@@ -21,6 +21,7 @@ volumes:
   grafana:
   postgres:
   redis:
+  mongo:
   test-orderer-001.org0:
   test-orderer-002.org0:
   test-orderer-011.org0:
@@ -38,6 +39,10 @@ volumes:
   test-robot-001.org0:
   test-observer-hlfparser-001.org0:
   test-observer-apiservice-001.org0:
+  test-observer-l0-gate:
+  test-observer-l1-hlf:
+  test-observer-l2-foundation:
+  test-observer-l3-balance:
   hlf-proxy-public:
   hlf-proxy-private:
 
@@ -119,6 +124,35 @@ services:
     <<: *default-healthcheck
 
 ###############################################################################
+  mongo:
+    image: "${IMG_MONGO}"
+    restart: unless-stopped
+    environment:
+      - MONGODB_ROOT_USER=test
+      - MONGODB_ROOT_PASSWORD=test
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_REPLICA_SET_KEY=changeme
+    ports:
+      - "${IP}:${EXP_MONGO}"
+    volumes:
+      - ${ORIGIN}/mongo/data:/data:ro
+      - mongo:/bitnami/mongodb:rw
+    <<: *default-healthcheck
+
+  mongo-exporter:
+    image: "${IMG_MONGO_EXPORTER}"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "${IP}:${EXP_MONGO_EXPORTER}"
+    command: ["--mongodb.uri=mongodb://test:test@mongo:27017", "--collect-all"]
+    volumes:
+      - ${ORIGIN}/mongo-exporter/data:/data:ro
+    <<: *default-healthcheck
+
+###############################################################################
   mailhog:
     image: "${IMG_MAILHOG}"
     restart: unless-stopped
@@ -175,6 +209,10 @@ services:
       - test-robot-001.org0:/state/test-robot-001.org0
       - test-observer-hlfparser-001.org0:/state/test-observer-hlfparser-001.org0
       - test-observer-apiservice-001.org0:/state/test-observer-apiservice-001.org0
+      - test-observer-l0-gate:/state/test-observer-l0-gate
+      - test-observer-l1-hlf:/state/test-observer-l1-hlf
+      - test-observer-l2-foundation:/state/test-observer-l2-foundation
+      - test-observer-l3-balance:/state/test-observer-l3-balance
 
 ###############################################################################
   test-orderer-001.org0:
@@ -497,6 +535,74 @@ services:
       - "${IP}:${EXP_OBSERVER_APISERVICE_HEALTH}"
       - "${IP}:${EXP_OBSERVER_APISERVICE_API}"
       - "${IP}:${EXP_OBSERVER_APISERVICE_METRIC}"
+    <<: *default-healthcheck
+
+  test-observer-l1-hlf:
+    image: "${IMG_OBSERVER_L1_HLF}"
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - L1HLF_CONFIG=/etc/config.yaml
+    user: "root"
+    volumes:
+      - ${ORIGIN}/test-observer-l1-hlf/data:/data:ro
+      - ${ORIGIN}/test-observer-l1-hlf/etc/config.yaml:/etc/config.yaml:ro
+      - test-observer-l1-hlf:/state:rw
+    ports:
+      - "${IP}:${EXP_OBSERVER_L1_HLF_API}"
+      - "${IP}:${EXP_OBSERVER_L1_HLF_MINER}"
+    <<: *default-healthcheck
+
+  test-observer-l2-foundation:
+    image: "${IMG_OBSERVER_L2_FOUNDATION}"
+    restart: always
+    depends_on:
+      - mongo
+      - test-observer-l1-hlf
+    environment:
+      - L2F_CONFIG=/etc/config.yaml
+    user: "root"
+    volumes:
+      - ${ORIGIN}/test-observer-l2-foundation/data:/data:ro
+      - ${ORIGIN}/test-observer-l2-foundation/etc/config.yaml:/etc/config.yaml:ro
+      - test-observer-l2-foundation:/state:rw
+    ports:
+      - "${IP}:${EXP_OBSERVER_L2_FOUNDATION_API}"
+      - "${IP}:${EXP_OBSERVER_L2_FOUNDATION_MINER}"
+    <<: *default-healthcheck
+
+  test-observer-l3-balance:
+    image: "${IMG_OBSERVER_L3_BALANCE}"
+    restart: always
+    depends_on:
+      - mongo
+      - test-observer-l1-hlf
+      - test-observer-l2-foundation
+    environment:
+      - L3B_CONFIG=/etc/config.yaml
+    user: "root"
+    volumes:
+      - ${ORIGIN}/test-observer-l3-balance/data:/data:ro
+      - ${ORIGIN}/test-observer-l3-balance/etc/config.yaml:/etc/config.yaml:ro
+      - test-observer-l3-balance:/state:rw
+    ports:
+      - "${IP}:${EXP_OBSERVER_L3_BALANCE_API}"
+      - "${IP}:${EXP_OBSERVER_L3_BALANCE_MINER}"
+    <<: *default-healthcheck
+
+###############################################################################
+  observer-l0-gate:
+    image: "${IMG_OBSERVER_GATE}"
+    restart: unless-stopped
+    user: root
+    volumes:
+      - tool:/state
+      - ${ORIGIN}/observer-l0-gate/data:/data
+      - ${ORIGIN}/observer-l0-gate/etc/config.yaml:/etc/config.yaml:ro
+      - test-observer-l0-gate:/state
+    ports:
+      - "${IP}:${IMG_OBSERVER_GATE_PUBLIC}"
     <<: *default-healthcheck
 
 ###############################################################################
