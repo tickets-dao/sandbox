@@ -597,7 +597,7 @@ services:
     restart: unless-stopped
     user: root
     volumes:
-      - tool:/state
+      - tool:/state/test-observer-l0-gate
       - ${ORIGIN}/observer-l0-gate/data:/data
       - ${ORIGIN}/observer-l0-gate/etc/config.yaml:/etc/config.yaml:ro
       - test-observer-l0-gate:/state
