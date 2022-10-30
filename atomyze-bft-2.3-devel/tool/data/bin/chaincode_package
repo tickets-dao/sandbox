@@ -3,7 +3,7 @@
 . default
 
 process_go_chaincode() {
-    src="$1"
+	src="$1"
 	chaincode_dir="${src%/go.mod}"
 	chaincode="${chaincode_dir##*/}"
 	channel_dir="${chaincode_dir%/*}"
@@ -42,15 +42,13 @@ process_go_chaincode() {
 }
 
 process_package() {
-    src="$1"
-	src_no_ext="${src%/*.tar.gz}"
-	chaincode="${src_no_ext##*/}"
+	src="$1"
+	src_no_ext="${src%.tar.gz}"
 	channel_dir="${src%/*}"
 	channel="${channel_dir##*/}"
 	namespace_dir="${channel_dir%/*}"
 	namespace="${namespace_dir##*/}"
 	dst_dir="$CHANNEL_STATE/$namespace/$channel"
-	dst="$dst_dir/$chaincode.tar.gz"
 	sequence_file="$dst.sequence"
 	
 	[ -r "$channel_dir/.prepare" ] && . "$channel_dir/.prepare"
@@ -58,6 +56,9 @@ process_package() {
 	metadata="$(tar -zxvOf "$src" metadata.json)"
 	version="${metadata##*_}"
 	CHAINCODE_VERSION="${version%\"*}"
+	chaincode="${metadata%%_*}"
+	chaincode="${chaincode##*\"}"
+	dst="$dst_dir/$chaincode.tar.gz"
 	[ -z "$CHAINCODE_POLICY" ] && _err "fail chaincode policy"
 	[ -n "$CHAINCODE_SEQUENCE" ] && echo "$CHAINCODE_SEQUENCE" > "$sequence_file"
 

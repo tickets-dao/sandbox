@@ -15,7 +15,6 @@ package_install() {
 	version="$(cat "$src.version")"
 	policy="$(cat "$src.policy")"
 	sequence_file="$src.sequence"
-	sequence="$(cat "$sequence_file" || echo "1")"
 	id="${chaincode}_${version}:${hash}"
 	dst_dir="$CHANNEL_STATE/$namespace/$channel"
 	dst="$dst_dir/$chaincode.tar.gz.install"
@@ -33,6 +32,7 @@ package_install() {
 	fi
 
 	err="0"
+	sequence="99999"
 	for peer in $(_configtx_peer_fqdn "$configtx")
 	do
 		org="$(_org_by_hostname "$peer")"
@@ -50,29 +50,49 @@ package_install() {
 		grep -qE "Package ID: ${chaincode}_${version}:${hash}" "$OUT" || \
 			_err "failed to install '$chaincode' on '$peer'"
 
-		_info "approvemyorg '$chaincode' to '$peer'"
-		orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
-		$APPROVEFORMYORG \
-			--tls \
-			--cafile "$(_crypto_ca_by_hostname "$orderer")" \
-			--orderer "$orderer:$ORDERER_PORT" \
-			--channelID "$channel" \
-			--name "$chaincode" \
-			--version "$version" \
-			--package-id "$id" \
-			--sequence "$sequence" \
-			--signature-policy "$policy"
+		for try in 1 2 3 4 5
+		do
+			_info "try sequence: '$sequence' and  version: '$version'"
+			_info "approvemyorg '$chaincode' to '$peer'"
+			orderer="$(_configtx_orderer_fqdn "$configtx" "1")"
+			$APPROVEFORMYORG \
+				--tls \
+				--cafile "$(_crypto_ca_by_hostname "$orderer")" \
+				--orderer "$orderer:$ORDERER_PORT" \
+				--channelID "$channel" \
+				--name "$chaincode" \
+				--version "$version" \
+				--sequence "$sequence" \
+				--package-id "$id" \
+				--signature-policy "$policy" 2>&1 | tee "$OUT"
 
-		_info "commit '$chaincode' to '$peer'"
-		$COMMIT \
-			--tls \
-			--cafile "$(_crypto_ca_by_hostname "$orderer")" \
-			--orderer "$orderer:$ORDERER_PORT" \
-			--channelID "$channel" \
-			--name "$chaincode" \
-			--version "$version" \
-			--sequence "$sequence" \
-			--signature-policy "$policy"
+			if expected_sequence="$(grep -m 1 -E "Error:.*sequence" "$OUT")"
+			then
+				sequence="${expected_sequence##* sequence }"
+				sequence="${sequence##*number }"
+				echo "-- detect sequence: '$sequence'"
+				continue
+			fi
+			
+			_info "commit '$chaincode' to '$peer'"
+			$COMMIT \
+				--tls \
+				--cafile "$(_crypto_ca_by_hostname "$orderer")" \
+				--orderer "$orderer:$ORDERER_PORT" \
+				--channelID "$channel" \
+				--name "$chaincode" \
+				--version "$version" \
+				--sequence "$sequence" \
+				--signature-policy "$policy" 2>&1 | tee -a "$OUT"
+
+			if grep -E "committed" "$OUT"
+			then
+				break
+			else
+				sleep 1
+				continue
+			fi
+		done
 
 		_info "chaincode querycommitted on '$peer'"
 		peer lifecycle chaincode querycommitted --channelID "$channel" | tee "$OUT"
@@ -88,7 +108,7 @@ package_install() {
 			_err "failed to init chaincode '$chaincode' with '$INIT'"
 	fi
 
-	echo "$((sequence + 1))" > "$sequence_file"
+	echo "$((sequence))" > "$sequence_file"
 	_copy "$src" "$dst"
 }
 
