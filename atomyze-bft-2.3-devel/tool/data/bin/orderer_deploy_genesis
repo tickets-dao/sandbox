@@ -2,6 +2,8 @@
 
 . default
 
+WAIT_AUTO_RESTART="30"
+
 orderer_deploy_genesis() {
     src="$1"
     dst="$src.orderer"
@@ -23,6 +25,9 @@ orderer_deploy_genesis() {
     else
         _err "failed to set genesis"
     fi
+
+    _info "wait until orderer containers auto restart with genesis.block"
+    sleep "$WAIT_AUTO_RESTART"
 }
 
 for genesis in $(find "$CHANNEL_STATE" -type f -name "genesis.block")
