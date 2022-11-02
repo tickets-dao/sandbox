@@ -2,9 +2,6 @@
 
 . default
 
-# WARNING Wait until container restart with new cryptomaterials
-WAIT_CONTAINERS_RESTART=5
-
 orderer_deploy_genesis() {
     src="$1"
     dst="$src.orderer"
@@ -26,13 +23,6 @@ orderer_deploy_genesis() {
     else
         _err "failed to set genesis"
     fi
-
-    _info "wait container restart with new cryptomaterials"
-    for orderer in $(_configtx_orderer_fqdn "$configtx")
-    do
-        run-on "$orderer" "/data/bin/script_reboot"
-    done
-    sleep "$WAIT_CONTAINERS_RESTART"
 }
 
 for genesis in $(find "$CHANNEL_STATE" -type f -name "genesis.block")

@@ -37,6 +37,7 @@ Created and started new channel|\
 Received block: 0"
 		if grep -qE "$success" "$OUT"
 		then
+			_info "channel: '$channel' created"
 			_copy "$src" "$dst"
 			return
 		else
