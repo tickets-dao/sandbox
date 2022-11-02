@@ -291,7 +291,13 @@ services:
       - tool
     env_file: .env-orderer
     environment:
-      - ORDERER_GENERAL_LOCALMSPID=org1илось локально использовать .gitconfig для atmz и ch-tokens , а для core  .netrc. Попробую воспроизвести в ci, но выглядит как костыль
+      - ORDERER_GENERAL_LOCALMSPID=org1
+    volumes:
+      - ${ORIGIN}/test-orderer-001.org1/data:/data
+      - test-orderer-001.org1:/state
+    ports:
+      - "${IP}:${EXP_ORDERER_001_ORG1}"
+    <<: *default-healthcheck
 
   test-orderer-002.org1:
     image: "${IMG_ORDERER}"
