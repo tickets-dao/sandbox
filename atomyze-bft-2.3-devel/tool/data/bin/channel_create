@@ -19,7 +19,6 @@ create_channel() {
 	export CORE_PEER_LOCALMSPID="$org"
 	export CORE_PEER_MSPCONFIGPATH="$(_crypto_admin_msp_by_org "$org")"
 
-	echo "$orderer:$ORDERER_PORT"
 	for try in 1 2 3 4 5
 	do
 		_info "try no: '$try' to create channel: '$channel'"
@@ -50,6 +49,5 @@ Received block: 0"
 
 for channeltx in $(find "$CHANNEL_STATE" -type f -name "channel.tx")
 do
-	create_channel "$channeltx" 
+	create_channel "$channeltx"
 done
-
