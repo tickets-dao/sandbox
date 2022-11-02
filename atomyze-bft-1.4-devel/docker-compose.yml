@@ -51,7 +51,16 @@ services:
       - ${ORIGIN}/dind/data:/data:rw
       - ${ORIGIN}/dind/etc/docker/daemon.json:/etc/docker/daemon.json
       - docker:/run
-    <<: *default-healthcheck
+    healthcheck:
+      test: [ "CMD", "/data/.prepare" ]
+      interval: 5s
+      timeout: 4s
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+        reservations:
+          memory: 128M
 
 ###############################################################################
   prometheus:

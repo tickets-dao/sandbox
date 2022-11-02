@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 . default
 
@@ -28,6 +28,10 @@ orderer_deploy_genesis() {
     fi
 
     _info "wait container restart with new cryptomaterials"
+    for orderer in $(_configtx_orderer_fqdn "$configtx")
+    do
+        run-on "$orderer" "/data/bin/script_reboot"
+    done
     sleep "$WAIT_CONTAINERS_RESTART"
 }
 
