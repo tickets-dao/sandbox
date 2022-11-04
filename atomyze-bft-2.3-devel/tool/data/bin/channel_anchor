@@ -3,7 +3,7 @@
 . default
 
 # Lasciate ogni speranza, voi ch'entrate
-# https://medium.com/coinmonks/ыadding-updating-channel-capabilities-in-hyperledger-fabric-6cb2a1aaea21
+# https://medium.com/coinmonks/adding-updating-channel-capabilities-in-hyperledger-fabric-6cb2a1aaea21
 
 anchor_list_json() {
 	local out
@@ -104,7 +104,7 @@ set_anchor() {
 			\"channel_header\": {
 				\"channel_id\":\"$channel\", \"type\":2
 			}
-		}, 
+		},
 		\"data\":{
 			\"config_update\":$(cat "$config_update_json")
 		}
@@ -125,7 +125,7 @@ set_anchor() {
 			-f "$anchor_tx" \
 			--tls \
 			--cafile "$(_crypto_ca_by_hostname "$orderer")" 2>&1 | tee "$OUT"
-		grep -qE "Successfully submitted channel" "$OUT" || _err "failed to setu anchor peers"
+		grep -qE "Successfully submitted channel" "$OUT" || _err "failed to setup anchor peers"
 	done
 }
 
