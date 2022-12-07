@@ -1,0 +1,48 @@
+stages:
+  - stop
+  - start
+
+######################################################################
+
+variables:
+  SANDBOX_VERSION: "bft-2.4"
+  SANDBOX_ROOT: "/atomyze/sandbox"
+  SANDBOX_WORKDIR: "$SANDBOX_PATH/atomyze-$SANDBOX_VERSION-devel"
+
+######################################################################
+
+.job_down: &job_down
+  tags:
+    - atmz-sandbox
+  script:
+    - if [ -d "$SANDBOX_WORKDIR" ];
+    - then
+    - cd $SANDBOX_WORKDIR
+    - docker-compose down -v
+    - fi
+
+######################################################################
+
+.job_up: &job_up
+  tags:
+    - atmz-sandbox
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - mkdir -p $SANDBOX_ROOT | true
+    - cp -R $CI_PROJECT_DIR/* $SANDBOX_ROOT
+    - cd $SANDBOX_WORKDIR
+    - docker-compose up
+
+######################################################################
+
+Down:
+  stage:
+    stop
+  <<: *job_down
+
+Deploy:
+  stage:
+    start
+  <<: *job_up
