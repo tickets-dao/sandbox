@@ -15,8 +15,7 @@ variables:
   tags:
     - atmz-sandbox
   script:
-    - if [ -d "$SANDBOX_WORKDIR" ];
-    - then
+    - if [ -d "$SANDBOX_WORKDIR" ]; then
     - cd $SANDBOX_WORKDIR
     - docker-compose down -v
     - fi
