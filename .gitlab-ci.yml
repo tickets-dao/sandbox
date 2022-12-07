@@ -32,7 +32,7 @@ variables:
     - mkdir -p $SANDBOX_ROOT | true
     - cp -R $CI_PROJECT_DIR/* $SANDBOX_ROOT
     - cd $SANDBOX_WORKDIR
-    - docker-compose up
+    - docker-compose up -d
 
 ######################################################################
 
