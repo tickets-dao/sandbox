@@ -7,7 +7,7 @@ stages:
 variables:
   SANDBOX_VERSION: "bft-2.4"
   SANDBOX_ROOT: "/atomyze/sandbox"
-  SANDBOX_WORKDIR: "$SANDBOX_PATH/atomyze-$SANDBOX_VERSION-devel"
+  SANDBOX_WORKDIR: "$SANDBOX_ROOT/atomyze-$SANDBOX_VERSION-devel"
 
 ######################################################################
 
