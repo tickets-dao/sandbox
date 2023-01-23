@@ -17,7 +17,7 @@ variables:
   script:
     - if [ -d "$SANDBOX_WORKDIR" ]; then
     - cd $SANDBOX_WORKDIR
-    - docker-compose down -v
+    - docker-compose down -v | true
     - fi
 
 ######################################################################
