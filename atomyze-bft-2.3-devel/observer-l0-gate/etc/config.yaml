@@ -11,8 +11,6 @@ subgraphs:
     name: test-observer-l1-hlf
   - url: http://test-observer-l2-foundation:9020/gql
     name: test-observer-l2-foundation
-  - url: http://test-observer-l3-balance:9030/gql
-    name: test-observer-l3-balance
 
 proxy:
   - path: /api

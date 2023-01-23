@@ -581,25 +581,6 @@ services:
       - "${IP}:${EXP_OBSERVER_L2_FOUNDATION_MINER}"
     <<: *default-healthcheck
 
-  test-observer-l3-balance:
-    image: "${IMG_OBSERVER_L3_BALANCE}"
-    restart: always
-    depends_on:
-      - mongo
-      - test-observer-l1-hlf
-      - test-observer-l2-foundation
-    environment:
-      - L3B_CONFIG=/etc/config.yaml
-    user: "root"
-    volumes:
-      - ${ORIGIN}/test-observer-l3-balance/data:/data:ro
-      - ${ORIGIN}/test-observer-l3-balance/etc/config.yaml:/etc/config.yaml:ro
-      - test-observer-l3-balance:/state:rw
-    ports:
-      - "${IP}:${EXP_OBSERVER_L3_BALANCE_API}"
-      - "${IP}:${EXP_OBSERVER_L3_BALANCE_MINER}"
-    <<: *default-healthcheck
-
 ###############################################################################
   observer-l0-gate:
     image: "${IMG_OBSERVER_GATE}"
