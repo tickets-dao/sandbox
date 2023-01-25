@@ -5,6 +5,7 @@ logType: ws-json # values: ws-txt, ws-txt-dev, ws-json, ws-json-dev
 serverPort: 3000
 subgraphHealthCheck: true
 pollIntervalInMs: 5000
+introspection: true
 
 subgraphs:
   - url: http://test-observer-l1-hlf:9010/gql
