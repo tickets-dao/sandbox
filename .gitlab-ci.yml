@@ -32,7 +32,7 @@ variables:
     - mkdir -p $SANDBOX_ROOT | true
     - cp -R $CI_PROJECT_DIR/* $SANDBOX_ROOT
     - cd $SANDBOX_WORKDIR
-    - docker-compose up -d
+    - . env-hlf-2.4.7 && docker-compose up -d
 
 ######################################################################
 
