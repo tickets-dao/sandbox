@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tickets-dao/foundation/v3/core"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 	ma "github.com/tickets-dao/foundation/v3/mock"
 )
 

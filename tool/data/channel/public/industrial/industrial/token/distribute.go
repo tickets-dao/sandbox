@@ -7,12 +7,13 @@ import (
 	"strings"
 
 	"github.com/tickets-dao/foundation/v3/core/types"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 // DistribRequest base struct
 type DistribRequest struct {
 	TransactionID string              `json:"transactionId"`
-	UserAddress   types.Address       `json:"userAddress"`
+	UserAddress   *types.Address      `json:"userAddress"`
 	GroupsAmounts map[string]*big.Int `json:"groupsAmounts"`
 	Ref           string              `json:"ref"`
 }

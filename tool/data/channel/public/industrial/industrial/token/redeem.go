@@ -6,15 +6,16 @@ import (
 	"fmt"
 
 	"github.com/tickets-dao/foundation/v3/core/types"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 // RedeemRequest base struct
 type RedeemRequest struct {
-	TransactionID string        `json:"transactionId"`
-	UserAddress   types.Address `json:"userAddress"`
-	GroupName     string        `json:"groupName"`
-	Amount        *big.Int      `json:"amounts"`
-	Ref           string        `json:"ref"`
+	TransactionID string         `json:"transactionId"`
+	UserAddress   *types.Address `json:"userAddress"`
+	GroupName     string         `json:"groupName"`
+	Amount        *big.Int       `json:"amounts"`
+	Ref           string         `json:"ref"`
 }
 
 const redeemRequestKey = "it_redeem_req"

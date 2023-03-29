@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/tickets-dao/foundation/v3/core/types"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 // Decimals const
@@ -18,7 +19,7 @@ type Predict struct {
 }
 
 // TxTransferIndustrial transfers token to user address
-func (it *IndustrialToken) TxTransferIndustrial(sender types.Sender, to types.Address, group string, amount *big.Int, ref string) error {
+func (it *IndustrialToken) TxTransferIndustrial(sender types.Sender, to *types.Address, group string, amount *big.Int, ref string) error {
 	if sender.Equal(to) {
 		return errors.New("impossible operation")
 	}
@@ -44,7 +45,7 @@ func (it *IndustrialToken) TxTransferIndustrial(sender types.Sender, to types.Ad
 		return err
 	}
 
-	if !sender.Address().IsUserIdSame(to) && len(it.config.FeeAddress) == 32 && it.config.Fee != nil && it.config.Fee.Currency != "" {
+	if !sender.Address().IsUserIDSame(to) && len(it.config.FeeAddress) == 32 && it.config.Fee != nil && it.config.Fee.Currency != "" {
 		feeAddr := types.AddrFromBytes(it.config.FeeAddress)
 		if it.config.Fee.Currency == it.Symbol {
 			return it.IndustrialBalanceTransfer(it.Symbol+"_"+group, sender.Address(), feeAddr, fee.Fee, "transfer fee")
@@ -75,7 +76,7 @@ func (it *IndustrialToken) TxSetFee(sender types.Sender, currency string, fee *b
 }
 
 // TxSetFeeAddress sets fee address
-func (it *IndustrialToken) TxSetFeeAddress(sender types.Sender, address types.Address) error {
+func (it *IndustrialToken) TxSetFeeAddress(sender types.Sender, address *types.Address) error {
 	if !sender.Address().Equal(it.FeeAddressSetter()) {
 		return errors.New("unauthorized")
 	}

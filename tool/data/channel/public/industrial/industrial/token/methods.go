@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tickets-dao/foundation/v3/core"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/proto"
@@ -140,12 +141,12 @@ func (it *IndustrialToken) ChangeGroupMetadata(groupName string, maturityDate ti
 }
 
 // QueryIndustrialBalanceOf - returns balance of the token for user address
-func (it *IndustrialToken) QueryIndustrialBalanceOf(address types.Address) (map[string]string, error) {
+func (it *IndustrialToken) QueryIndustrialBalanceOf(address *types.Address) (map[string]string, error) {
 	return it.IndustrialBalanceGet(address)
 }
 
 // QueryAllowedBalanceOf - returns allowed balance of the token for user address
-func (it *IndustrialToken) QueryAllowedBalanceOf(address types.Address, token string) (*big.Int, error) {
+func (it *IndustrialToken) QueryAllowedBalanceOf(address *types.Address, token string) (*big.Int, error) {
 	return it.AllowedBalanceGet(token, address)
 }
 

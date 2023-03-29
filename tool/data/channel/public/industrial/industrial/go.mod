@@ -1,4 +1,4 @@
-module gitlab.n-t.io/industrial
+module github.com/tickets-dao/sandbox/industrial
 
 go 1.14
 

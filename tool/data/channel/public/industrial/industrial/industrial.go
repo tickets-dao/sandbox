@@ -8,7 +8,7 @@ import (
 	"github.com/tickets-dao/foundation/v3/core"
 
 	"github.com/tickets-dao/foundation/v3/core/types"
-	ind "gitlab.n-t.io/industrial/token"
+	ind "github.com/tickets-dao/sandbox/industrial/token"
 )
 
 // IT - industrial token base struct

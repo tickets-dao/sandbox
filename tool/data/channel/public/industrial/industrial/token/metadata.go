@@ -11,11 +11,11 @@ import (
 
 // MaturityChangeRequest base struct
 type MaturityChangeRequest struct {
-	TransactionID string        `json:"transactionId"`
-	UserAddress   types.Address `json:"userAddress"`
-	GroupName     string        `json:"groupName"`
-	MaturityDate  time.Time     `json:"maturityDate"`
-	Ref           string        `json:"ref"`
+	TransactionID string         `json:"transactionId"`
+	UserAddress   *types.Address `json:"userAddress"`
+	GroupName     string         `json:"groupName"`
+	MaturityDate  time.Time      `json:"maturityDate"`
+	Ref           string         `json:"ref"`
 }
 
 const (

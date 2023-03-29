@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/tickets-dao/foundation/v3/core/types"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 // CheckLimitsAndPrice - checks limits and prices
@@ -22,7 +23,7 @@ func (it *IndustrialToken) CheckLimitsAndPrice(method string, amount *big.Int, c
 }
 
 // TxIndustrialBuyBack - method for token buyback
-func (it *IndustrialToken) TxIndustrialBuyBack(sender types.Sender, group string, amount *big.Int, currency string) error {
+func (it *IndustrialToken) TxIndustrialBuyBack(sender *types.Sender, group string, amount *big.Int, currency string) error {
 	if sender.Equal(it.Issuer()) {
 		return errors.New("impossible operation")
 	}
