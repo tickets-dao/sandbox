@@ -1,0 +1,186 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    timeout: 10s
+    api_version: v1
+    static_configs:
+    - targets: []
+
+scrape_configs:
+
+- job_name: prometheus
+  honor_timestamps: true
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - localhost:9090
+
+- job_name: dind
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - dind:8080
+
+- job_name: grafana
+  honor_timestamps: true
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - grafana:3000
+
+- job_name: orderer
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-orderer-001.org0:8080
+    - test-orderer-002.org0:8080
+    - test-orderer-011.org0:8080
+    - test-orderer-012.org0:8080
+    - test-orderer-001.org1:8080
+    - test-orderer-002.org1:8080
+    - test-orderer-011.org1:8080
+    - test-orderer-012.org1:8080
+
+- job_name: peer
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-peer-001.org0:8080
+    - test-peer-002.org0:8080
+    - test-peer-001.org1:8080
+    - test-peer-002.org1:8080
+    - test-peer-001.org2:8080
+    - test-peer-002.org2:8080
+
+- job_name: robot
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-robot-001.org0:8080
+
+- job_name: observer-hlfparser
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-hlfparser-001.org0:8080
+
+- job_name: observer-apiservice
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-apiservice-001.org0:8080
+
+- job_name: observer-l0-gate
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l0-gate:3000
+
+- job_name: observer-l1-hlf-miner
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l1-hlf:9011
+
+- job_name: observer-l1-hlf-api
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l1-hlf:9010
+
+- job_name: observer-l2-foundation-miner
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l2-foundation:9021
+
+- job_name: observer-l2-foundation-api
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l2-foundation:9020
+
+- job_name: observer-l3-balance-miner
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l3-balance:9031
+
+- job_name: observer-l3-balance-api
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - test-observer-l3-balance:9030
+
+- job_name: host
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - host.docker.internal:8080

@@ -1,0 +1,54 @@
+# logger
+logLevel: debug # values: error, warning, info, debug, trace
+logType: lr-json # values: std, lr-txt, lr-txt-dev, lr-json, lr-json-dev
+
+initStorCfg:
+  mongoStor: &mongoStor
+    dbName: "l3bdb"     # Mongo db name
+    mongoURI: "mongodb://test:test@mongo:27017"       # Mongo connection string
+  cleanAll: true      # whether to clean the db on startup
+
+# Miner configuration
+minerCfg:
+  # Web server port
+  # Endpoints:
+  # /info    - application info
+  # /metrics - prometheus metrics
+  # /healthz - liveness probe
+  # /readyz  - readiness probe
+  serverPort: 9031
+
+  l1uri: http://test-observer-l1-hlf:9010/gql # Observer-L1-HLF API address
+  l2uri: http://test-observer-l2-foundation:9020/gql # Observer-L2-Foundation API address
+
+  srcBufSize: 1         # amount of blocks requested for parsing
+  parserCountWorkers: 1 # parser workers pool size
+  saverTasksBufSize: 1  # max amount of saver tasks
+  saverMaxBatchSize: 1  # max amount of saver results for batch saving
+
+  # Handlers configuration
+  handlers:
+    - chName: fiat
+    - chName: cc
+    - chName: industrial
+
+  delayAfterError: 5s # delay after not unrecoverable channel error before retry run channel miner again
+
+  # Prometheus configuration
+  promMetrics:
+    prefix: l3b_ # Prometheus prefix
+
+  mongoStor: *mongoStor
+
+# API configuration
+apiCfg:
+  # Web server port
+  # Endpoints:
+  # /info    - application info
+  # /metrics - prometheus metrics
+  # /healthz - liveness probe
+  # /readyz  - readiness probe
+  # /gql     - GraphQL API
+  # /        - GraphQL playground
+  serverPort: 9030      # API server port
+  mongoStor: *mongoStor

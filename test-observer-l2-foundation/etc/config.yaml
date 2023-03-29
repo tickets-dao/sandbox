@@ -1,0 +1,58 @@
+# logger
+logLevel: debug # values: error, warning, info, debug, trace
+logType: lr-json # values: std, lr-txt, lr-txt-dev, lr-json, lr-json-dev
+
+initStorCfg:
+  mongoStor: &mongoStor
+    dbName: "l2fdb" # Mongo db name 
+    mongoURI: "mongodb://test:test@mongo:27017"       # Mongo connection string
+  cleanAll: true # whether to clean the db on startup
+
+# Miner configuration
+minerCfg:
+  # Web server port
+  # Endpoints:
+  # /info    - application info
+  # /metrics - prometheus metrics
+  # /healthz - liveness probe
+  # /readyz  - readiness probe
+  serverPort: 9021
+  
+  l1uri: http://test-observer-l1-hlf:9010/gql # Observer-L1-HLF API address
+
+  srcBufSize: 1         # amount of blocks requested for parsing
+  parserCountWorkers: 1 # parser workers pool size
+  saverTasksBufSize: 1  # max amount of saver tasks
+  saverMaxBatchSize: 1  # max amount of saver results for batch saving
+
+  # Block parser configuration
+  txSwapPrefix: swaps                 # prefix of keys in HLF which store tx swaps
+  txMultiSwapPrefix: multi_swap       # prefix of keys in HLF which store tx multi swaps
+  txPreimagePrefix: batchTransactions # prefix of keys in HLF which store tx preimages
+
+  # Handlers configuration
+  handlers:
+    - chName: fiat
+    - chName: cc
+    - chName: industrial
+
+  delayAfterError: 5s # delay after not unrecoverable channel error before retry run channel miner again
+
+  # Prometheus configuration
+  promMetrics:
+    prefix: l2f_ # Prometheus prefix
+
+  mongoStor: *mongoStor
+
+# API configuration
+apiCfg:
+  # Web server port
+  # Endpoints:
+  # /info    - application info
+  # /metrics - prometheus metrics
+  # /healthz - liveness probe
+  # /readyz  - readiness probe
+  # /gql     - GraphQL API
+  # /        - GraphQL playground
+  serverPort: 9020      # API server port
+  mongoStor: *mongoStor

@@ -1,0 +1,60 @@
+# logger
+logLevel: debug # values: error, warning, info, debug, trace
+logType: lr-json # values: std, lr-txt, lr-txt-dev, lr-json, lr-json-dev
+
+initStorCfg:
+  mongoStor: &mongoStor
+    dbName: "l1hlfdb" # Mongo db name
+    mongoURI: "mongodb://test:test@mongo:27017"       # Mongo connection string
+  cleanAll: true      # whether to clean the db on startup
+
+# config section for miner (it finds, parses blocks and saves them to the storage)
+minerCfg: 
+  # Web server port
+  # Endpoints:
+  # /info    - application info
+  # /metrics - prometheus metrics
+  # /healthz - liveness probe
+  # /readyz  - readiness probe
+  serverPort: 9011
+
+  # Fabric
+  profilePath: /state/connection/public/org0/User1@org0/connection.yaml # path to Fabric connection profile
+  userName: User1                              # Fabric user
+
+  parserCountWorkers: 10 # parser workers pool size
+  saverTasksBufSize: 1   # max amount of saver tasks
+  saverMaxBatchSize: 5   # max amount of saver results for batch saving
+  
+  delayAfterError: 3s    # delay after not unrecoverable channel error before retry run channel miner again
+
+  # Handlers configuration
+  handlers:
+    - chName: fiat
+    - chName: cc
+    - chName: industrial  
+    
+  # Mongo configuration
+  mongoStor: *mongoStor
+  
+  # Crypto configuration
+  cryptoSrc: local # values: local, vault, google
+
+  # Prometheus configuration
+  promMetrics:
+    prefix: l1hlf_ # Prometheus prefix
+
+# config section for API service (provides interfaces to query data from Observer-L1-HLF storage)
+apiCfg:
+  # Web server port
+  # Endpoints:
+  # /info    - application info
+  # /metrics - prometheus metrics
+  # /healthz - liveness probe
+  # /readyz  - readiness probe
+  # /gql     - GraphQL API
+  # /        - GraphQL playground
+  serverPort: 9010
+  
+  # Mongo configuration
+  mongoStor: *mongoStor
