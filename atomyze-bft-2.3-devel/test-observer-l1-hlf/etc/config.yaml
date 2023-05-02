@@ -30,9 +30,8 @@ minerCfg:
 
   # Handlers configuration
   handlers:
-    - chName: fiat
-    - chName: cc
-    - chName: industrial  
+    - chName: acl
+    - chName: tickets
     
   # Mongo configuration
   mongoStor: *mongoStor

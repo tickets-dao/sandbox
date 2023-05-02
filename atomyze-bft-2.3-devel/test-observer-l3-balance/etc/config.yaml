@@ -28,9 +28,8 @@ minerCfg:
 
   # Handlers configuration
   handlers:
-    - chName: fiat
-    - chName: cc
-    - chName: industrial
+    - chName: acl
+    - chName: tickets
 
   delayAfterError: 5s # delay after not unrecoverable channel error before retry run channel miner again
 

@@ -22,28 +22,10 @@ txPreimagePrefix: batchTransactions # prefix of keys in HLF which store tx preim
 
 # Robots configuration
 robots:
-  - chName: fiat
+  - chName: tickets
     collectorsBufSize: 1
     src:
-      - chName: fiat
-        initBlockNum: 1
-      - chName: cc
-        initBlockNum: 1
-      - chName: industrial
-        initBlockNum: 1
-  - chName: cc
-    collectorsBufSize: 1
-    src:
-      - chName: cc
-        initBlockNum: 1
-      - chName: fiat
-        initBlockNum: 1
-  - chName: industrial
-    collectorsBufSize: 1
-    src:
-      - chName: industrial
-        initBlockNum: 1
-      - chName: fiat
+      - chName: tickets
         initBlockNum: 1
 
 # Batch limits

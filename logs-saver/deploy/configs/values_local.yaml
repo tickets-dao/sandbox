@@ -1,0 +1,23 @@
+listen:
+  port: 12345
+  bind_ip: 0.0.0.0
+logger:
+  enable console: true
+  console json format: true
+  console level: debug
+  enable file: true
+  file json format: true
+  file level: debug
+  file location: ./tmp/logs.log
+postgres:
+  port: 5432
+  host: localhost
+  user: postgres
+  password: postgres
+  migration_host: localhost
+  migration_port: 5432
+  database: atomyze_logs
+  ssl mode: disable
+  migrations dir: migrations
+  #  used for goose migrations
+  pg-dsn: "postgres://postgres@localhost:5432/atomyze_logs?sslmode=disable&timezone=utc"
