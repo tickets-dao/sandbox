@@ -1,0 +1,23 @@
+{"level":"INFO","ts":"2023-04-13T16:18:36.415+0300","caller":"cmd/main.go:48","msg":"starting mux at '0.0.0.0:12345'"}
+{"level":"INFO","ts":"2023-04-13T16:33:10.396+0300","caller":"cmd/main.go:48","msg":"starting mux at '0.0.0.0:12345'"}
+{"level":"INFO","ts":"2023-04-13T16:33:12.265+0300","caller":"cmd/main.go:48","msg":"starting mux at '0.0.0.0:12345'"}
+{"level":"INFO","ts":"2023-04-13T16:33:59.527+0300","caller":"cmd/main.go:93","msg":"saved log '4770efc5-6dd9-485a-9496-8df73e59a2f0' in 4.686151ms"}
+{"level":"INFO","ts":"2023-04-13T16:34:44.044+0300","caller":"cmd/main.go:93","msg":"saved log 'e9e0163e-0982-40db-8989-724e348ea1b4' in 1.087011ms"}
+{"level":"INFO","ts":"2023-04-13T16:34:48.964+0300","caller":"cmd/main.go:93","msg":"saved log '21a5deb4-85fa-40be-9e3d-7eab76fd0fd3' in 1.599791ms"}
+{"level":"INFO","ts":"2023-04-13T16:34:51.156+0300","caller":"cmd/main.go:93","msg":"saved log 'f0db833c-7041-4e01-bb0a-7d441d3c7f2b' in 782.696µs"}
+{"level":"INFO","ts":"2023-04-13T16:34:51.158+0300","caller":"cmd/main.go:93","msg":"saved log 'b4de562f-0ac9-4621-86c2-4b14cdb4bce9' in 813.06µs"}
+{"level":"INFO","ts":"2023-04-13T16:36:40.786+0300","caller":"cmd/main.go:93","msg":"saved log '87c42e83-7203-4465-8cc5-30403742f81f' in 4.090015ms"}
+{"level":"INFO","ts":"2023-04-13T16:36:40.871+0300","caller":"cmd/main.go:93","msg":"saved log '6e602c71-7ad9-4cdc-95f4-867bf293315d' in 809.149µs"}
+{"level":"INFO","ts":"2023-04-13T16:36:40.872+0300","caller":"cmd/main.go:93","msg":"saved log 'ced08d95-3334-4e87-b7e7-349967bffb20' in 435.998µs"}
+{"level":"INFO","ts":"2023-04-13T16:37:47.848+0300","caller":"cmd/main.go:93","msg":"saved log 'c4f2ae1c-fd19-4ef0-87ad-423318840557' in 1.671523ms"}
+{"level":"INFO","ts":"2023-04-13T16:37:47.850+0300","caller":"cmd/main.go:93","msg":"saved log '24626980-5b34-4ac8-b3d6-368eb908b34c' in 659.281µs"}
+{"level":"INFO","ts":"2023-04-13T16:37:47.851+0300","caller":"cmd/main.go:93","msg":"saved log '436dde4c-bfcc-4d47-96c0-8c848262e065' in 579.532µs"}
+{"level":"INFO","ts":"2023-04-13T16:38:30.908+0300","caller":"cmd/main.go:48","msg":"starting mux at '0.0.0.0:12345'"}
+{"level":"INFO","ts":"2023-04-13T17:02:52.972+0300","caller":"cmd/main.go:92","msg":"saved log '2eb3bbb5-bcd5-4649-a41d-b3a8db3b6d1d' in 5.887424ms"}
+{"level":"INFO","ts":"2023-04-13T17:02:52.975+0300","caller":"cmd/main.go:92","msg":"saved log '6ce899e6-e428-4920-bc62-d6541ab9be09' in 634.822µs"}
+{"level":"INFO","ts":"2023-04-13T17:02:52.976+0300","caller":"cmd/main.go:92","msg":"saved log '08087b28-0c96-4d7a-b099-bfa22771bb4c' in 477.209µs"}
+{"level":"INFO","ts":"2023-04-13T17:02:52.976+0300","caller":"cmd/main.go:92","msg":"saved log '7821142e-4bf5-4b7b-918a-23af4b846bb4' in 455.601µs"}
+{"level":"INFO","ts":"2023-04-22T12:51:59.755+0300","caller":"cmd/main.go:51","msg":"starting mux at '0.0.0.0:12345'"}
+{"level":"INFO","ts":"2023-04-24T00:24:42.948+0300","caller":"cmd/main.go:53","msg":"starting mux at '0.0.0.0:12345'"}
+{"level":"ERROR","ts":"2023-04-24T00:26:22.310+0300","caller":"cmd/main.go:77","msg":"failed to parse time from 'parsing time \"\" as \"2006-01-02T15:04:05.999999999Z07:00\": cannot parse \"\" as \"2006\"': %!v(MISSING)"}
+{"level":"INFO","ts":"2023-04-24T00:26:22.310+0300","caller":"cmd/main.go:98","msg":"saved log '2452993e-3cb9-4e9d-a3be-e004105b13dc' in 116.651µs"}
