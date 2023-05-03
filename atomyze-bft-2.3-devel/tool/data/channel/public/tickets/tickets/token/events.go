@@ -37,10 +37,10 @@ type Ticket struct {
 	// текущий владелец билета
 	Owner string `json:"owner"`
 
-	Category string
-	Price    *big.Int
-	Sector   int
-	Row      int
-	Number   int
-	ShowID   string
+	Category string `json:"category"`
+	Price    int32  `json:"price"`
+	Sector   int    `json:"sector"`
+	Row      int    `json:"row"`
+	Number   int    `json:"number"`
+	EventID  string `json:"event_id"`
 }

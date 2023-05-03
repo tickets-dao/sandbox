@@ -57,6 +57,16 @@ func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
 
 // QueryTicketsByCategory - returns all categories for event
 func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket, error) {
+	pricesMap, err := con.getPricesMap()
+	if err != nil {
+		return nil, err
+	}
+
+	price, ok := pricesMap[category]
+	if !ok {
+		return nil, fmt.Errorf("category '%s' is not present in event categories: %v", category, pricesMap)
+	}
+
 	availableTickets, err := con.IndustrialBalanceGet(con.Issuer())
 	if err != nil {
 		return nil, err
@@ -75,11 +85,14 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 			continue
 		}
 
+		ticketFromKey.Price = int32(price.Int64())
+
 		tickets = append(tickets, ticketFromKey)
 	}
 
 	return tickets, err
 }
+
 func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 	if len(keyParts) != 5 {
 		return Ticket{}, fmt.Errorf("expected %d parts in key, got %d", 5, len(keyParts))
@@ -105,7 +118,7 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 		Sector:   int(sector),
 		Row:      int(row),
 		Number:   int(number),
-		ShowID:   eventID,
+		EventID:  eventID,
 	}, nil
 
 }
