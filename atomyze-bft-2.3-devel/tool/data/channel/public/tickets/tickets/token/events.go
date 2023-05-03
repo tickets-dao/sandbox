@@ -36,4 +36,11 @@ type Ticket struct {
 	LastBuyPrice *big.Int `json:"last_buy_price"`
 	// текущий владелец билета
 	Owner string `json:"owner"`
+
+	Category string
+	Price    *big.Int
+	Sector   int
+	Row      int
+	Number   int
+	ShowID   string
 }

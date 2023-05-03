@@ -10,13 +10,12 @@ import (
 const rubCurrency = "RUB"
 
 func (con *Contract) NBTxBuy(sender *types.Sender, categoryName string, sector, row, number int) (TransferEvent, error) {
-	lg.Infof("TxBuy start, metadata: %+v, issuer: '%s'", contractMetadata, con.issuer)
-	issuerAddress := con.issuer.String()
+	lg.Infof("TxBuy start, metadata: %+v, issuer: '%s'", contractMetadata, con.Issuer())
 
 	ticketKey := con.createTicketID(categoryName, sector, row, number)
 	lg.Infof("starting buying ticket '%s'", ticketKey)
 
-	balances, err := con.IndustrialBalanceGet(con.issuer)
+	balances, err := con.IndustrialBalanceGet(con.Issuer())
 	if err != nil {
 		return TransferEvent{}, fmt.Errorf("failed to get industrial balances of sender '%s': %v", sender.Address(), err)
 	}
@@ -30,15 +29,9 @@ func (con *Contract) NBTxBuy(sender *types.Sender, categoryName string, sector, 
 
 	lg.Infof("got industrial ticket: %s", ticketIndustrial)
 
-	pricesMapBytes, err := con.GetStub().GetState(joinStateKey(issuerAddress, pricesMapStateSubKey))
+	pricesMap, err := con.getPricesMap()
 	if err != nil {
-		return TransferEvent{}, fmt.Errorf("failed to get prices map: %v", err)
-	}
-
-	var pricesMap map[string]*big.Int
-
-	if err = json.Unmarshal(pricesMapBytes, &pricesMap); err != nil {
-		return TransferEvent{}, fmt.Errorf("failed to unmarshal prices map: %v", err)
+		return TransferEvent{}, err
 	}
 
 	price, ok := pricesMap[categoryName]
@@ -82,4 +75,19 @@ func (con *Contract) NBTxBuy(sender *types.Sender, categoryName string, sector, 
 
 func (con *Contract) NBTxAddAlowedBalance(sender *types.Sender) error {
 	return con.AllowedBalanceAdd(rubCurrency, sender.Address(), big.NewInt(2000), "test increase")
+}
+
+func (con Contract) getPricesMap() (map[string]*big.Int, error) {
+	pricesMapBytes, err := con.GetStub().GetState(joinStateKey(con.Issuer().String(), pricesMapStateSubKey))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get prices map: %v", err)
+	}
+
+	var pricesMap map[string]*big.Int
+
+	if err = json.Unmarshal(pricesMapBytes, &pricesMap); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal prices map: %v", err)
+	}
+
+	return pricesMap, nil
 }

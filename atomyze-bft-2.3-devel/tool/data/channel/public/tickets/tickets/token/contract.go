@@ -22,20 +22,13 @@ const issuerAddrString = "5unWkjiVbpAkDDvyS8pxT1hWuwqEFgFShTb8i4WBr2KdDWuuf"
 
 type Contract struct {
 	core.BaseContract
-	issuer *types.Address
-	meta   Metadata
+	meta Metadata
 }
 
 // NewContract
 func NewContract() *Contract {
-	issuer, err := types.AddrFromBase58Check(issuerAddrString)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse address from '%s': %v", issuerAddrString, err))
-	}
-
 	return &Contract{
 		BaseContract: core.BaseContract{},
-		issuer:       issuer,
 		meta: Metadata{
 			EventStart:   time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
 			EventName:    "Лебединое озеро",
@@ -60,8 +53,14 @@ type Seat struct {
 	Number int
 }
 
+// Issuer returns issuer
 func (con *Contract) Issuer() *types.Address {
-	return con.issuer
+	issuer, err := types.AddrFromBase58Check(issuerAddrString)
+	if err != nil {
+		panic(fmt.Errorf("failed to parse address from '%s': %v", issuerAddrString, err))
+	}
+
+	return issuer
 }
 
 func (con *Contract) NBTxPrepare(sender *types.Sender, categoryName string, sector, row, number int, newBurningHash string) error {
@@ -145,16 +144,6 @@ func (con *Contract) QueryInitArgs(sender *types.Sender) ([]string, error) {
 	}
 
 	return initArgs, nil
-}
-
-// QueryIndustrialBalanceOf - returns balance of the token for user address
-func (con *Contract) QueryIndustrialBalanceOf(address *types.Address) (map[string]string, error) {
-	return con.IndustrialBalanceGet(address)
-}
-
-// QueryAllowedBalanceOf - returns allowed balance of the token for user address
-func (con *Contract) QueryAllowedBalanceOf(address *types.Address, token string) (*big.Int, error) {
-	return con.AllowedBalanceGet(token, address)
 }
 
 func (con *Contract) createTicketID(categoryName string, sector int, row int, number int) string {

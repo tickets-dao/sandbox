@@ -49,14 +49,14 @@ var priceCategories = []PriceCategory{
 
 // NBTxInitialize - initializes chaincode
 func (con *Contract) NBTxInitialize(sender *types.Sender) error {
-	lg.Infof("this is nbtx initialize for sender %s, issuer: '%s'\n", sender.Address().String(), con.issuer)
+	lg.Infof("this is nbtx initialize for sender %s, issuer: '%s'\n", sender.Address().String(), con.Issuer())
 
 	return con.CustomInitialize(priceCategories)
 }
 
 // CustomInitialize - initial tickets0 generation
 func (con *Contract) CustomInitialize(priceCategories []PriceCategory) error {
-	lg.Infof("this is custom init, going to start, issuer: '%s'\n", con.issuer)
+	lg.Infof("this is custom init, going to start, issuer: '%s'\n", con.Issuer())
 
 	lg.Infof("price categories: %+v\n", priceCategories)
 
