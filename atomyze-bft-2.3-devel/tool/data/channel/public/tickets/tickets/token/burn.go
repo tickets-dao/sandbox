@@ -10,7 +10,7 @@ import (
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
-func (con *Contract) TxBurn(sender *types.Sender, categoryName string, sector, row, number int, burningPrivateKey string) (BurnEvent, error) {
+func (con *Contract) NBTxBurn(sender *types.Sender, categoryName string, sector, row, number int, burningPrivateKey string) (BurnEvent, error) {
 	issuerAddress := con.Issuer().String()
 
 	ticketKey := joinStateKey(

@@ -10,15 +10,13 @@ import (
 )
 
 func main() {
-	c := token.Contract{
-		BaseContract: core.BaseContract{},
-	}
+	c := token.NewContract()
 
 	lg := logging.NewHTTPLogger("main")
 
-	lg.Warning("starting tickets")
+	lg.Warning("starting tickets, issuer: '%s'", c.Issuer())
 
-	cc, err := core.NewChainCode(&c, "org0", nil)
+	cc, err := core.NewChainCode(c, "org0", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

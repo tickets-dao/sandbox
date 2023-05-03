@@ -23,6 +23,15 @@ func TestGenerateKeys(t *testing.T) {
 	}
 }
 
+func TestPrintIssuer(t *testing.T) {
+	prKey, err := readPrivateKeyFromFile(filenameByUser(issuerUsername))
+	if err != nil {
+		t.Fatalf("failed to read private key from file: %v", err)
+	}
+
+	fmt.Println(utils.GetAddressByPublicKey(prKey.Public().(ed25519.PublicKey)))
+}
+
 // Сохранение приватного ключа в файл
 func savePrivateKeyToFile(privateKey ed25519.PrivateKey, filename string) error {
 	keyBytes := privateKey.Seed()

@@ -3,8 +3,6 @@ package token
 import (
 	"encoding/json"
 	"fmt"
-	"time"
-
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
@@ -51,26 +49,14 @@ var priceCategories = []PriceCategory{
 
 // NBTxInitialize - initializes chaincode
 func (con *Contract) NBTxInitialize(sender *types.Sender) error {
-	lg.Infof("this is nbtx initialize for sender %s\n", sender.Address().String())
-	if con.issuer != nil {
-		lg.Warningf("contract already initialised, going to exit")
-		return nil
-	}
+	lg.Infof("this is nbtx initialize for sender %s, issuer: '%s'\n", sender.Address().String(), con.issuer)
 
-	con.issuer = sender.Address()
-
-	lg.Infof("going to start custom init")
-
-	return con.CustomInitialize(priceCategories, "Лебединое озеро", "Театральная площадь, 1", time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local))
+	return con.CustomInitialize(priceCategories)
 }
 
 // CustomInitialize - initial tickets0 generation
-func (con *Contract) CustomInitialize(priceCategories []PriceCategory, eventName, eventAddress string, eventDate time.Time) error {
-	lg.Infof("this is custom init, going to start, metadata: %+v\n", contractMetadata)
-	if contractMetadata != nil {
-		lg.Warningf("contract metadata is not nil (%+v), returning", contractMetadata)
-		return nil
-	}
+func (con *Contract) CustomInitialize(priceCategories []PriceCategory) error {
+	lg.Infof("this is custom init, going to start, issuer: '%s'\n", con.issuer)
 
 	lg.Infof("price categories: %+v\n", priceCategories)
 
@@ -124,14 +110,6 @@ func (con *Contract) CustomInitialize(priceCategories []PriceCategory, eventName
 		if err != nil {
 			return fmt.Errorf("failed to emit ticket %s: %v", ticketID, err)
 		}
-	}
-
-	contractMetadata = &Metadata{
-		EventStart:   eventDate,
-		EventName:    eventName,
-		EventAddress: eventAddress,
-		Issuer:       con.Issuer(),
-		Verifiers:    []*types.Address{},
 	}
 
 	lg.Infof("all done, returning nil error\n")

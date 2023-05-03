@@ -3,12 +3,12 @@ package token
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-
 	"github.com/tickets-dao/chaincode/logging"
 	"github.com/tickets-dao/foundation/v3/core"
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
+	"strconv"
+	"time"
 )
 
 const pricesMapStateSubKey = "prices-map"
@@ -18,9 +18,30 @@ const ticketersStateSubKey = "ticketers"
 
 var lg = logging.NewHTTPLogger("contract")
 
+const issuerAddrString = "5unWkjiVbpAkDDvyS8pxT1hWuwqEFgFShTb8i4WBr2KdDWuuf"
+
 type Contract struct {
 	core.BaseContract
 	issuer *types.Address
+	meta   Metadata
+}
+
+// NewContract
+func NewContract() *Contract {
+	issuer, err := types.AddrFromBase58Check(issuerAddrString)
+	if err != nil {
+		panic(fmt.Errorf("failed to parse address from '%s': %v", issuerAddrString, err))
+	}
+
+	return &Contract{
+		BaseContract: core.BaseContract{},
+		issuer:       issuer,
+		meta: Metadata{
+			EventStart:   time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
+			EventName:    "Лебединое озеро",
+			EventAddress: "Театральная площадь, 1",
+		},
+	}
 }
 
 func (con *Contract) GetID() string {
@@ -43,7 +64,7 @@ func (con *Contract) Issuer() *types.Address {
 	return con.issuer
 }
 
-func (con *Contract) TxPrepare(sender *types.Sender, categoryName string, sector, row, number int, newBurningHash string) error {
+func (con *Contract) NBTxPrepare(sender *types.Sender, categoryName string, sector, row, number int, newBurningHash string) error {
 	issuerAddress := con.Issuer().String()
 
 	ticketKey := joinStateKey(
@@ -99,7 +120,7 @@ func (con *Contract) QueryMetadataTest() (string, error) {
 	return `{"hello": "world"}`, nil
 }
 
-func (con *Contract) TxInitArgsPrint() error {
+func (con *Contract) NBTxInitArgsPrint() error {
 	argsLen := con.GetInitArgsLen()
 	lg.Info("total init args len: ", argsLen)
 	for i := 0; i < argsLen; i++ {

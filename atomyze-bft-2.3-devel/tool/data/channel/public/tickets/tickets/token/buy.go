@@ -9,14 +9,14 @@ import (
 
 const rubCurrency = "RUB"
 
-func (con *Contract) TxBuy(sender *types.Sender, categoryName string, sector, row, number int) (TransferEvent, error) {
-	lg.Infof("TxBuy start")
-	issuerAddress := con.Issuer().String()
+func (con *Contract) NBTxBuy(sender *types.Sender, categoryName string, sector, row, number int) (TransferEvent, error) {
+	lg.Infof("TxBuy start, metadata: %+v, issuer: '%s'", contractMetadata, con.issuer)
+	issuerAddress := con.issuer.String()
 
 	ticketKey := con.createTicketID(categoryName, sector, row, number)
 	lg.Infof("starting buying ticket '%s'", ticketKey)
 
-	balances, err := con.IndustrialBalanceGet(con.Issuer())
+	balances, err := con.IndustrialBalanceGet(con.issuer)
 	if err != nil {
 		return TransferEvent{}, fmt.Errorf("failed to get industrial balances of sender '%s': %v", sender.Address(), err)
 	}
@@ -80,6 +80,6 @@ func (con *Contract) TxBuy(sender *types.Sender, categoryName string, sector, ro
 	return transferEvent, nil
 }
 
-func (con *Contract) TxAddAlowedBalance(sender *types.Sender) error {
+func (con *Contract) NBTxAddAlowedBalance(sender *types.Sender) error {
 	return con.AllowedBalanceAdd(rubCurrency, sender.Address(), big.NewInt(2000), "test increase")
 }
