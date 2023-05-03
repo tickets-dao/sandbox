@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-const showID = "42"
+const eventID = "42"
 
-type Show struct {
-	startTime time.Time
-	address   string
-	name      string
-	id        string
+type Event struct {
+	StartTime time.Time `json:"start_time"`
+	Address   string    `json:"address"`
+	Name      string    `json:"name"`
+	ID        string    `json:"id"`
 }
 
 // QueryIndustrialBalanceOf - returns balance of the token for user address
@@ -29,19 +29,19 @@ func (con *Contract) QueryAllowedBalanceOf(address *types.Address, token string)
 }
 
 // QueryIndustrialBalanceOf - returns balance of the token for user address
-func (con *Contract) QueryShows() ([]Show, error) {
-	return []Show{
+func (con *Contract) QueryEvents() ([]Event, error) {
+	return []Event{
 		{
-			startTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
-			address:   "Театральная площадь, 1",
-			name:      "Лебединое озеро",
-			id:        showID,
+			StartTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
+			Address:   "Театральная площадь, 1",
+			Name:      "Лебединое озеро",
+			ID:        eventID,
 		},
 	}, nil
 }
 
-// QueryCategories - returns all categories for show
-func (con *Contract) QueryCategories(showID string) ([]string, error) {
+// QueryEventCategories - returns all categories for event
+func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
 	pricesMap, err := con.getPricesMap()
 	if err != nil {
 		return nil, err
@@ -55,8 +55,8 @@ func (con *Contract) QueryCategories(showID string) ([]string, error) {
 	return categories, err
 }
 
-// QueryTicketsByCategory - returns all categories for show
-func (con *Contract) QueryTicketsByCategory(category string) ([]Ticket, error) {
+// QueryTicketsByCategory - returns all categories for event
+func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket, error) {
 	availableTickets, err := con.IndustrialBalanceGet(con.Issuer())
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 		Sector:   int(sector),
 		Row:      int(row),
 		Number:   int(number),
-		ShowID:   showID,
+		ShowID:   eventID,
 	}, nil
 
 }
