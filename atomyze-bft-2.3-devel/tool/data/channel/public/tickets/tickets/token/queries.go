@@ -93,6 +93,32 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 	return tickets, err
 }
 
+func (con *Contract) QueryMyTickets(sender *types.Sender) ([]Ticket, error) {
+	senderAddress := sender.Address()
+	lg.Infof("query my tickets for sender '%s'", senderAddress)
+	ticketsStringsMap, err := con.IndustrialBalanceGet(senderAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get industrial balance: %v", err)
+	}
+
+	myTickets := make([]Ticket, 0, len(ticketsStringsMap))
+
+	for ticketString := range ticketsStringsMap {
+		ticket, err := ticketFromKeyParts(strings.Split(ticketString, "::"))
+		if err != nil {
+			lg.Errorf("failed to parse ticket fom string: '%s': %v", err)
+		}
+
+		ticket.Owner = senderAddress.String()
+
+		myTickets = append(myTickets, ticket)
+	}
+
+	lg.Infof("query myTickets for sender '%s' done, got %d tickets", senderAddress, len(myTickets))
+
+	return myTickets, nil
+}
+
 func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 	if len(keyParts) != 5 {
 		return Ticket{}, fmt.Errorf("expected %d parts in key, got %d", 5, len(keyParts))
@@ -120,5 +146,4 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 		Number:   int(number),
 		EventID:  eventID,
 	}, nil
-
 }

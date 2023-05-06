@@ -73,7 +73,7 @@ func (con *Contract) NBTxBuy(sender *types.Sender, categoryName string, sector, 
 	return transferEvent, nil
 }
 
-func (con *Contract) NBTxAddAlowedBalance(sender *types.Sender) error {
+func (con *Contract) NBTxAddAllowedBalance(sender *types.Sender) error {
 	return con.AllowedBalanceAdd(rubCurrency, sender.Address(), big.NewInt(2000), "test increase")
 }
 

@@ -78,20 +78,26 @@ func (con *Contract) CustomInitialize(priceCategories []PriceCategory) error {
 
 	lg.Infof("categories map: '%s'\n", string(categoriesMapBytes))
 
-	if err = con.GetStub().PutState(joinStateKey(issuerAddress, pricesMapStateSubKey), categoriesMapBytes); err != nil {
+	stub := con.GetStub()
+	if err = stub.PutState(joinStateKey(issuerAddress, pricesMapStateSubKey), categoriesMapBytes); err != nil {
 		return fmt.Errorf("failed to save categories map state: %v", err)
 	}
 
-	if err = con.GetStub().PutState(joinStateKey(issuerAddress, ticketersStateSubKey), []byte("[]")); err != nil {
+	if err = stub.PutState(joinStateKey(issuerAddress, ticketersStateSubKey), []byte("[]")); err != nil {
 		return fmt.Errorf("failed to save ticketers addreses: %v", err)
 	}
 
-	if err = con.GetStub().PutState(joinStateKey(issuerAddress, issuerBalanceStateSubKey), []byte("0")); err != nil {
+	if err = stub.PutState(joinStateKey(issuerAddress, issuerBalanceStateSubKey), []byte("0")); err != nil {
 		return fmt.Errorf("failed to save ticketers addreses: %v", err)
 	}
 
-	if err = con.GetStub().PutState(joinStateKey(issuerAddress, buyBackRateStateSubKey), []byte("1")); err != nil {
+	if err = stub.PutState(joinStateKey(issuerAddress, buyBackRateStateSubKey), []byte("1")); err != nil {
 		return fmt.Errorf("failed to save ticketers addreses: %v", err)
+	}
+
+	issuerInfoBytes, _ := json.Marshal(IssuerInfo{Parent: con.Issuer(), NextEventID: 1})
+	if err = stub.PutState(issuerAddress, issuerInfoBytes); err != nil {
+		return fmt.Errorf("failed to put issuer info: %v", err)
 	}
 
 	// билеты, которые нужно выпустить, соответствует ключу в стейте
