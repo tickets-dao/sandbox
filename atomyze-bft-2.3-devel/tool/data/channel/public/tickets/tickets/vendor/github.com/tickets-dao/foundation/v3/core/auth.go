@@ -31,7 +31,7 @@ func (cc *ChainCode) checkAuthIfNeeds( //nolint:gocognit,funlen
 	argMethodLen := len(method.in)
 
 	lg := Logger()
-	
+
 	lg.Infof("argLen: %d, args: %v", argMethodLen, args)
 
 	// requestID := args[0]
@@ -66,6 +66,7 @@ func (cc *ChainCode) checkAuthIfNeeds( //nolint:gocognit,funlen
 	if input.ChaincodeSpec == nil ||
 		input.ChaincodeSpec.ChaincodeId == nil ||
 		chaincodeName != input.ChaincodeSpec.ChaincodeId.Name {
+		lg.Infof("expected chaincode name '%s', got %+v", chaincodeName, input.ChaincodeSpec)
 		return nil, nil, 0, errors.New("incorrect chaincode")
 	}
 
