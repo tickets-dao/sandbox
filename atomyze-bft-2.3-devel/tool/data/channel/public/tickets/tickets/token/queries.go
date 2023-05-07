@@ -40,6 +40,19 @@ func (con *Contract) QueryEvents() ([]Event, error) {
 	}, nil
 }
 
+// QueryIndustrialBalanceOf - returns balance of the token for user address
+func (con *Contract) QueryEventsByIDs(eventIDs string) ([]Event, error) {
+
+	return []Event{
+		{
+			StartTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
+			Address:   "Театральная площадь, 1",
+			Name:      "Лебединое озеро",
+			ID:        eventID,
+		},
+	}, nil
+}
+
 // QueryEventCategories - returns all categories for event
 func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
 	pricesMap, err := con.getPricesMap()

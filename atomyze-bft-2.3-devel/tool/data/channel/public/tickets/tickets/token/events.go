@@ -1,6 +1,8 @@
 package token
 
-import "github.com/tickets-dao/foundation/v3/core/types/big"
+import (
+	"github.com/tickets-dao/foundation/v3/core/types/big"
+)
 
 // TransferEvent ...
 type TransferEvent struct {
