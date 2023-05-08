@@ -2,6 +2,7 @@ package token
 
 import (
 	"github.com/tickets-dao/foundation/v3/core/types/big"
+	"strconv"
 )
 
 // TransferEvent ...
@@ -45,4 +46,8 @@ type Ticket struct {
 	Row      int    `json:"row"`
 	Number   int    `json:"number"`
 	EventID  string `json:"event_id"`
+}
+
+func (t Ticket) String() string {
+	return joinStateKey(issuerAddrString, t.Category, strconv.Itoa(t.Sector), strconv.Itoa(t.Row), strconv.Itoa(t.Number))
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -65,6 +66,10 @@ func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
 		categories = append(categories, category)
 	}
 
+	sort.Slice(categories, func(i, j int) bool {
+		return categories[i] <= categories[j]
+	})
+
 	return categories, err
 }
 
@@ -103,6 +108,10 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 		tickets = append(tickets, ticketFromKey)
 	}
 
+	sort.Slice(tickets, func(i, j int) bool {
+		return tickets[i].String() <= tickets[j].String()
+	})
+
 	return tickets, err
 }
 
@@ -126,6 +135,10 @@ func (con *Contract) QueryMyTickets(sender *types.Sender) ([]Ticket, error) {
 
 		myTickets = append(myTickets, ticket)
 	}
+
+	sort.Slice(myTickets, func(i, j int) bool {
+		return myTickets[i].String() <= myTickets[j].String()
+	})
 
 	lg.Infof("query myTickets for sender '%s' done, got %d tickets", senderAddress, len(myTickets))
 
