@@ -160,7 +160,7 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 		return Ticket{}, fmt.Errorf("failed to parse row: %v", err)
 	}
 
-	number, err := strconv.ParseInt(keyParts[3], 10, 32)
+	number, err := strconv.ParseInt(keyParts[4], 10, 32)
 	if err != nil {
 		return Ticket{}, fmt.Errorf("failed to parse number: %v", err)
 	}
