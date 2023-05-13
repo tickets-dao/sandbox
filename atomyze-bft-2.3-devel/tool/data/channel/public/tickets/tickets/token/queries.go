@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const eventID = "42"
+const defaultEventID = "42"
 
 type Event struct {
 	StartTime time.Time `json:"start_time"`
@@ -36,7 +36,7 @@ func (con *Contract) QueryEvents() ([]Event, error) {
 			StartTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
 			Address:   "Театральная площадь, 1",
 			Name:      "Лебединое озеро",
-			ID:        eventID,
+			ID:        defaultEventID,
 		},
 	}, nil
 }
@@ -49,14 +49,14 @@ func (con *Contract) QueryEventsByIDs(eventIDs string) ([]Event, error) {
 			StartTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
 			Address:   "Театральная площадь, 1",
 			Name:      "Лебединое озеро",
-			ID:        eventID,
+			ID:        defaultEventID,
 		},
 	}, nil
 }
 
 // QueryEventCategories - returns all categories for event
 func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
-	pricesMap, err := con.getPricesMap()
+	pricesMap, err := con.getPricesMap("")
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
 
 // QueryTicketsByCategory - returns all categories for event
 func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket, error) {
-	pricesMap, err := con.getPricesMap()
+	pricesMap, err := con.getPricesMap("")
 	if err != nil {
 		return nil, err
 	}
@@ -170,6 +170,6 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 		Sector:   int(sector),
 		Row:      int(row),
 		Number:   int(number),
-		EventID:  eventID,
+		EventID:  defaultEventID,
 	}, nil
 }

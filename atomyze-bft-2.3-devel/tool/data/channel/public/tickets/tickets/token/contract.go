@@ -41,6 +41,12 @@ func (con *Contract) GetID() string {
 	return "tickets"
 }
 
+type PriceCategories map[string]PriceCategory
+
+func (c PriceCategory) ticketIDs() []string {
+	return nil
+}
+
 type PriceCategory struct {
 	Name  string
 	Seats []Seat
@@ -146,8 +152,8 @@ func (con *Contract) QueryInitArgs(sender *types.Sender) ([]string, error) {
 	return initArgs, nil
 }
 
-func (con *Contract) createTicketID(categoryName string, sector int, row int, number int) string {
+func (con *Contract) createTicketID(eventID, categoryName string, sector, row, number int) string {
 	return fmt.Sprintf("%s::%s::%d::%d::%d",
-		con.Issuer().String(), categoryName, sector, row, number,
+		eventID, categoryName, sector, row, number,
 	)
 }
