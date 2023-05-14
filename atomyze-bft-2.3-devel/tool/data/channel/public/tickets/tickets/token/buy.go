@@ -26,7 +26,7 @@ func (con *Contract) NBTxBuy(sender *types.Sender, eventID, categoryName string,
 
 	lg.Infof("got issuer balances: %v", balances)
 
-	ticketKey := con.createTicketID(eventID, categoryName, row, number)
+	ticketKey := createTicketID(eventID, categoryName, row, number)
 	lg.Infof("buying ticket '%s'", ticketKey)
 
 	ticketIndustrial, ok := balances[ticketKey]

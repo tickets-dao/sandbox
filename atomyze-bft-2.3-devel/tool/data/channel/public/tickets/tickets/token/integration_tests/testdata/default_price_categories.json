@@ -1,1 +1,1 @@
-[{"name":"parter","num_of_rows":5,"num_of_seats":5,"price":"1000"},{"name":"бельэтаж","num_of_rows":3,"num_of_seats":10,"price":"500"}]
+[{"name":"parter","rows":5,"seats":5,"price":"1000"},{"name":"бельэтаж","rows":3,"seats":10,"price":"500"}]

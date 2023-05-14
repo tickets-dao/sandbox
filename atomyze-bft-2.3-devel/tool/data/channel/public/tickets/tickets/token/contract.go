@@ -49,22 +49,9 @@ type PriceCategory struct {
 	Price *big.Int `json:"price"`
 }
 
-// Issuer returns issuer
-func (con *Contract) Issuer() *types.Address {
-	issuer, err := types.AddrFromBase58Check(issuerAddrString)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse address from '%s': %v", issuerAddrString, err))
-	}
+func (con *Contract) NBTxPrepare(sender *types.Sender, eventID, categoryName string, row, number int, newBurningHash string) error {
 
-	return issuer
-}
-
-func (con *Contract) NBTxPrepare(sender *types.Sender, categoryName string, sector, row, number int, newBurningHash string) error {
-	issuerAddress := con.Issuer().String()
-
-	ticketKey := joinStateKey(
-		issuerAddress, categoryName, strconv.Itoa(sector), strconv.Itoa(row), strconv.Itoa(number),
-	)
+	ticketKey := createTicketID(eventID, categoryName, row, number)
 
 	balances, err := con.IndustrialBalanceGet(sender.Address())
 	if err != nil {
@@ -142,6 +129,6 @@ func (con *Contract) QueryInitArgs(sender *types.Sender) ([]string, error) {
 	return initArgs, nil
 }
 
-func (con *Contract) createTicketID(eventID, categoryName string, row, number int) string {
+func createTicketID(eventID, categoryName string, row, number int) string {
 	return fmt.Sprintf("%s::%s::%d::%d", eventID, categoryName, row, number)
 }

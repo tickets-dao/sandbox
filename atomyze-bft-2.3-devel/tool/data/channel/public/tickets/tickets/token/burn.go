@@ -4,18 +4,13 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"strconv"
-
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
-func (con *Contract) NBTxBurn(sender *types.Sender, categoryName string, sector, row, number int, burningPrivateKey string) (BurnEvent, error) {
-	issuerAddress := con.Issuer().String()
+func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string, row, number int, burningPrivateKey string) (BurnEvent, error) {
 
-	ticketKey := joinStateKey(
-		issuerAddress, categoryName, strconv.Itoa(sector), strconv.Itoa(row), strconv.Itoa(number),
-	)
+	ticketKey := createTicketID(eventID, categoryName, row, number)
 
 	ticketBytes, err := con.GetStub().GetState(ticketKey)
 	if err != nil {

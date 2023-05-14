@@ -23,11 +23,22 @@ func TestTickets_Emission(t *testing.T) {
 
 	fmt.Println(issuer.OtfNbInvoke("it", "initV2"))
 
-	result1, result2 := issuer.OtfNbInvoke("it", "emission", string(defaultPriceCategoriesBytes))
+	result1, result2 := issuer.OtfNbInvoke(
+		"it",
+		"emission",
+		string(defaultPriceCategoriesBytes),
+		"Лебединое озеро 1",
+		"Москва, центр",
+		"2023-05-26 15:00:00",
+	)
 
 	fmt.Println(result1, result2)
 
-	//result := issuer.Invoke("it", "industrialBalanceOf", issuer.Address())
+	fmt.Println("issuer industrial balance: ", issuer.Invoke("it", "industrialBalanceOf", issuer.Address()))
+
+	fmt.Println("issuer events: ", issuer.Invoke("it", "eventsByIssuer", issuer.Address()))
+
+	fmt.Println("events by id", issuer.Invoke("it", "eventsByIDs", fmt.Sprintf(`["%s::1"]`, issuer.Address())))
 
 }
 

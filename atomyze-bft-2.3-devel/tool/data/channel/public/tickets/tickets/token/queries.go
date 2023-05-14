@@ -83,11 +83,13 @@ func (con *Contract) QueryEventsByIDs(eventIDsString string) ([]Event, error) {
 		return nil, fmt.Errorf("failed to unmarshal event ids from '%s': %v", eventIDsString, err)
 	}
 
+	lg.Infof("get events with ids '%v'", eventIDs)
+
 	events := make([]Event, 0, len(eventIDs))
 	for _, eventID := range eventIDs {
 		event, err := con.getEventByID(eventID)
 		if err != nil {
-			lg.Errorf("failed to get event with id '%s': %v", err)
+			lg.Errorf("failed to get event with id '%s': %v", eventID, err)
 			continue
 		}
 
@@ -168,6 +170,11 @@ func (con *Contract) QueryEventCategories(eventID string) ([]PriceCategory, erro
 
 // QueryTicketsByCategory - returns all categories for event
 func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket, error) {
+	issuer, _, err := parseEventID(eventID)
+	if err != nil {
+		return nil, err
+	}
+
 	pricesMap, err := con.getPricesMap(eventID)
 	if err != nil {
 		return nil, err
@@ -178,7 +185,7 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 		return nil, fmt.Errorf("category '%s' is not present in event categories: %v", category, pricesMap)
 	}
 
-	availableTickets, err := con.IndustrialBalanceGet(con.Issuer())
+	availableTickets, err := con.IndustrialBalanceGet(issuer)
 	if err != nil {
 		return nil, err
 	}
@@ -262,6 +269,7 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 }
 
 func (con Contract) getEventByID(eventID string) (Event, error) {
+	lg.Infof("get event with id '%s'", eventID)
 	address, eventNum, err := parseEventID(eventID)
 	if err != nil {
 		return Event{}, err
@@ -278,8 +286,7 @@ func (con Contract) getEventByID(eventID string) (Event, error) {
 	}
 
 	var event Event
-	err = json.Unmarshal(eventBytes, err)
-	if err != nil {
+	if err = json.Unmarshal(eventBytes, &event); err != nil {
 		return Event{}, fmt.Errorf("failed to unmarshal event from '%s': %v", string(eventBytes), err)
 	}
 

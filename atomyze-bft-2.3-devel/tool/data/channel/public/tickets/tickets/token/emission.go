@@ -120,7 +120,7 @@ func (con *Contract) emitTickets(issuer *types.Address, eventID string, categori
 
 		for row := 1; row <= category.Rows; row++ {
 			for seat := 1; seat <= category.Seats; seat++ {
-				ticketID := con.createTicketID(eventID, category.Name, row, seat)
+				ticketID := createTicketID(eventID, category.Name, row, seat)
 				ticketKeys = append(ticketKeys, ticketID)
 			}
 		}

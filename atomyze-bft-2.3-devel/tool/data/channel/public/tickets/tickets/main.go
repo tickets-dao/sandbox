@@ -14,7 +14,7 @@ func main() {
 
 	lg := logging.NewHTTPLogger("main")
 
-	lg.Warningf("starting tickets, issuer: '%s'", c.Issuer())
+	lg.Warningf("starting tickets")
 
 	cc, err := core.NewChainCode(c, "org0", nil)
 	if err != nil {
