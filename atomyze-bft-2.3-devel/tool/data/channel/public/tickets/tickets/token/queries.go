@@ -193,7 +193,7 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 	tickets := make([]Ticket, 0, len(availableTickets))
 	for ticket := range availableTickets {
 		ticketParts := strings.Split(ticket, "::")
-		if ticketParts[1] != category {
+		if ticketParts[2] != category {
 			continue
 		}
 
@@ -261,7 +261,7 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 	}
 
 	return Ticket{
-		Category: keyParts[1],
+		Category: keyParts[2],
 		Row:      int(row),
 		Number:   int(number),
 		EventID:  joinStateKey(keyParts[0], keyParts[1]),

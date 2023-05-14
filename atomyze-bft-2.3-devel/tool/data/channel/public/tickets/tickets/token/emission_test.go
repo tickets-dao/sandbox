@@ -40,6 +40,8 @@ func TestTickets_Emission(t *testing.T) {
 
 	fmt.Println("events by id", issuer.Invoke("it", "eventsByIDs", fmt.Sprintf(`["%s::1"]`, issuer.Address())))
 
+	fmt.Println("parter tickets: ", issuer.Invoke("it", "ticketsByCategory", issuer.Address()+"::1", "parter"))
+
 }
 
 func TestTickets_Check_Issuer_InfoAfterInit(t *testing.T) {

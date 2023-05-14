@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TestInitV2  PROD" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="atomyze_sandbox" />
+    <working_directory value="$PROJECT_DIR$/atomyze-bft-2.3-devel/tool/data/channel/public/tickets/tickets/token/integration_tests" />
+    <envs>
+      <env name="HLF_PROXY_URL" value="http://51.250.110.24:9001" />
+      <env name="HLF_PROXY_AUTH_TOKEN" value="test" />
+    </envs>
+    <root_directory value="$PROJECT_DIR$/atomyze-bft-2.3-devel/tool/data/channel/public/tickets/tickets" />
+    <kind value="PACKAGE" />
+    <package value="github.com/tickets-dao/chaincode/token/integration_tests" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <framework value="gotest" />
+    <pattern value="^\QTestInitV2\E$" />
+    <method v="2" />
+  </configuration>
+</component>
