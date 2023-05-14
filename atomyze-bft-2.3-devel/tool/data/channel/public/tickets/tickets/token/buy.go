@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
+	"strconv"
 	"strings"
 )
 
 const rubCurrency = "RUB"
 
-func (con *Contract) NBTxBuy(sender *types.Sender, eventID, categoryName string, sector, row, number int) (TransferEvent, error) {
+func (con *Contract) NBTxBuy(sender *types.Sender, eventID, categoryName string, row, number int) (TransferEvent, error) {
 	lg.Infof("TxBuy start event id: '%s'", eventID)
 
-	issuer, err := parseEventID(eventID)
+	issuer, _, err := parseEventID(eventID)
 	if err != nil {
 		return TransferEvent{}, err
 	}
@@ -25,7 +26,7 @@ func (con *Contract) NBTxBuy(sender *types.Sender, eventID, categoryName string,
 
 	lg.Infof("got issuer balances: %v", balances)
 
-	ticketKey := con.createTicketID(eventID, categoryName, sector, row, number)
+	ticketKey := con.createTicketID(eventID, categoryName, row, number)
 	lg.Infof("buying ticket '%s'", ticketKey)
 
 	ticketIndustrial, ok := balances[ticketKey]
@@ -83,26 +84,21 @@ func (con *Contract) NBTxAddAllowedBalance(sender *types.Sender) error {
 	return con.AllowedBalanceAdd(rubCurrency, sender.Address(), big.NewInt(2000), "test increase")
 }
 
-func (con Contract) getPricesMap(eventID string) (map[string]*big.Int, error) {
-	pricesMapBytes, err := con.GetStub().GetState(joinStateKey(eventID, pricesMapStateSubKey))
-	if err != nil {
-		return nil, fmt.Errorf("failed to get prices map: %v", err)
-	}
-
-	var pricesMap map[string]*big.Int
-
-	if err = json.Unmarshal(pricesMapBytes, &pricesMap); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal prices map: %v", err)
-	}
-
-	return pricesMap, nil
-}
-
-func parseEventID(eventID string) (*types.Address, error) {
+func parseEventID(eventID string) (*types.Address, int, error) {
 	eventIDParts := strings.Split(eventID, "::")
 	if len(eventIDParts) != 2 {
-		return nil, fmt.Errorf("expected event id '%s' be in format '<issuer_address>::<integer event number>'", eventID)
+		return nil, 0, fmt.Errorf("expected event id '%s' be in format '<issuer_address>::<integer event number>'", eventID)
 	}
 
-	return types.AddrFromBase58Check(eventIDParts[0])
+	address, err := types.AddrFromBase58Check(eventIDParts[0])
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to get address from '%s': %v", eventIDParts[0], err)
+	}
+
+	eventNum, err := strconv.ParseInt(eventIDParts[1], 10, 32)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse event num from '%s': %v", eventIDParts[1], err)
+	}
+
+	return address, int(eventNum), nil
 }

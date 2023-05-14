@@ -15,6 +15,7 @@ const pricesMapStateSubKey = "prices-map"
 const buyBackRateStateSubKey = "buyback-rate"
 const issuerBalanceStateSubKey = "balance"
 const ticketersStateSubKey = "ticketers"
+const eventsInfoStateKey = "events"
 
 var lg = logging.NewHTTPLogger("contract")
 
@@ -41,22 +42,11 @@ func (con *Contract) GetID() string {
 	return "tickets"
 }
 
-type PriceCategories map[string]PriceCategory
-
-func (c PriceCategory) ticketIDs() []string {
-	return nil
-}
-
 type PriceCategory struct {
-	Name  string
-	Seats []Seat
-	Price *big.Int
-}
-
-type Seat struct {
-	Sector int
-	Row    int
-	Number int
+	Name  string   `json:"name"`
+	Rows  int      `json:"rows"`
+	Seats int      `json:"seats"`
+	Price *big.Int `json:"price"`
 }
 
 // Issuer returns issuer
@@ -152,8 +142,6 @@ func (con *Contract) QueryInitArgs(sender *types.Sender) ([]string, error) {
 	return initArgs, nil
 }
 
-func (con *Contract) createTicketID(eventID, categoryName string, sector, row, number int) string {
-	return fmt.Sprintf("%s::%s::%d::%d::%d",
-		eventID, categoryName, sector, row, number,
-	)
+func (con *Contract) createTicketID(eventID, categoryName string, row, number int) string {
+	return fmt.Sprintf("%s::%s::%d::%d", eventID, categoryName, row, number)
 }

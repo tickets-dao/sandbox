@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TestCreateEvent in github.com/tickets-dao/chaincode/token/integration_tests" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+    <module name="atomyze_sandbox" />
+    <working_directory value="$PROJECT_DIR$/atomyze-bft-2.3-devel/tool/data/channel/public/tickets/tickets/token/integration_tests" />
+    <envs>
+      <env name="HLF_PROXY_URL" value="http://localhost:9001" />
+      <env name="HLF_PROXY_AUTH_TOKEN" value="test" />
+    </envs>
+    <root_directory value="$PROJECT_DIR$/atomyze-bft-2.3-devel/tool/data/channel/public/tickets/tickets" />
+    <kind value="PACKAGE" />
+    <package value="github.com/tickets-dao/chaincode/token/integration_tests" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <framework value="gotest" />
+    <pattern value="^\QTestCreateEvent\E$" />
+    <method v="2" />
+  </configuration>
+</component>

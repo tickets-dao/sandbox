@@ -1,7 +1,9 @@
 package token
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 	"sort"
@@ -29,45 +31,136 @@ func (con *Contract) QueryAllowedBalanceOf(address *types.Address, token string)
 	return con.AllowedBalanceGet(token, address)
 }
 
-// QueryIndustrialBalanceOf - returns balance of the token for user address
+// QueryEvents - returns list of all events
 func (con *Contract) QueryEvents() ([]Event, error) {
-	return []Event{
-		{
-			StartTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
-			Address:   "Театральная площадь, 1",
-			Name:      "Лебединое озеро",
-			ID:        defaultEventID,
-		},
-	}, nil
+	iterator, err := con.GetStub().GetStateByPartialCompositeKey(eventsInfoStateKey, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get iterator: %v", err)
+	}
+
+	defer func(iterator shim.StateQueryIteratorInterface) {
+		err2 := iterator.Close()
+		if err2 != nil {
+			lg.Errorf("got error %v on closing iterator", err2)
+		}
+	}(iterator)
+
+	var eventsInfo []Event
+	var totalCount int
+
+	for iterator.HasNext() {
+		totalCount++
+		info, err := iterator.Next()
+		if err != nil {
+			lg.Errorf("failed to get next event from iterator: %v", err)
+			continue
+		}
+
+		var issuerInfo Event
+		err = json.Unmarshal(info.Value, &issuerInfo)
+		if err != nil {
+			lg.Errorf("failed to unmarshal event from '%s': %v", string(info.Value), err)
+			continue
+		}
+
+		eventsInfo = append(eventsInfo, issuerInfo)
+	}
+
+	sort.Slice(eventsInfo, func(i, j int) bool {
+		return eventsInfo[i].Name <= eventsInfo[j].Name
+	})
+
+	lg.Infof("got %d events info from %d total count", len(eventsInfo), totalCount)
+
+	return eventsInfo, nil
 }
 
-// QueryIndustrialBalanceOf - returns balance of the token for user address
-func (con *Contract) QueryEventsByIDs(eventIDs string) ([]Event, error) {
+// QueryEventsByIDs - returns list of events
+func (con *Contract) QueryEventsByIDs(eventIDsString string) ([]Event, error) {
+	var eventIDs []string
+	err := json.Unmarshal([]byte(eventIDsString), &eventIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal event ids from '%s': %v", eventIDsString, err)
+	}
 
-	return []Event{
-		{
-			StartTime: time.Date(2023, 5, 16, 19, 00, 00, 00, time.Local),
-			Address:   "Театральная площадь, 1",
-			Name:      "Лебединое озеро",
-			ID:        defaultEventID,
-		},
-	}, nil
+	events := make([]Event, 0, len(eventIDs))
+	for _, eventID := range eventIDs {
+		event, err := con.getEventByID(eventID)
+		if err != nil {
+			lg.Errorf("failed to get event with id '%s': %v", err)
+			continue
+		}
+
+		events = append(events, event)
+	}
+
+	sort.Slice(events, func(i, j int) bool {
+		return events[i].ID <= events[j].ID
+	})
+
+	return events, nil
+}
+
+// QueryEventsByIssuer - returns list of events per issuer
+func (con *Contract) QueryEventsByIssuer(address *types.Address) ([]Event, error) {
+	lg.Infof("starting query events by issuer with address: '%s'", address)
+
+	iterator, err := con.GetStub().GetStateByPartialCompositeKey(eventsInfoStateKey, []string{address.String()})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get iterator: %v", err)
+	}
+
+	defer func(iterator shim.StateQueryIteratorInterface) {
+		err2 := iterator.Close()
+		if err2 != nil {
+			lg.Errorf("got error %v on closing iterator", err2)
+		}
+	}(iterator)
+
+	var events []Event
+	var totalCount int
+
+	for iterator.HasNext() {
+		totalCount++
+		info, err := iterator.Next()
+		if err != nil {
+			lg.Errorf("failed to get next info from iterator: %v", err)
+			continue
+		}
+
+		var event Event
+		err = json.Unmarshal(info.Value, &event)
+		if err != nil {
+			lg.Errorf("failed to unmarshal event from '%s': %v", string(info.Value), err)
+			continue
+		}
+
+		events = append(events, event)
+	}
+
+	sort.Slice(events, func(i, j int) bool {
+		return events[i].ID <= events[j].ID
+	})
+
+	lg.Infof("got %d events from %d total count", len(events), totalCount)
+
+	return events, nil
 }
 
 // QueryEventCategories - returns all categories for event
-func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
-	pricesMap, err := con.getPricesMap("")
+func (con *Contract) QueryEventCategories(eventID string) ([]PriceCategory, error) {
+	pricesMap, err := con.getPricesMap(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	var categories = make([]string, 0, len(pricesMap))
+	var categories = make([]PriceCategory, 0, len(pricesMap))
 	for category := range pricesMap {
-		categories = append(categories, category)
+		categories = append(categories, PriceCategory{Name: category, Price: pricesMap[category]})
 	}
 
 	sort.Slice(categories, func(i, j int) bool {
-		return categories[i] <= categories[j]
+		return categories[i].Name <= categories[j].Name
 	})
 
 	return categories, err
@@ -75,7 +168,7 @@ func (con *Contract) QueryEventCategories(eventID string) ([]string, error) {
 
 // QueryTicketsByCategory - returns all categories for event
 func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket, error) {
-	pricesMap, err := con.getPricesMap("")
+	pricesMap, err := con.getPricesMap(eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -150,11 +243,6 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 		return Ticket{}, fmt.Errorf("expected %d parts in key, got %d", 5, len(keyParts))
 	}
 
-	sector, err := strconv.ParseInt(keyParts[2], 10, 32)
-	if err != nil {
-		return Ticket{}, fmt.Errorf("failed to parse sector: %v", err)
-	}
-
 	row, err := strconv.ParseInt(keyParts[3], 10, 32)
 	if err != nil {
 		return Ticket{}, fmt.Errorf("failed to parse row: %v", err)
@@ -167,9 +255,33 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 
 	return Ticket{
 		Category: keyParts[1],
-		Sector:   int(sector),
 		Row:      int(row),
 		Number:   int(number),
-		EventID:  defaultEventID,
+		EventID:  joinStateKey(keyParts[0], keyParts[1]),
 	}, nil
+}
+
+func (con Contract) getEventByID(eventID string) (Event, error) {
+	address, eventNum, err := parseEventID(eventID)
+	if err != nil {
+		return Event{}, err
+	}
+
+	eventInfoKey, err := con.GetStub().CreateCompositeKey(eventsInfoStateKey, []string{address.String(), strconv.Itoa(eventNum)})
+	if err != nil {
+		return Event{}, fmt.Errorf("failed to create composite key for saving event's info: %v", err)
+	}
+
+	eventBytes, err := con.GetStub().GetState(eventInfoKey)
+	if err != nil {
+		return Event{}, fmt.Errorf("failed to get state at '%s': %v", eventInfoKey, err)
+	}
+
+	var event Event
+	err = json.Unmarshal(eventBytes, err)
+	if err != nil {
+		return Event{}, fmt.Errorf("failed to unmarshal event from '%s': %v", string(eventBytes), err)
+	}
+
+	return event, nil
 }

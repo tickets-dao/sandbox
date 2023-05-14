@@ -26,6 +26,9 @@ func TestTickets_Emission(t *testing.T) {
 	result1, result2 := issuer.OtfNbInvoke("it", "emission", string(defaultPriceCategoriesBytes))
 
 	fmt.Println(result1, result2)
+
+	//result := issuer.Invoke("it", "industrialBalanceOf", issuer.Address())
+
 }
 
 func TestTickets_Check_Issuer_InfoAfterInit(t *testing.T) {

@@ -8,41 +8,16 @@ import (
 
 var priceCategoriesDefault = []PriceCategory{
 	{
-		Name: "parter",
-		Seats: []Seat{
-			{
-				Sector: 1,
-				Row:    1,
-				Number: 1,
-			},
-			{
-				Sector: 1,
-				Row:    1,
-				Number: 2,
-			},
-
-			{
-				Sector: 1,
-				Row:    1,
-				Number: 3,
-			},
-			{
-				Sector: 1,
-				Row:    1,
-				Number: 4,
-			},
-			{
-				Sector: 1,
-				Row:    2,
-				Number: 1,
-			},
-			{
-				Sector: 1,
-				Row:    2,
-				Number: 2,
-			},
-		},
+		Name:  "parter",
+		Seats: 5,
+		Rows:  5,
 		Price: big.NewInt(1000),
+	},
+	{
+		Name:  "бельэтаж",
+		Seats: 10,
+		Rows:  3,
+		Price: big.NewInt(500),
 	},
 }
 

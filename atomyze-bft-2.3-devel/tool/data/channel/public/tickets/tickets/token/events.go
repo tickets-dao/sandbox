@@ -42,12 +42,11 @@ type Ticket struct {
 
 	Category string `json:"category"`
 	Price    int32  `json:"price"`
-	Sector   int    `json:"sector"`
 	Row      int    `json:"row"`
 	Number   int    `json:"number"`
 	EventID  string `json:"event_id"`
 }
 
 func (t Ticket) String() string {
-	return joinStateKey(issuerAddrString, t.Category, strconv.Itoa(t.Sector), strconv.Itoa(t.Row), strconv.Itoa(t.Number))
+	return joinStateKey(t.EventID, t.Category, strconv.Itoa(t.Row), strconv.Itoa(t.Number))
 }
