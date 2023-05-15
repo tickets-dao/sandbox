@@ -12,14 +12,9 @@ import (
 
 // TestTransfer - create user 'from' and user 'userTo', emit amount to user 'userFrom' and transfer token from 'userFrom' to 'userTo'
 func TestGenerateKeys(t *testing.T) {
-	err := generateAndSaveKeys("issuer")
+	err := generateAndSaveKeys(ticketerUsername)
 	if err != nil {
-		t.Fatalf("failed to generate and save keys for issuer: %v", err)
-	}
-
-	err = generateAndSaveKeys("user")
-	if err != nil {
-		t.Fatalf("failed to generate and save keys for user: %v", err)
+		t.Fatalf("failed to generate and save keys for username '%s': %v", ticketerUsername, err)
 	}
 }
 

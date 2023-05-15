@@ -1,7 +1,6 @@
 package token
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/tickets-dao/chaincode/logging"
 	"github.com/tickets-dao/foundation/v3/core"
@@ -47,49 +46,6 @@ type PriceCategory struct {
 	Rows  int      `json:"rows"`
 	Seats int      `json:"seats"`
 	Price *big.Int `json:"price"`
-}
-
-func (con *Contract) NBTxPrepare(sender *types.Sender, eventID, categoryName string, row, number int, newBurningHash string) error {
-
-	ticketKey := createTicketID(eventID, categoryName, row, number)
-
-	balances, err := con.IndustrialBalanceGet(sender.Address())
-	if err != nil {
-		return fmt.Errorf("failed to get industrial balances of sender '%s': %v", sender.Address(), err)
-	}
-
-	ticketIndustrial, ok := balances[ticketKey]
-	if !ok {
-		return fmt.Errorf("unathorized for ticket '%s'", ticketKey)
-	}
-
-	fmt.Println(ticketIndustrial)
-
-	ticketBytes, err := con.GetStub().GetState(ticketKey)
-	if err != nil {
-		return fmt.Errorf("failed to get ticket info from state: %v", err)
-	}
-
-	if err = con.IndustrialBalanceLock(ticketKey, sender.Address(), new(big.Int).SetInt64(1)); err != nil {
-		return fmt.Errorf("failed to lock ticket: %v", err)
-	}
-
-	var ticket Ticket
-	err = json.Unmarshal(ticketBytes, &ticket)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal ticket from '%s': %v", string(ticketBytes), err)
-	}
-
-	ticket.BurningHash = newBurningHash
-
-	ticketBytes, _ = json.Marshal(ticket)
-
-	err = con.GetStub().PutState(ticketKey, ticketBytes)
-	if err != nil {
-		return fmt.Errorf("failed to update ticket: %v", err)
-	}
-
-	return nil
 }
 
 // QueryMetadata responds with current contract metadata

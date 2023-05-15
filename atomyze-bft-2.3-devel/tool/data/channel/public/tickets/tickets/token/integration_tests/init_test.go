@@ -17,6 +17,7 @@ import (
 
 const issuerUsername = "issuer"
 const defaultUsername = "user"
+const ticketerUsername = "ticketer"
 
 // TestTransfer - create user 'from' and user 'userTo', emit amount to user 'userFrom' and transfer token from 'userFrom' to 'userTo'
 func TestInitialize(t *testing.T) {

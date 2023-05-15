@@ -18,6 +18,7 @@ type IssuerInfo struct {
 	ID          *types.Address `json:"id"`
 	NextEventID int            `json:"next_event_id"`
 	Name        string         `json:"name"`
+	Ticketers   []string       `json:"ticketers"`
 }
 
 func (con *Contract) NBTxMarkUserAsIssuer(sender *types.Sender, issuerCandidate *types.Address, newName string) (IssuerInfo, error) {
