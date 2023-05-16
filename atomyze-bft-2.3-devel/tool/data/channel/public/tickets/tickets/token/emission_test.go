@@ -13,6 +13,9 @@ import (
 //go:embed integration_tests/testdata/default_price_categories.json
 var defaultPriceCategoriesBytes []byte
 
+//go:embed integration_tests/testdata/default_price_categories_map.json
+var defaultPriceCategoriesMapBytes []byte
+
 func TestTickets_Emission(t *testing.T) {
 	mock := ma.NewLedger(t)
 	issuer := mock.NewWallet()
@@ -41,6 +44,33 @@ func TestTickets_Emission(t *testing.T) {
 	fmt.Println("events by id", issuer.Invoke("it", "eventsByIDs", fmt.Sprintf(`["%s::1"]`, issuer.Address())))
 
 	fmt.Println("parter tickets: ", issuer.Invoke("it", "ticketsByCategory", issuer.Address()+"::1", "parter"))
+
+}
+
+func TestTickets_EmissionAndChangePrices(t *testing.T) {
+	mock := ma.NewLedger(t)
+	issuer := mock.NewWallet()
+
+	it := &Contract{}
+
+	mock.NewChainCode("it", it, &core.ContractOptions{}, issuer.Address())
+
+	fmt.Println(issuer.OtfNbInvoke("it", "initV2"))
+
+	issuer.OtfNbInvoke(
+		"it",
+		"emission",
+		string(defaultPriceCategoriesBytes),
+		"Лебединое озеро 1",
+		"Москва, центр",
+		"2023-05-26 15:00:00",
+	)
+
+	eventID := issuer.Address() + "::1"
+	issuer.OtfNbInvoke("it", "setPricesCategories", eventID, string(defaultPriceCategoriesMapBytes))
+
+	res := issuer.Invoke("it", "eventCategories", eventID)
+	fmt.Println(res)
 
 }
 

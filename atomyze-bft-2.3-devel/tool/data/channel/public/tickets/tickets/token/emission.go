@@ -64,17 +64,68 @@ func (con *Contract) NBTxEmission(sender *types.Sender, priceCategoriesString, n
 	return nil
 }
 
+// NBTxEmission - create tickets emission
+func (con *Contract) NBTxSetPricesCategories(sender *types.Sender, eventID, priceCategoriesString string) error {
+	lg.Infof("this is set prices categories for sender %s\n", sender.Address())
+	issuer, _, err := parseEventID(eventID)
+	if err != nil {
+		return err
+	}
+
+	if !sender.Equal(issuer) {
+		return fmt.Errorf("unathorized: expected sender '%s', got '%s'", issuer.Address, sender.Address())
+	}
+
+	var newPricesMap map[string]PriceCategory
+	err = json.Unmarshal([]byte(priceCategoriesString), &newPricesMap)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal prices map from '%s': %v", priceCategoriesString, err)
+	}
+
+	previousPrices, err := con.getPricesMap(eventID)
+	if err != nil {
+		return fmt.Errorf("failed to get prices map: %v", err)
+	}
+
+	if len(newPricesMap) != len(previousPrices) {
+		return fmt.Errorf("expected %d categories in new map, got  %d", len(previousPrices), len(newPricesMap))
+	}
+
+	var pricesMap = make(map[string]*big.Int, len(newPricesMap))
+
+	for categoryName := range previousPrices {
+		newPrice, ok := newPricesMap[categoryName]
+		if !ok {
+			return fmt.Errorf("category '%s' is absent from new categories map '%v'", categoryName, newPricesMap)
+		}
+
+		pricesMap[categoryName] = newPrice.Price
+	}
+
+	if err = con.savePricesMap(eventID, pricesMap); err != nil {
+		return fmt.Errorf("failed to save prices map: %v", err)
+	}
+
+	lg.Infof("all done, returning nil error\n")
+
+	return nil
+}
+
 func (con *Contract) saveCategoriesMap(eventID string, categories []PriceCategory) error {
-	categoriesMap := make(map[string]*big.Int, len(categories))
+	pricesMap := make(map[string]*big.Int, len(categories))
 	for _, category := range categories {
-		if _, ok := categoriesMap[category.Name]; ok {
+		if _, ok := pricesMap[category.Name]; ok {
 			return fmt.Errorf("category '%s' is used more than once", category.Name)
 		}
 
-		categoriesMap[category.Name] = category.Price
+		pricesMap[category.Name] = category.Price
 	}
 
-	categoriesMapBytes, err := json.Marshal(categoriesMap)
+	return con.savePricesMap(eventID, pricesMap)
+}
+
+func (con *Contract) savePricesMap(eventID string, pricesMap map[string]*big.Int) error {
+	categoriesMapBytes, err := json.Marshal(pricesMap)
 	if err != nil {
 		return fmt.Errorf("failed to marshal categories map: %v", err)
 	}
