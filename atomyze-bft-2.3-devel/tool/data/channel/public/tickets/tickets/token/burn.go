@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core/types"
-	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string, row, number int, burningPrivateKey string) (BurnEvent, error) {
@@ -35,11 +34,6 @@ func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string
 		)
 
 		return BurnEvent{}, fmt.Errorf("bad burning key, got hash '%s' instead of '%s'", string(burningHash[:]), ticket.BurningHash)
-	}
-
-	err = con.IndustrialBalanceBurnLocked(ticketKey, types.AddrFromBytes([]byte(ticket.Owner)), new(big.Int).SetInt64(1), "event entrance")
-	if err != nil {
-		return BurnEvent{}, fmt.Errorf("failed to burn ticket: %v", err)
 	}
 
 	return BurnEvent{
