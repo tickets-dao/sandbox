@@ -3,16 +3,19 @@ package token
 import (
 	"crypto/md5"
 	_ "embed"
+	"encoding/hex"
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core"
 	ma "github.com/tickets-dao/foundation/v3/mock"
 	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestTickets_PrepareAndBurnTicket(t *testing.T) {
 	mock := ma.NewLedger(t)
 	issuer := mock.NewWallet()
+	ticketer := mock.NewWallet()
 
 	it := &Contract{}
 
@@ -31,6 +34,13 @@ func TestTickets_PrepareAndBurnTicket(t *testing.T) {
 
 	fmt.Println(result1, result2)
 
+	issuer.SignedInvoke(
+		"it",
+		"addTicketer",
+		ticketer.Address(),
+	)
+
+	time.Sleep(time.Second)
 	privateKey := generateRandomString(20)
 	burningHash := md5.Sum(privateKey)
 
@@ -41,7 +51,19 @@ func TestTickets_PrepareAndBurnTicket(t *testing.T) {
 		"parter",
 		"1",
 		"1",
-		string(burningHash[:]),
+		hex.EncodeToString(burningHash[:]),
+	)
+
+	fmt.Println(result, txResp)
+
+	result, txResp = ticketer.OtfNbInvoke(
+		"it",
+		"burn",
+		fmt.Sprintf(`%s::1`, issuer.Address()),
+		"parter",
+		"1",
+		"1",
+		string(privateKey),
 	)
 
 	fmt.Println(result, txResp)

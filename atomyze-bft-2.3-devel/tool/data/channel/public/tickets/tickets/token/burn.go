@@ -2,9 +2,11 @@ package token
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core/types"
+	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string, row, number int, burningPrivateKey string) (BurnEvent, error) {
@@ -23,9 +25,14 @@ func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string
 		return BurnEvent{}, fmt.Errorf("failed to get ticket at '%s': %v", ticketKey, err)
 	}
 
+	owner, err := types.AddrFromBase58Check(ticket.Owner)
+	if err != nil {
+		return BurnEvent{}, fmt.Errorf("failed to parse owner from '%s': %v", ticket.Owner, err)
+	}
+
 	burningHash := md5.Sum([]byte(burningPrivateKey))
 
-	if ticket.BurningHash != string(burningHash[:]) {
+	if ticket.BurningHash != hex.EncodeToString(burningHash[:]) {
 		lg.Warningf(
 			"got bad burning key '%s' from '%s', expected '%s'",
 			string(burningHash[:]),
@@ -34,6 +41,22 @@ func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string
 		)
 
 		return BurnEvent{}, fmt.Errorf("bad burning key, got hash '%s' instead of '%s'", string(burningHash[:]), ticket.BurningHash)
+	}
+
+	balances, err := con.IndustrialBalanceGet(owner)
+	if err != nil {
+		return BurnEvent{}, err
+	}
+
+	ticketBalance, ok := balances[ticketKey]
+	lg.Infof("balances has ticket: %s, %t", ticketBalance, ok)
+
+	if err = con.IndustrialBalanceLock(ticketKey, owner, big.NewInt(1)); err != nil {
+		return BurnEvent{}, fmt.Errorf("failed to lock ticket: %v", err)
+	}
+
+	if err = con.IndustrialBalanceBurnLocked(ticketKey, owner, big.NewInt(1), "scanned qr"); err != nil {
+		return BurnEvent{}, fmt.Errorf("failed to lock ticket: %v", err)
 	}
 
 	return BurnEvent{

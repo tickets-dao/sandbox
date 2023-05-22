@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core/types"
-	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
 func (con *Contract) NBTxPrepare(sender *types.Sender, eventID, categoryName string, row, number int, newBurningHash string) (Ticket, error) {
@@ -21,9 +20,9 @@ func (con *Contract) NBTxPrepare(sender *types.Sender, eventID, categoryName str
 		return Ticket{}, fmt.Errorf("unathorized for ticket '%s'", ticketKey)
 	}
 
-	if err = con.IndustrialBalanceLock(ticketKey, sender.Address(), big.NewInt(1)); err != nil {
-		return Ticket{}, fmt.Errorf("failed to lock ticket: %v", err)
-	}
+	//if err = con.IndustrialBalanceLock(ticketKey, sender.Address(), big.NewInt(1)); err != nil {
+	//	return Ticket{}, fmt.Errorf("failed to lock ticket: %v", err)
+	//}
 
 	ticket := Ticket{
 		BurningHash: newBurningHash,
