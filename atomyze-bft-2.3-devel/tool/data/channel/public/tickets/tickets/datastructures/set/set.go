@@ -62,7 +62,7 @@ func (s Set) String() string {
 
 func FromSlice(slice []string) Set {
 	if slice == nil {
-		return nil
+		return make(map[string]struct{})
 	}
 	s := Set{}
 	for _, el := range slice {

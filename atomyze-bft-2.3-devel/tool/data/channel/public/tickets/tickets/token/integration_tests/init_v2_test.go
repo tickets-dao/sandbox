@@ -45,6 +45,26 @@ func TestInitV2(t *testing.T) {
 			sCtx.Assert().NoError(err)
 		})
 
+		t.WithNewStep("read cryptos for issuer", func(sCtx provider.StepCtx) {
+			pkey, err := readPrivateKeyFromFile(filenameByUser(ticketerUsername))
+			sCtx.Assert().NoError(err)
+			publicKey = base58.Encode(pkey.Public().(ed25519.PublicKey))
+		})
+
+		t.WithNewStep("Add user by invoking method `addUser` of chaincode `acl` with valid parameters", func(sCtx provider.StepCtx) {
+			_, err := utils.Invoke(ctx, os.Getenv(utils.EnvHlfProxyURL),
+				os.Getenv(utils.EnvHlfProxyAuthToken),
+				"acl", "addUser", publicKey, "test", "ticketer", "true")
+			sCtx.Assert().NoError(err)
+		})
+
+		time.Sleep(utils.BatchTransactionTimeout)
+		t.WithNewStep("Check user is created by querying method `checkKeys` of chaincode `acl`", func(sCtx provider.StepCtx) {
+			_, err := utils.Query(ctx, os.Getenv(utils.EnvHlfProxyURL),
+				os.Getenv(utils.EnvHlfProxyAuthToken), "acl", "checkKeys", publicKey)
+			sCtx.Assert().NoError(err)
+		})
+
 		t.WithNewStep("read cryptos for user", func(sCtx provider.StepCtx) {
 
 			pkey, err := readPrivateKeyFromFile(filenameByUser(defaultUsername))
