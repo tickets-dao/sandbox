@@ -193,7 +193,7 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 	tickets := make([]Ticket, 0, len(availableTickets))
 	for ticket := range availableTickets {
 		ticketParts := strings.Split(ticket, "::")
-		if ticketParts[2] != category {
+		if ticketParts[2] != category || ticketParts[1] != eventID {
 			continue
 		}
 

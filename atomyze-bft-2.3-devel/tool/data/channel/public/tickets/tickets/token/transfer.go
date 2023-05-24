@@ -7,7 +7,7 @@ import (
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
-func (con *Contract) TxTransferTo(
+func (con *Contract) NBTxTransferTo(
 	sender *types.Sender,
 	address *types.Address,
 	eventID, categoryName string,

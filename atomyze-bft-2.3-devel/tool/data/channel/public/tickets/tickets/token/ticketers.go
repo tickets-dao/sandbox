@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-func (con *Contract) TxAddTicketer(sender *types.Sender, newTicketer *types.Address) error {
+func (con *Contract) NBTxAddTicketer(sender *types.Sender, newTicketer *types.Address) error {
 	lg.Infof("starting to add new ticketer '%s' for issuer '%s'", newTicketer, sender.Address())
 	issuerInfo, err := con.getIssuerInfo(sender.Address())
 	if err != nil {
@@ -37,7 +37,7 @@ func (con *Contract) TxAddTicketer(sender *types.Sender, newTicketer *types.Addr
 	return nil
 }
 
-func (con *Contract) TxDeleteTicketer(sender *types.Sender, newTicketer *types.Address) error {
+func (con *Contract) NBTxDeleteTicketer(sender *types.Sender, newTicketer *types.Address) error {
 	lg.Infof("starting to delete new ticketer '%s' for issuer '%s'", newTicketer, sender.Address())
 	issuerInfo, err := con.getIssuerInfo(sender.Address())
 	if err != nil {
