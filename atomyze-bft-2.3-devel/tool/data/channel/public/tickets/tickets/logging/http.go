@@ -3,7 +3,6 @@ package logging
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/op/go-logging"
@@ -17,25 +16,25 @@ type HttpBackend struct {
 func (h *HttpBackend) Log(level logging.Level, i int, record *logging.Record) error {
 	fmt.Printf("customLog: %s %s %s\n", record.Time, level, record.Formatted(i+1))
 
-	req, err := http.NewRequest("POST", "http://5.101.179.223:12345/", strings.NewReader(record.Formatted(i+1)))
-	if err != nil {
-		err = fmt.Errorf("failed to make request: %v", err)
-
-		fmt.Println(err.Error())
-		return err
-	}
-
-	req.Header.Set("level", level.String())
-	req.Header.Set("module", record.Module)
-	req.Header.Set("time", record.Time.Format(time.RFC3339Nano))
-
-	_, err = h.cli.Do(req)
-	if err != nil {
-		err = fmt.Errorf("failed to perform post request: %v", err)
-		fmt.Println(err.Error())
-
-		return err
-	}
+	//req, err := http.NewRequest("POST", "http://5.101.179.223:12345/", strings.NewReader(record.Formatted(i+1)))
+	//if err != nil {
+	//	err = fmt.Errorf("failed to make request: %v", err)
+	//
+	//	fmt.Println(err.Error())
+	//	return err
+	//}
+	//
+	//req.Header.Set("level", level.String())
+	//req.Header.Set("module", record.Module)
+	//req.Header.Set("time", record.Time.Format(time.RFC3339Nano))
+	//
+	//_, err = h.cli.Do(req)
+	//if err != nil {
+	//	err = fmt.Errorf("failed to perform post request: %v", err)
+	//	fmt.Println(err.Error())
+	//
+	//	return err
+	//}
 
 	return nil
 }

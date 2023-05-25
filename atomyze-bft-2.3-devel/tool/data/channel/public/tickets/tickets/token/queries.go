@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/tickets-dao/chaincode/datastructures/set"
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 	"sort"
@@ -83,10 +84,12 @@ func (con *Contract) QueryEventsByIDs(eventIDsString string) ([]Event, error) {
 		return nil, fmt.Errorf("failed to unmarshal event ids from '%s': %v", eventIDsString, err)
 	}
 
-	lg.Infof("get events with ids '%v'", eventIDs)
+	deduplicatedEventIDs := set.FromSlice(eventIDs).ToSlice()
+	lg.Infof("got %d deduplicated event ids from %d initial event ids", len(deduplicatedEventIDs), len(eventIDs))
+	lg.Infof("get events with ids '%v'", deduplicatedEventIDs)
 
-	events := make([]Event, 0, len(eventIDs))
-	for _, eventID := range eventIDs {
+	events := make([]Event, 0, len(deduplicatedEventIDs))
+	for _, eventID := range deduplicatedEventIDs {
 		event, err := con.getEventByID(eventID)
 		if err != nil {
 			lg.Errorf("failed to get event with id '%s': %v", eventID, err)
@@ -170,6 +173,7 @@ func (con *Contract) QueryEventCategories(eventID string) ([]PriceCategory, erro
 
 // QueryTicketsByCategory - returns all categories for event
 func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket, error) {
+	lg.Infof("starting tickets for event '%s', category '%s'", eventID, category)
 	issuer, _, err := parseEventID(eventID)
 	if err != nil {
 		return nil, err
@@ -190,12 +194,16 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 		return nil, err
 	}
 
+	ticketPrefix := joinStateKey(eventID, category)
+
+	lg.Infof("going to parse tickets")
 	tickets := make([]Ticket, 0, len(availableTickets))
 	for ticket := range availableTickets {
-		ticketParts := strings.Split(ticket, "::")
-		if ticketParts[2] != category || ticketParts[1] != eventID {
+		if !strings.HasPrefix(ticket, ticketPrefix) {
 			continue
 		}
+
+		ticketParts := strings.Split(ticket, "::")
 
 		ticketFromKey, err := ticketFromKeyParts(ticketParts)
 		if err != nil {
@@ -208,6 +216,7 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 		tickets = append(tickets, ticketFromKey)
 	}
 
+	lg.Infof("got %d tickets from %d total", len(tickets), len(availableTickets))
 	sort.Slice(tickets, func(i, j int) bool {
 		return tickets[i].String() <= tickets[j].String()
 	})

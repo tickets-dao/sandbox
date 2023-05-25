@@ -41,7 +41,8 @@ func TestTickets_Emission(t *testing.T) {
 
 	fmt.Println("issuer events: ", issuer.Invoke("it", "eventsByIssuer", issuer.Address()))
 
-	fmt.Println("events by id", issuer.Invoke("it", "eventsByIDs", fmt.Sprintf(`["%s::1"]`, issuer.Address())))
+	eventID := fmt.Sprintf(`["%s::1", "%s::1"]`, issuer.Address(), issuer.Address())
+	fmt.Println("events by id", issuer.Invoke("it", "eventsByIDs", eventID))
 
 	fmt.Println("parter tickets: ", issuer.Invoke("it", "ticketsByCategory", issuer.Address()+"::1", "parter"))
 
