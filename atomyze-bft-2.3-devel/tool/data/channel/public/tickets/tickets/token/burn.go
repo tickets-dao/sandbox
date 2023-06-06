@@ -7,12 +7,27 @@ import (
 	"fmt"
 	"github.com/tickets-dao/foundation/v3/core/types"
 	"github.com/tickets-dao/foundation/v3/core/types/big"
+	"time"
 )
 
-func (con *Contract) NBTxBurn(sender *types.Sender, eventID, categoryName string, row, number int, burningPrivateKey string) (BurnEvent, error) {
+func (con *Contract) TxBurn(sender *types.Sender, eventID, categoryName, nowString string, row, number int, burningPrivateKey string) (BurnEvent, error) {
+	now, err := time.Parse(time.RFC3339, nowString)
+	if err != nil {
+		return BurnEvent{}, fmt.Errorf("failed to parse now time from '%s': %v", nowString, err)
+	}
 	issuer, _, err := parseEventID(eventID)
 	if err != nil {
 		return BurnEvent{}, err
+	}
+
+	event, err := con.getEventByID(eventID)
+	if err != nil {
+		return BurnEvent{}, fmt.Errorf("failed to get event by id: %v", err)
+	}
+
+	if now.After(event.StartTime.Add(timeThreshold)) {
+		//концерт уже начался, нельзя погасить
+		return BurnEvent{}, fmt.Errorf("now '%s' is after concert start '%s', couldn't burn ticket", now, event.StartTime)
 	}
 
 	if err = con.checkTicketer(issuer, sender.Address()); err != nil {

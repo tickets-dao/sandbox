@@ -7,16 +7,31 @@ import (
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const rubCurrency = "RUB"
 
-func (con *Contract) NBTxBuy(sender *types.Sender, eventID, categoryName string, row, number int) (TransferEvent, error) {
+func (con *Contract) TxBuy(sender *types.Sender, eventID, categoryName, nowString string, row, number int) (TransferEvent, error) {
 	lg.Infof("TxBuy start event id: '%s'", eventID)
+	now, err := time.Parse(time.RFC3339, nowString)
+	if err != nil {
+		return TransferEvent{}, fmt.Errorf("failed to parse now time from '%s': %v", nowString, err)
+	}
 
 	issuer, _, err := parseEventID(eventID)
 	if err != nil {
 		return TransferEvent{}, err
+	}
+
+	event, err := con.getEventByID(eventID)
+	if err != nil {
+		return TransferEvent{}, fmt.Errorf("failed to get event by id: %v", err)
+	}
+
+	if now.After(event.StartTime.Add(timeThreshold)) {
+		//концерт уже начался, нельзя погасить
+		return TransferEvent{}, fmt.Errorf("now '%s' is after concert start '%s', couldn't burn ticket", now, event.StartTime)
 	}
 
 	balances, err := con.IndustrialBalanceGet(issuer)

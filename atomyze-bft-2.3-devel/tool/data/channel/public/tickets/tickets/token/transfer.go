@@ -7,7 +7,16 @@ import (
 	"github.com/tickets-dao/foundation/v3/core/types/big"
 )
 
-func (con *Contract) NBTxTransferTo(
+func (con *Contract) TxTransferTo(
+	sender *types.Sender,
+	address *types.Address,
+	eventID, categoryName string,
+	row, number int,
+) (TransferEvent, error) {
+	return con.transferTicket(sender, address, eventID, categoryName, row, number)
+}
+
+func (con *Contract) transferTicket(
 	sender *types.Sender,
 	address *types.Address,
 	eventID, categoryName string,
@@ -15,6 +24,7 @@ func (con *Contract) NBTxTransferTo(
 ) (TransferEvent, error) {
 	ticketID := createTicketID(eventID, categoryName, row, number)
 	lg.Infof("transferring ticket '%s' from '%s' to '%s'", ticketID, sender.Address(), address)
+
 	ticket := Ticket{
 		BurningHash: "", // delete previous saved hash
 		Owner:       sender.Address().String(),

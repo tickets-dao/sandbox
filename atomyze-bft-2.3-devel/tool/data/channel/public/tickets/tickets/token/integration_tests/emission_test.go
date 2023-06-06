@@ -57,7 +57,7 @@ func TestCreateEvent(t *testing.T) {
 					"tickets",
 					"tickets",
 					"emission",
-					[]string{string(defaultPriceCategories), "Лебединое озеро 1", "Москва, центр", "2023-05-26 15:00:00"},
+					[]string{string(defaultPriceCategories), "Лебединое озеро", "Москва, Театральная площадь 1", "2023-06-26 15:00:00"},
 				)
 				sCtx.Assert().NoError(err)
 			})

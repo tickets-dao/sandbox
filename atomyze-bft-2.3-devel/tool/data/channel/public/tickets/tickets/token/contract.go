@@ -16,6 +16,8 @@ const issuerBalanceStateSubKey = "balance"
 const ticketersStateSubKey = "ticketers"
 const eventsInfoStateKey = "events"
 
+const timeThreshold = 3 * time.Hour
+
 var lg = logging.NewHTTPLogger("contract")
 
 const issuerAddrString = "5unWkjiVbpAkDDvyS8pxT1hWuwqEFgFShTb8i4WBr2KdDWuuf"

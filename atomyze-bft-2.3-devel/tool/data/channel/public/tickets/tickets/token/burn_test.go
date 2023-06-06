@@ -34,7 +34,7 @@ func TestTickets_PrepareAndBurnTicket(t *testing.T) {
 
 	fmt.Println(result1, result2)
 
-	issuer.SignedInvoke(
+	issuer.RawSignedInvokeWithErrorReturned(
 		"it",
 		"addTicketer",
 		ticketer.Address(),

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="TestCreateEvent in github.com/tickets-dao/chaincode/token/integration_tests" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+  <configuration default="false" name="TestCreateEvent local" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="atomyze_sandbox" />
     <working_directory value="$PROJECT_DIR$/atomyze-bft-2.3-devel/tool/data/channel/public/tickets/tickets/token/integration_tests" />
     <envs>
