@@ -13,26 +13,26 @@ func (con *Contract) TxTransferTo(
 	eventID, categoryName string,
 	row, number int,
 ) (TransferEvent, error) {
-	return con.transferTicket(sender, address, eventID, categoryName, row, number)
+	ticketID := createTicketID(eventID, categoryName, row, number)
+	lg.Infof("TxTransferTo '%s' ticketID '%s'", address, ticketID)
+	return con.transferTicket(sender, address, ticketID)
 }
 
 func (con *Contract) transferTicket(
 	sender *types.Sender,
 	address *types.Address,
-	eventID, categoryName string,
-	row, number int,
+	ticketID string,
 ) (TransferEvent, error) {
-	ticketID := createTicketID(eventID, categoryName, row, number)
 	lg.Infof("transferring ticket '%s' from '%s' to '%s'", ticketID, sender.Address(), address)
 
-	ticket := Ticket{
-		BurningHash: "", // delete previous saved hash
-		Owner:       sender.Address().String(),
-		Category:    categoryName,
-		Row:         row,
-		Number:      number,
-		EventID:     eventID,
+	ticket, err := con.getTicket(ticketID)
+	if err != nil {
+		err = fmt.Errorf("failed to get ticket: %v", err)
 	}
+
+	ticket.BurningHash = ""
+	ticket.Owner = address.String()
+
 	ticketBytes, err := json.Marshal(ticket)
 	if err != nil {
 		return TransferEvent{}, fmt.Errorf("failed to marshal ticket: %v", err)
@@ -47,10 +47,14 @@ func (con *Contract) transferTicket(
 		return TransferEvent{}, fmt.Errorf("failed to transfer ticket: %v", err)
 	}
 
-	return TransferEvent{
+	transferEvent := TransferEvent{
 		From:   sender.Address().String(),
 		To:     address.String(),
 		Price:  0,
 		Ticker: ticketID,
-	}, nil
+	}
+
+	lg.Infof("transferred ticket %s: %#v", ticketID, transferEvent)
+
+	return transferEvent, nil
 }

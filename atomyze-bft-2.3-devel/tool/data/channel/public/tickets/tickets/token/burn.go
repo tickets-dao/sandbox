@@ -11,7 +11,7 @@ import (
 )
 
 func (con *Contract) TxBurn(sender *types.Sender, eventID, categoryName, nowString string, row, number int, burningPrivateKey string) (BurnEvent, error) {
-	now, err := time.Parse(time.RFC3339, nowString)
+	now, err := time.Parse(timeLayout, nowString)
 	if err != nil {
 		return BurnEvent{}, fmt.Errorf("failed to parse now time from '%s': %v", nowString, err)
 	}

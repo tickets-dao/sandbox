@@ -14,7 +14,7 @@ const rubCurrency = "RUB"
 
 func (con *Contract) TxBuy(sender *types.Sender, eventID, categoryName, nowString string, row, number int) (TransferEvent, error) {
 	lg.Infof("TxBuy start event id: '%s'", eventID)
-	now, err := time.Parse(time.RFC3339, nowString)
+	now, err := time.Parse(timeLayout, nowString)
 	if err != nil {
 		return TransferEvent{}, fmt.Errorf("failed to parse now time from '%s': %v", nowString, err)
 	}

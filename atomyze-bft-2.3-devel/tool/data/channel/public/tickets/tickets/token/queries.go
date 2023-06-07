@@ -211,7 +211,7 @@ func (con *Contract) QueryTicketsByCategory(eventID, category string) ([]Ticket,
 			continue
 		}
 
-		ticketFromKey.Price = int32(price.Int64())
+		ticketFromKey.LastBuyPrice = price
 
 		tickets = append(tickets, ticketFromKey)
 	}
@@ -277,7 +277,7 @@ func ticketFromKeyParts(keyParts []string) (Ticket, error) {
 	}, nil
 }
 
-func (con Contract) getEventByID(eventID string) (Event, error) {
+func (con *Contract) getEventByID(eventID string) (Event, error) {
 	lg.Infof("get event with id '%s'", eventID)
 	address, eventNum, err := parseEventID(eventID)
 	if err != nil {

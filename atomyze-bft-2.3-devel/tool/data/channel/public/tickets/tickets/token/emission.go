@@ -64,8 +64,8 @@ func (con *Contract) NBTxEmission(sender *types.Sender, priceCategoriesString, n
 	return nil
 }
 
-// NBTxEmission - create tickets emission
-func (con *Contract) NBTxSetPricesCategories(sender *types.Sender, eventID, priceCategoriesString string) error {
+// TxSetPricesCategories - create tickets emission
+func (con *Contract) TxSetPricesCategories(sender *types.Sender, eventID, priceCategoriesString string) error {
 	lg.Infof("this is set prices categories for sender %s\n", sender.Address())
 	issuer, _, err := parseEventID(eventID)
 	if err != nil {
@@ -207,7 +207,7 @@ func mustParseEventID(eventID string) (string, int) {
 }
 
 func (con *Contract) saveEventInfo(eventID string, eventName string, address string, eventTimeString string) error {
-	eventTime, err := time.Parse("2006-01-02 15:04:05", eventTimeString)
+	eventTime, err := time.Parse(timeLayout, eventTimeString)
 	if err != nil {
 		return fmt.Errorf("failed to parse event time from '%s': %v", eventTimeString, err)
 	}

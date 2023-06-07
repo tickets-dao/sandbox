@@ -41,7 +41,6 @@ type Ticket struct {
 	Owner string `json:"owner"`
 
 	Category string `json:"category"`
-	Price    int32  `json:"price"`
 	Row      int    `json:"row"`
 	Number   int    `json:"number"`
 	EventID  string `json:"event_id"`
