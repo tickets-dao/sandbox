@@ -36,7 +36,7 @@ type ConfirmEvent struct {
 type Ticket struct {
 	BurningHash string `json:"burning_hash"`
 	// стоимость последней покупки этого билета, используется для расчета стоимости возврата билета
-	LastBuyPrice *big.Int `json:"last_buy_price"`
+	LastBuyPrice *big.Int `json:"last_buy_price,omitempty"`
 	// текущий владелец билета
 	Owner string `json:"owner"`
 

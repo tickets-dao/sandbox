@@ -24,7 +24,7 @@ func TestMyTickets(t *testing.T) {
 		var err error
 
 		t.WithNewStep("Generate cryptos for issuer", func(sCtx provider.StepCtx) {
-			pkey, err = readPrivateKeyFromFile(filenameByUser(issuerUsername))
+			pkey, err = readPrivateKeyFromFile(filenameByUser(defaultUsername))
 			sCtx.Assert().NoError(err)
 			pubKey = pkey.Public().(ed25519.PublicKey)
 			//issuerAddress, err = utils.GetAddressByPublicKey(pubKey)

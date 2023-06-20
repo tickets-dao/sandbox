@@ -152,6 +152,8 @@ func (con *Contract) getPricesMap(eventID string) (map[string]*big.Int, error) {
 		return nil, fmt.Errorf("failed to unmarshal prices map: %v", err)
 	}
 
+	lg.Infof("from bytes: '%s' got map '%v'", string(pricesMapBytes), pricesMap)
+
 	return pricesMap, nil
 }
 

@@ -61,6 +61,10 @@ func (con *Contract) TxBuy(sender *types.Sender, eventID, categoryName, nowStrin
 		return TransferEvent{}, fmt.Errorf("unknown category '%s' in map '%v'", categoryName, pricesMap)
 	}
 
+	if price == nil {
+		lg.Errorf("got nil price for category '%s' from map %v", categoryName, pricesMap)
+	}
+
 	err = con.AllowedBalanceTransfer(rubCurrency, sender.Address(), issuer, price, "ticket buy")
 	if err != nil {
 		return TransferEvent{}, fmt.Errorf("failed to transfer fiat to issuer: %v", err)
